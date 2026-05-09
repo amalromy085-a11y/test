@@ -3969,12 +3969,356 @@ function initClientFormAC(c={}){
   const ci=document.getElementById('cf-coord-inp');
   if(ci){fsGetAll('users',fn().where('role','==','coordinator')).then(coords=>{createAutocomplete(ci,coords.map(c=>({id:c.id,label:c.name||c.email,sub:'Coordinator'})),{minChars:0,onSelect(it){const h=document.getElementById('cf-coord-id');if(h)h.value=it.id;}});});}
 }
+// ══════════════════════════════════════════════════════════════
+// REPLACE the existing clientForm() and saveClient() functions
+// Find:   async function clientForm(c={}){
+// Select until closing } of async function saveClient(existingId='')
+// Replace with this block
+// ══════════════════════════════════════════════════════════════
+
 async function clientForm(c={}){
   const isCouple=c.plan==='Couple';
-  return`<div class="fr"><div><label class="fl">Full Name (Primary) *</label><input class="fi" id="cf-name" value="${c.name||''}" placeholder="Client full name"></div><div><label class="fl">Phone *</label><input class="fi" id="cf-phone" value="${c.phone||''}" placeholder="10-digit number"></div></div><div class="fr"><div><label class="fl">Email</label><input class="fi" id="cf-email" type="email" value="${c.email||''}"></div><div><label class="fl">Age</label><input class="fi" id="cf-age" type="number" value="${c.age||''}"></div></div><div class="fr"><div><label class="fl">Plan *</label><select class="fs" id="cf-plan" onchange="toggleCouplePlan(this)"><option value="">— Select —</option>${PLANS.map(p=>`<option ${c.plan===p?'selected':''}>${p}</option>`).join('')}</select></div><div><label class="fl">Country</label>${acCountryField('cf-country',c.country||'')}</div></div><div id="couple-wrap" style="display:${isCouple?'block':'none'};background:var(--pink-dim);border:1px solid var(--pink);border-radius:10px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--pink);margin-bottom:10px">👫 Couple Plan — Partner Details</div><div class="fr"><div><label class="fl">Partner Full Name</label><input class="fi" id="cf-partner-name" value="${c.partnerName||''}"></div><div><label class="fl">Partner Phone</label><input class="fi" id="cf-partner-phone" value="${c.partnerPhone||''}"></div></div></div><div class="fr"><div><label class="fl">Assign Trainer</label><input class="fi" id="cf-trainer-inp" placeholder="Type trainer name…" value="${c.trainerName||''}" autocomplete="off"><input type="hidden" id="cf-trainer-id" value="${c.trainerId||''}"></div><div><label class="fl">Assign Coordinator</label><input class="fi" id="cf-coord-inp" placeholder="Type coordinator name…" value="${c.coordinatorName||''}" autocomplete="off"><input type="hidden" id="cf-coord-id" value="${c.coordinatorId||''}"></div></div><div class="fr"><div><label class="fl">Gender</label><select class="fs" id="cf-gender"><option value="">— Select —</option>${['Male','Female','Other'].map(g=>`<option ${c.gender===g?'selected':''}>${g}</option>`).join('')}</select></div><div><label class="fl">Fitness Goal</label><select class="fs" id="cf-goal"><option value="">— Select —</option>${['Weight Loss','Fat Loss','Muscle Gain','Toning','Strength','General Fitness','Rehabilitation','Couple Fitness','Corporate Fitness'].map(g=>`<option ${c.goal===g?'selected':''}>${g}</option>`).join('')}</select></div></div><div class="fr"><div><label class="fl">Sessions Per Week</label><input class="fi" id="cf-spw" type="number" value="${c.sessionsPerWeek||''}" min="1" max="14"></div><div><label class="fl">Date of Birth</label><input class="fi" id="cf-dob" type="date" value="${c.dob||''}"></div></div><div class="fr"><div><label class="fl">Start Date</label><input class="fi" id="cf-start" type="date" value="${c.startDate||''}"></div><div><label class="fl">End Date</label><input class="fi" id="cf-end" type="date" value="${c.endDate||''}"></div></div><div class="fr"><div><label class="fl">City</label><input class="fi" id="cf-city" value="${c.city||''}"></div><div><label class="fl">Company</label><input class="fi" id="cf-company" value="${c.company||''}"></div></div><div style="margin-bottom:14px"><label class="fl">Medical Conditions / Notes</label><textarea class="fta" id="cf-med">${c.medical||''}</textarea></div><div class="fr" style="margin-bottom:14px"><div><label class="fl">Status</label><select class="fs" id="cf-active"><option value="true" ${c.active!==false?'selected':''}>Active</option><option value="false" ${c.active===false?'selected':''}>Inactive</option></select></div></div><div class="mo-foot"><button class="btn btn-g" onclick="closeM2()">Cancel</button><button class="btn btn-p" onclick="saveClient('${c.id||''}')">Save Client</button></div>`;
+  return`
+  <!-- ── TABS ── -->
+  <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap">
+    <div class="cf-tab active" onclick="cfTab(this,'cft-basic')"    style="padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid var(--accent);color:var(--accent);transition:all .15s">👤 Basic Info</div>
+    <div class="cf-tab"        onclick="cfTab(this,'cft-schedule')"  style="padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .15s">🕐 Schedule</div>
+    <div class="cf-tab"        onclick="cfTab(this,'cft-fitness')"   style="padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .15s">💪 Fitness</div>
+    <div class="cf-tab"        onclick="cfTab(this,'cft-more')"      style="padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .15s">📋 More</div>
+  </div>
+
+  <!-- ── TAB 1: BASIC INFO ── -->
+  <div id="cft-basic" class="cft-panel" style="display:block">
+    <div class="fr">
+      <div class="fg"><label class="fl">Full Name (Primary) *</label><input class="fi" id="cf-name" value="${c.name||''}" placeholder="Client full name"></div>
+      <div class="fg"><label class="fl">Phone *</label><input class="fi" id="cf-phone" value="${c.phone||''}" placeholder="10-digit number"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="cf-email" type="email" value="${c.email||''}"></div>
+      <div class="fg"><label class="fl">Date of Birth</label><input class="fi" id="cf-dob" type="date" value="${c.dob||''}"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Gender</label>
+        <select class="fs" id="cf-gender">
+          <option value="">— Select —</option>
+          ${['Male','Female','Other'].map(g=>`<option ${c.gender===g?'selected':''}>${g}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Country</label>${acCountryField('cf-country',c.country||'')}</div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">City</label><input class="fi" id="cf-city" value="${c.city||''}"></div>
+      <div class="fg"><label class="fl">Company (if Corporate)</label><input class="fi" id="cf-company" value="${c.company||''}"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Plan *</label>
+        <select class="fs" id="cf-plan" onchange="toggleCouplePlan(this)">
+          <option value="">— Select —</option>
+          ${PLANS.map(p=>`<option ${c.plan===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Status</label>
+        <select class="fs" id="cf-active">
+          <option value="true"  ${c.active!==false?'selected':''}>✅ Active</option>
+          <option value="false" ${c.active===false?'selected':''}>📦 Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Couple wrap -->
+    <div id="couple-wrap" style="display:${isCouple?'block':'none'};background:var(--pink-dim);border:1px solid rgba(255,105,180,.3);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--pink);margin-bottom:10px">👫 Couple Plan — Partner Details</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Partner Full Name</label><input class="fi" id="cf-partner-name" value="${c.partnerName||''}" placeholder="Partner's full name"></div>
+        <div class="fg"><label class="fl">Partner Phone</label><input class="fi" id="cf-partner-phone" value="${c.partnerPhone||''}" placeholder="Partner's number"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Partner Age</label><input class="fi" id="cf-partner-age" type="number" value="${c.partnerAge||''}"></div>
+        <div class="fg"><label class="fl">Partner Gender</label>
+          <select class="fs" id="cf-partner-gender">
+            <option value="">— Select —</option>
+            ${['Male','Female','Other'].map(g=>`<option ${c.partnerGender===g?'selected':''}>${g}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 2: SCHEDULE ── -->
+  <div id="cft-schedule" class="cft-panel" style="display:none">
+
+    <!-- Trainer assignment -->
+    <div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.15);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:10px;font-size:13px">🧑‍🏫 Assign Trainer & Coordinator</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Assign Trainer</label>
+          <input class="fi" id="cf-trainer-inp" placeholder="Type trainer name…" value="${c.trainerName||''}" autocomplete="off">
+          <input type="hidden" id="cf-trainer-id" value="${c.trainerId||''}">
+        </div>
+        <div class="fg"><label class="fl">Trainer Gender Pref.</label>
+          <select class="fs" id="cf-tgender">
+            <option value="">No preference</option>
+            <option value="Male"   ${c.trainerGenderPref==='Male'  ?'selected':''}>Male Trainer</option>
+            <option value="Female" ${c.trainerGenderPref==='Female'?'selected':''}>Female Trainer</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">Assign Coordinator</label>
+        <input class="fi" id="cf-coord-inp" placeholder="Type coordinator name…" value="${c.coordinatorName||''}" autocomplete="off">
+        <input type="hidden" id="cf-coord-id" value="${c.coordinatorId||''}">
+      </div>
+    </div>
+
+    <!-- Session schedule -->
+    <div style="background:var(--blue-dim);border:1px solid rgba(77,159,255,.2);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-weight:700;color:var(--blue);margin-bottom:12px;font-size:13px">🕐 Session Schedule</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Sessions Per Week</label>
+          <input class="fi" id="cf-spw" type="number" value="${c.sessionsPerWeek||''}" min="1" max="14" placeholder="e.g. 5">
+        </div>
+        <div class="fg"><label class="fl">Session Duration (min)</label>
+          <input class="fi" id="cf-duration" type="number" value="${c.sessionDuration||60}" placeholder="60">
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Preferred Session Time *</label>
+        <input class="fi" id="cf-sesstime" type="time" value="${c.preferredSessionTime||''}">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">This time will be used when auto-scheduling sessions and in the Time Chart</div>
+      </div>
+      <div class="fg"><label class="fl">Session Type</label>
+        <select class="fs" id="cf-sesstype">
+          <option value="">— Select type —</option>
+          ${SESSION_TYPES.map(t=>`<option ${c.sessionType===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- Days of week selector -->
+      <div class="fg" style="margin-bottom:0">
+        <label class="fl">Preferred Days</label>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>{
+            const sel=(c.preferredDays||[]).includes(d);
+            return`<button type="button" class="pref-day-btn ${sel?'sel':''}" data-day="${d}"
+              onclick="this.classList.toggle('sel')"
+              style="padding:7px 11px;border-radius:7px;border:1px solid ${sel?'var(--accent)':'var(--border2)'};background:${sel?'var(--accent-dim)':'var(--bg)'};color:${sel?'var(--accent)':'var(--muted)'};font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;min-width:40px"
+              onmouseover="this.style.borderColor='var(--accent)'"
+              onmouseout="if(!this.classList.contains('sel'))this.style.borderColor='var(--border2)'">${d}</button>`;
+          }).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">Select the days this client trains each week</div>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div style="background:var(--green-dim);border:1px solid rgba(0,230,118,.15);border-radius:10px;padding:14px">
+      <div style="font-weight:700;color:var(--green);margin-bottom:12px;font-size:13px">📅 Membership Dates</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Start Date</label><input class="fi" id="cf-start" type="date" value="${c.startDate||''}"></div>
+        <div class="fg"><label class="fl">End Date</label><input class="fi" id="cf-end" type="date" value="${c.endDate||''}"></div>
+      </div>
+
+      <!-- Auto-schedule toggle -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="cf-autoschedule" ${c.autoSchedule?'checked':''} style="width:18px;height:18px;accent-color:var(--accent)">
+          <div>
+            <div style="font-size:13px;font-weight:600">🔄 Auto-Schedule Sessions on Save</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Automatically create sessions from start date using the selected time, days and frequency above</div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 3: FITNESS ── -->
+  <div id="cft-fitness" class="cft-panel" style="display:none">
+    <div class="fr">
+      <div class="fg"><label class="fl">Fitness Goal</label>
+        <select class="fs" id="cf-goal">
+          <option value="">— Select —</option>
+          ${['Weight Loss','Fat Loss','Muscle Gain','Toning','Strength','General Fitness','Rehabilitation','Couple Fitness','Corporate Fitness'].map(g=>`<option ${c.goal===g?'selected':''}>${g}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Fitness Level</label>
+        <select class="fs" id="cf-level">
+          <option value="">— Select —</option>
+          ${['Beginner','Intermediate','Advanced','Athlete'].map(l=>`<option ${c.fitnessLevel===l?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Current Weight (kg)</label><input class="fi" id="cf-weight" type="number" step="0.1" value="${c.weight||''}"></div>
+      <div class="fg"><label class="fl">Height (cm)</label><input class="fi" id="cf-height" type="number" value="${c.height||''}"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Target Weight (kg)</label><input class="fi" id="cf-target-weight" type="number" step="0.1" value="${c.targetWeight||''}" placeholder="Goal weight"></div>
+      <div class="fg"><label class="fl">Target Date</label><input class="fi" id="cf-target-date" type="date" value="${c.targetDate||''}"></div>
+    </div>
+    <div class="fg"><label class="fl">Medical Conditions / Injuries</label>
+      <textarea class="fta" id="cf-med" placeholder="Any allergies, injuries, medical conditions the trainer should know…">${c.medical||''}</textarea>
+    </div>
+    <div class="fg" style="margin-bottom:0"><label class="fl">Equipment Available at Home</label>
+      <input class="fi" id="cf-equipment" value="${c.equipment||''}" placeholder="e.g. Dumbbells, Resistance bands, Yoga mat">
+    </div>
+  </div>
+
+  <!-- ── TAB 4: MORE ── -->
+  <div id="cft-more" class="cft-panel" style="display:none">
+    <div class="fg"><label class="fl">Age</label><input class="fi" id="cf-age" type="number" value="${c.age||''}"></div>
+    <div class="fg"><label class="fl">Special Notes for Trainer</label>
+      <textarea class="fta" id="cf-trainer-notes" placeholder="Any specific instructions or preferences…" style="min-height:70px">${c.trainerNotes||''}</textarea>
+    </div>
+    <div class="fg"><label class="fl">How did they hear about us?</label>
+      <select class="fs" id="cf-source">
+        <option value="">— Select —</option>
+        ${['Referral','Social Media','Google','Walk-in','Advertisement','Other'].map(s=>`<option ${c.source===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fg" style="margin-bottom:0"><label class="fl">Emergency Contact</label>
+      <input class="fi" id="cf-emergency" value="${c.emergencyContact||''}" placeholder="Name — Phone number">
+    </div>
+  </div>
+
+  <div class="mo-foot" style="margin-top:18px">
+    <button class="btn btn-g" onclick="closeM2()">Cancel</button>
+    <button class="btn btn-p" onclick="saveClient('${c.id||''}')">💾 Save Client</button>
+  </div>`;
 }
-function toggleCouplePlan(sel){const w=$('couple-wrap');if(w)w.style.display=sel.value==='Couple'?'block':'none';}
+
+// Tab switcher for client form
+function cfTab(tabEl,panelId){
+  tabEl.closest('.mb').querySelectorAll('.cf-tab').forEach(t=>{
+    t.style.borderBottomColor='transparent';
+    t.style.color='var(--muted)';
+    t.classList.remove('active');
+  });
+  tabEl.style.borderBottomColor='var(--accent)';
+  tabEl.style.color='var(--accent)';
+  tabEl.classList.add('active');
+  tabEl.closest('.mb').querySelectorAll('.cft-panel').forEach(p=>p.style.display='none');
+  const panel=document.getElementById(panelId);
+  if(panel)panel.style.display='block';
+}
+
 async function saveClient(existingId=''){
+  const name=$('cf-name')?.value.trim();
+  const phone=$('cf-phone')?.value.trim();
+  if(!name||!phone){
+    // Switch to basic tab to show error
+    const firstTab=document.querySelector('.cf-tab');
+    if(firstTab)cfTab(firstTab,'cft-basic');
+    toast('Name and phone are required','error');return;
+  }
+
+  const plan=$('cf-plan')?.value;
+  const startDate=$('cf-start')?.value||'';
+  const sessTime=$('cf-sesstime')?.value||'';
+  const sessType=$('cf-sesstype')?.value||'';
+  const spw=$('cf-spw')?.value||'';
+  const autoSchedule=document.getElementById('cf-autoschedule')?.checked||false;
+
+  // Collect preferred days
+  const preferredDays=[...document.querySelectorAll('.pref-day-btn.sel')].map(b=>b.dataset.day);
+
+  const trainerId=document.getElementById('cf-trainer-id')?.value||'';
+  const trainerName=($('cf-trainer-inp')?.value||'').replace(/\s*\([^)]*\)\s*$/,'').trim()||'';
+  const coordinatorId=document.getElementById('cf-coord-id')?.value||'';
+  const coordinatorName=$('cf-coord-inp')?.value.trim()||'';
+
+  const data={
+    name,phone,
+    email:$('cf-email')?.value.trim()||'',
+    dob:document.getElementById('cf-dob')?.value||'',
+    gender:$('cf-gender')?.value||'',
+    country:$('cf-country')?.value.trim()||'',
+    city:$('cf-city')?.value.trim()||'',
+    company:$('cf-company')?.value.trim()||'',
+    plan,
+    active:$('cf-active')?.value==='true',
+    trainerId,trainerName,
+    trainerGenderPref:$('cf-tgender')?.value||'',
+    coordinatorId,coordinatorName,
+    sessionsPerWeek:spw,
+    sessionDuration:document.getElementById('cf-duration')?.value||'60',
+    preferredSessionTime:sessTime,
+    sessionType:sessType,
+    preferredDays,
+    startDate,
+    endDate:$('cf-end')?.value||'',
+    autoSchedule,
+    goal:$('cf-goal')?.value||'',
+    fitnessLevel:document.getElementById('cf-level')?.value||'',
+    weight:document.getElementById('cf-weight')?.value||null,
+    height:document.getElementById('cf-height')?.value||null,
+    targetWeight:document.getElementById('cf-target-weight')?.value||null,
+    targetDate:document.getElementById('cf-target-date')?.value||'',
+    medical:$('cf-med')?.value||'',
+    equipment:document.getElementById('cf-equipment')?.value||'',
+    trainerNotes:document.getElementById('cf-trainer-notes')?.value||'',
+    age:Number($('cf-age')?.value)||null,
+    source:document.getElementById('cf-source')?.value||'',
+    emergencyContact:document.getElementById('cf-emergency')?.value||'',
+    addedBy:auth().currentUser.uid,
+  };
+
+  // Couple plan extra fields
+  if(plan==='Couple'){
+    data.partnerName=document.getElementById('cf-partner-name')?.value.trim()||'';
+    data.partnerPhone=document.getElementById('cf-partner-phone')?.value.trim()||'';
+    data.partnerAge=Number(document.getElementById('cf-partner-age')?.value)||null;
+    data.partnerGender=document.getElementById('cf-partner-gender')?.value||'';
+  }
+
+  try{
+    let clientId=existingId;
+    if(existingId){
+      await fsUpdate('clients',existingId,data);
+      toast('Client updated! ✅','success');
+    } else {
+      const ref=await fsAdd('clients',data);
+      clientId=ref.id;
+      toast('Client added! ✅','success');
+    }
+
+    // ── AUTO-SCHEDULE SESSIONS ───────────────────────────────
+    if(autoSchedule&&startDate&&sessTime&&preferredDays.length&&trainerId&&clientId){
+      const endDate=$('cf-end')?.value;
+      const schedCount=Math.min(Number(spw||3)*8,60); // up to ~2 months
+      const dayMap={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:0};
+      const selDays=preferredDays.map(d=>dayMap[d]);
+      const dates=[];
+      let cur=new Date(startDate);
+      let attempts=0;
+      while(dates.length<schedCount&&attempts<365){
+        attempts++;
+        if(selDays.includes(cur.getDay())){
+          const ds=cur.toISOString().split('T')[0];
+          if(!endDate||ds<=endDate)dates.push(ds);
+        }
+        cur=new Date(cur.getTime()+86400000);
+      }
+      await Promise.all(dates.map(date=>fsAdd('sessions',{
+        clientId,clientName:name,trainerId,trainerName,
+        date,time:sessTime,type:sessType||'General Fitness',
+        status:'not-started',meetLink:'',notes:'[Auto-scheduled]',
+      })));
+
+      // Also add to time chart
+      await fn().setDoc(fn().doc(db(),'timechart',clientId),{
+        clientId,clientName:name,trainerId,trainerName,
+        sessionTime:sessTime,sessionType:sessType||'General Fitness',
+        todayStatus:'not-started',
+        lastStatusUpdate:getTodayStr(),
+        remarks:`Auto-scheduled · ${preferredDays.join(', ')}`,
+      },{merge:true});
+
+      toast(`🔄 ${dates.length} sessions auto-scheduled!`,'info');
+    }
+
+    closeM2();
+    clients();
+
+  }catch(e){toast('Error: '+e.message,'error');}
+}
   const name=$('cf-name').value.trim(),phone=$('cf-phone').value.trim();
   if(!name||!phone){toast('Name and phone are required','error');return;}
   const plan=$('cf-plan').value;
