@@ -2102,7 +2102,8 @@ async function delSession(id){
   if(!confirm('Delete this session?'))return;
   try{await fsDel('sessions',id);toast('Deleted','success');sessions();}
   catch(e){toast('Error: '+e.message,'error');}
-}// ══════════════════════════════════════════════════════════════
+}
+// ══════════════════════════════════════════════════════════════
 // TIME CHART
 // ══════════════════════════════════════════════════════════════
 async function timechart(){
@@ -2887,28 +2888,1126 @@ async function saveCert(existingId=''){const name=$('cf2-name').value.trim(),iss
 async function delCert(id){if(!confirm('Delete?'))return;try{await fsDel('certificates',id);toast('Deleted','success');certificates()}catch(e){toast('Error','error')}}
 
 // ══════════════════════════════════════════════════════════════
-// CLIENTS
+// RICH CLIENT SECTION — Journey Timeline + Animations
+// Find:   async function clients(){
+// Select until closing } of async function delClient(id)
+// Replace entirely with this block
 // ══════════════════════════════════════════════════════════════
-async function clients(){
-  $('page').innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto"></div></div>`;
-  let data;
-  if(CR==='trainer')data=await fsGetAll('clients',fn().where('trainerId','==',auth().currentUser.uid));
-  else if(CR==='coordinator'){const myUid=auth().currentUser.uid;data=await fsGetAll('clients',fn().where('coordinatorId','==',myUid));}
-  else data=await fsGetAll('clients');
-  $('page').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap"><input class="fi" id="cl-search" placeholder="🔍 Search by name or phone…" oninput="filterClients()" style="max-width:280px;margin:0">${CR!=='trainer'&&CR!=='client'?`<button class="btn btn-p" onclick="openAddClient()">+ Add Client</button>`:''}</div><div class="card" style="padding:0"><div class="tbl-wrap" id="cl-table">${renderClientsTable(data)}</div></div>`;
-  window._clientsData=data;
+
+// ── INJECT STYLES ─────────────────────────────────────────────
+(function injectClientStyles(){
+  if(document.getElementById('client-rich-styles'))return;
+  const s=document.createElement('style');s.id='client-rich-styles';
+  s.textContent=`
+/* ── CLIENT CARD GRID ──────────────────────────────────── */
+.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding:4px}
+
+/* ── CLIENT CARD ────────────────────────────────────────── */
+.cl-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,border-color .3s;
+  position:relative;
+  animation:cardEntry .5s cubic-bezier(.34,1.56,.64,1) both;
 }
-function renderClientsTable(data){if(!data.length)return emptyState('🏃','No clients yet',CR==='coordinator'?'No clients assigned to you yet.':'Add your first client.',CR!=='trainer'&&CR!=='client'&&CR!=='coordinator'?'+ Add Client':'',CR!=='trainer'&&CR!=='client'&&CR!=='coordinator'?'openAddClient()':'');return`<table><thead><tr><th>Name</th><th>Partner</th><th>Phone</th><th>Plan</th><th>Trainer</th><th>Coordinator</th><th>Goal</th><th>Status</th><th>Actions</th></tr></thead><tbody>${data.map(c=>`<tr><td><strong>${c.name||'—'}</strong>${c.plan==='Couple'?'<span class="badge b-pk" style="margin-left:5px;font-size:10px">👫 Couple</span>':''}</td><td style="font-size:12px">${c.plan==='Couple'?(c.partnerName||'<span style="color:var(--muted2)">—</span>'):'<span style="color:var(--muted2)">N/A</span>'}</td><td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.phone||'—'}</td><td>${planBadge(c.plan)}</td><td style="font-size:12px">${c.trainerName||'—'}</td><td style="font-size:12px">${c.coordinatorName?`<span class="badge b-b">🧑‍💼 ${c.coordinatorName}</span>`:'<span style="color:var(--muted2)">—</span>'}</td><td style="font-size:12px">${c.goal||'—'}</td><td>${c.active?`<span class="badge b-g">Active</span>`:`<span class="badge b-r">Inactive</span>`}</td><td><div class="td-actions"><button class="btn btn-g btn-sm" onclick="viewClient('${c.id}')">View</button>${CR!=='trainer'&&CR!=='client'?`<button class="btn btn-g btn-sm" onclick="openEditClient('${c.id}')">Edit</button>${CR!=='coordinator'?`<button class="btn btn-d btn-sm" onclick="delClient('${c.id}')">Delete</button>`:''}`:''}</div></td></tr>`).join('')}</tbody></table>`;}
-function filterClients(){const v=$('cl-search').value.toLowerCase();const filtered=(window._clientsData||[]).filter(c=>(c.name||'').toLowerCase().includes(v)||(c.phone||'').includes(v)||(c.partnerName||'').toLowerCase().includes(v));$('cl-table').innerHTML=renderClientsTable(filtered)}
-async function openAddClient(){const html=await clientForm();openM2('ADD CLIENT',html);initClientFormAC()}
-async function openEditClient(id){const c=await fsGet('clients',id);if(!c){toast('Client not found','error');return}const html=await clientForm(c);openM2('EDIT CLIENT',html);initClientFormAC(c)}
-function initClientFormAC(c={}){initCountryAC('cf-country');const planSel=$('cf-plan');if(planSel){planSel.addEventListener('change',()=>{const coupleWrap=$('couple-wrap');if(coupleWrap)coupleWrap.style.display=planSel.value==='Couple'?'block':'none';});}const trainerInp=document.getElementById('cf-trainer-inp');if(trainerInp){fsGetAll('users',fn().where('role','==','trainer')).then(trainers=>{const items=trainers.map(t=>({id:t.id,label:(t.name||t.email)+' ('+(t.gender||'Any')+')',sub:t.gender||''}));createAutocomplete(trainerInp,items,{minChars:0,onSelect(it){const hid=document.getElementById('cf-trainer-id');if(hid)hid.value=it.id;}});});}const coordInp=document.getElementById('cf-coord-inp');if(coordInp){fsGetAll('users',fn().where('role','==','coordinator')).then(coords=>{const items=coords.map(c=>({id:c.id,label:c.name||c.email,sub:'Coordinator'}));createAutocomplete(coordInp,items,{minChars:0,onSelect(it){const hid=document.getElementById('cf-coord-id');if(hid)hid.value=it.id;}});});}}
-async function clientForm(c={}){const isCouple=c.plan==='Couple';return`<div class="fr"><div><label class="fl">Full Name (Primary) *</label><input class="fi" id="cf-name" value="${c.name||''}" placeholder="Client full name"></div><div><label class="fl">Phone *</label><input class="fi" id="cf-phone" value="${c.phone||''}" placeholder="10-digit number"></div></div><div class="fr"><div><label class="fl">Email</label><input class="fi" id="cf-email" type="email" value="${c.email||''}"></div><div><label class="fl">Age</label><input class="fi" id="cf-age" type="number" value="${c.age||''}"></div></div><div class="fr"><div><label class="fl">Plan *</label><select class="fs" id="cf-plan" onchange="toggleCouplePlan(this)"><option value="">— Select —</option>${PLANS.map(p=>`<option ${c.plan===p?'selected':''}>${p}</option>`).join('')}</select></div><div><label class="fl">Country</label>${acCountryField('cf-country',c.country||'')}</div></div><div id="couple-wrap" style="display:${isCouple?'block':'none'};background:var(--pink-dim);border:1px solid var(--pink);border-radius:10px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--pink);margin-bottom:10px">👫 Couple Plan — Partner Details</div><div class="fr"><div><label class="fl">Partner Full Name *</label><input class="fi" id="cf-partner-name" value="${c.partnerName||''}" placeholder="Partner's full name"></div><div><label class="fl">Partner Phone</label><input class="fi" id="cf-partner-phone" value="${c.partnerPhone||''}" placeholder="Partner's number"></div></div><div class="fr"><div><label class="fl">Partner Age</label><input class="fi" id="cf-partner-age" type="number" value="${c.partnerAge||''}"></div><div><label class="fl">Partner Gender</label><select class="fs" id="cf-partner-gender"><option value="">— Select —</option>${['Male','Female','Other'].map(g=>`<option ${c.partnerGender===g?'selected':''}>${g}</option>`).join('')}</select></div></div></div><div class="fr"><div><label class="fl">Assign Trainer</label><input class="fi" id="cf-trainer-inp" placeholder="Type trainer name…" value="${c.trainerName||''}" autocomplete="off"><input type="hidden" id="cf-trainer-id" value="${c.trainerId||''}"></div><div><label class="fl">Assign Coordinator</label><input class="fi" id="cf-coord-inp" placeholder="Type coordinator name…" value="${c.coordinatorName||''}" autocomplete="off"><input type="hidden" id="cf-coord-id" value="${c.coordinatorId||''}"></div></div><div class="fr"><div><label class="fl">Gender</label><select class="fs" id="cf-gender"><option value="">— Select —</option>${['Male','Female','Other'].map(g=>`<option ${c.gender===g?'selected':''}>${g}</option>`).join('')}</select></div><div><label class="fl">Trainer Gender Pref.</label><select class="fs" id="cf-tgender"><option value="">No preference</option><option value="Male" ${c.trainerGenderPref==='Male'?'selected':''}>Male Trainer</option><option value="Female" ${c.trainerGenderPref==='Female'?'selected':''}>Female Trainer</option></select></div></div><div class="fr"><div><label class="fl">Fitness Goal</label><select class="fs" id="cf-goal"><option value="">— Select —</option>${['Weight Loss','Fat Loss','Muscle Gain','Toning','Strength','General Fitness','Rehabilitation','Couple Fitness','Corporate Fitness'].map(g=>`<option ${c.goal===g?'selected':''}>${g}</option>`).join('')}</select></div><div><label class="fl">Sessions Per Week</label><input class="fi" id="cf-spw" type="number" value="${c.sessionsPerWeek||''}" min="1" max="14"></div></div><div class="fr"><div><label class="fl">Current Weight (kg)</label><input class="fi" id="cf-weight" type="number" value="${c.weight||''}"></div><div><label class="fl">Height (cm)</label><input class="fi" id="cf-height" type="number" value="${c.height||''}"></div></div><div class="fr"><div><label class="fl">Start Date</label><input class="fi" id="cf-start" type="date" value="${c.startDate||''}"></div><div><label class="fl">End Date</label><input class="fi" id="cf-end" type="date" value="${c.endDate||''}"></div></div><div class="fr"><div><label class="fl">City</label><input class="fi" id="cf-city" value="${c.city||''}"></div><div><label class="fl">Company (if Corporate)</label><input class="fi" id="cf-company" value="${c.company||''}"></div></div><div style="margin-bottom:14px"><label class="fl">Medical Conditions / Notes</label><textarea class="fta" id="cf-med">${c.medical||''}</textarea></div><div class="fr" style="margin-bottom:14px"><div><label class="fl">Status</label><select class="fs" id="cf-active"><option value="true" ${c.active!==false?'selected':''}>Active</option><option value="false" ${c.active===false?'selected':''}>Inactive</option></select></div></div><div class="mo-foot"><button class="btn btn-g" onclick="closeM2()">Cancel</button><button class="btn btn-p" onclick="saveClient('${c.id||''}')">Save Client</button></div>`;}
-function toggleCouplePlan(sel){const wrap=$('couple-wrap');if(wrap)wrap.style.display=sel.value==='Couple'?'block':'none';}
-async function saveClient(existingId=''){const name=$('cf-name').value.trim(),phone=$('cf-phone').value.trim();if(!name||!phone){toast('Name and phone are required','error');return}const plan=$('cf-plan').value;const trainerId=document.getElementById('cf-trainer-id')?.value||'';const trainerName=($('cf-trainer-inp')?.value||'').replace(/\s*\([^)]*\)\s*$/,'').trim()||'';const coordinatorId=document.getElementById('cf-coord-id')?.value||'';const coordinatorName=$('cf-coord-inp')?.value.trim()||'';const country=$('cf-country')?.value.trim()||'';const data={name,phone,email:$('cf-email').value.trim(),plan,trainerId,trainerName,coordinatorId,coordinatorName,gender:$('cf-gender').value,trainerGenderPref:$('cf-tgender').value,goal:$('cf-goal').value,weight:$('cf-weight').value,height:$('cf-height').value,startDate:$('cf-start').value,endDate:$('cf-end').value,medical:$('cf-med').value,active:$('cf-active').value==='true',sessionsPerWeek:$('cf-spw').value,city:$('cf-city').value.trim(),company:$('cf-company').value.trim(),country,age:Number($('cf-age')?.value)||null,addedBy:auth().currentUser.uid};if(plan==='Couple'){data.partnerName=document.getElementById('cf-partner-name')?.value.trim()||'';data.partnerPhone=document.getElementById('cf-partner-phone')?.value.trim()||'';data.partnerAge=Number(document.getElementById('cf-partner-age')?.value)||null;data.partnerGender=document.getElementById('cf-partner-gender')?.value||'';}else{data.partnerName='';data.partnerPhone='';data.partnerAge=null;data.partnerGender='';}try{if(existingId){await fsUpdate('clients',existingId,data);toast('Client updated!','success')}else{await fsAdd('clients',data);toast('Client added!','success')}closeM2();clients();}catch(e){toast('Error: '+e.message,'error')}}
-async function viewClient(id){const c=await fsGet('clients',id);if(!c){toast('Not found','error');return}const[sessions,attendance,trainerRatings,certs]=await Promise.all([fsGetAll('sessions',fn().where('clientId','==',id)),fsGetAll('attendance',fn().where('clientId','==',id)),c.trainerId?fsGetAll('trainerratings',fn().where('trainerId','==',c.trainerId)):[],c.trainerId?fsGetAll('certificates',fn().where('trainerId','==',c.trainerId)):[]]);const present=attendance.filter(a=>a.status==='present').length;const rate=attendance.length?Math.round(present/attendance.length*100):0;const trainerAvg=trainerRatings.length?avgRating(trainerRatings).toFixed(1):'-';openM2(`CLIENT: ${(c.name||'').toUpperCase()}`,`<div class="fr" style="margin-bottom:14px"><div class="sc sc-a" style="margin:0;padding:14px"><div class="sc-lbl">Plan</div><div style="font-size:22px;font-weight:700">${c.plan||'—'}</div></div><div class="sc sc-g" style="margin:0;padding:14px"><div class="sc-lbl">Attendance</div><div style="font-size:22px;font-weight:700">${rate}%</div></div></div><div class="detail-section"><div class="detail-section-title">Personal Info</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px"><div><span style="color:var(--muted)">Phone:</span> ${c.phone||'—'}</div><div><span style="color:var(--muted)">Email:</span> ${c.email||'—'}</div><div><span style="color:var(--muted)">Age:</span> ${c.age?c.age+' years':'—'}</div><div><span style="color:var(--muted)">Country:</span> ${c.country||'—'}</div></div></div><div class="detail-section"><div class="detail-section-title">Fitness Plan</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px"><div><span style="color:var(--muted)">Trainer:</span> ${c.trainerName||'—'} ${trainerAvg!=='-'?`<span style="color:#ffbb00">⭐${trainerAvg}</span>`:''}</div><div><span style="color:var(--muted)">Coordinator:</span> ${c.coordinatorName||'—'}</div><div><span style="color:var(--muted)">Goal:</span> ${c.goal||'—'}</div><div><span style="color:var(--muted)">Start:</span> ${c.startDate||'—'}</div></div></div><div class="mo-foot">${CR!=='trainer'&&CR!=='client'?`<button class="btn btn-g" onclick="closeM2();openEditClient('${id}')">Edit</button>`:''}<button class="btn btn-g" onclick="closeM2()">Close</button></div>`);}
-async function delClient(id){if(!confirm('Delete this client?'))return;try{await fsDel('clients',id);toast('Client deleted','success');clients()}catch(e){toast('Error: '+e.message,'error')}}
-// ══════ USERS ══════
+.cl-card:hover{
+  transform:translateY(-6px) scale(1.01);
+  box-shadow:0 24px 60px rgba(0,0,0,.5);
+  border-color:rgba(212,255,0,.2);
+}
+.cl-card:hover .cl-card-glow{opacity:1}
+@keyframes cardEntry{
+  from{opacity:0;transform:translateY(30px) scale(.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ── CARD BANNER ────────────────────────────────────────── */
+.cl-banner{
+  height:90px;
+  position:relative;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.cl-banner-bg{
+  position:absolute;inset:0;
+  background-size:200% 200%;
+  animation:gradShift 6s ease infinite;
+}
+@keyframes gradShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.cl-banner-pattern{
+  position:absolute;inset:0;
+  opacity:.12;
+  background-image:radial-gradient(circle at 20% 80%,white 1px,transparent 1px),
+    radial-gradient(circle at 80% 20%,white 1px,transparent 1px),
+    radial-gradient(circle at 50% 50%,white 0.5px,transparent 0.5px);
+  background-size:40px 40px,60px 60px,20px 20px;
+}
+.cl-banner-hexes{
+  position:absolute;inset:0;opacity:.08;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34z' fill='none' stroke='white' stroke-width='1'/%3E%3Cpath d='M28 100L0 84V50l28-16 28 16v34z' fill='none' stroke='white' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* ── AVATAR ─────────────────────────────────────────────── */
+.cl-avatar-wrap{
+  position:absolute;bottom:-24px;left:18px;
+  width:56px;height:56px;
+  border-radius:50%;
+  border:3px solid var(--card);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  overflow:hidden;
+  z-index:2;
+}
+.cl-avatar{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:20px;
+  transition:transform .3s;
+}
+.cl-card:hover .cl-avatar{transform:scale(1.1)}
+
+/* ── STATUS DOT ─────────────────────────────────────────── */
+.cl-status-dot{
+  position:absolute;bottom:-22px;left:56px;
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--card);
+  z-index:3;
+}
+.cl-status-dot.active{background:var(--green);animation:blink 1.4s infinite}
+.cl-status-dot.inactive{background:var(--muted2)}
+
+/* ── CARD GLOW ──────────────────────────────────────────── */
+.cl-card-glow{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(212,255,0,.6),transparent);
+  opacity:0;transition:opacity .3s;
+}
+
+/* ── CARD BODY ──────────────────────────────────────────── */
+.cl-body{padding:34px 18px 16px}
+.cl-name{font-size:15px;font-weight:800;letter-spacing:.3px;margin-bottom:2px}
+.cl-role{font-size:11px;color:var(--muted);letter-spacing:.5px}
+.cl-tags{display:flex;gap:5px;flex-wrap:wrap;margin:10px 0}
+.cl-mini-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.cl-mini-stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center}
+.cl-mini-stat-val{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1}
+.cl-mini-stat-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.cl-progress-bar{height:4px;background:var(--border2);border-radius:4px;overflow:hidden;margin:8px 0}
+.cl-progress-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.34,1.2,.64,1)}
+.cl-actions{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+
+/* ── SEARCH BAR ─────────────────────────────────────────── */
+.cl-search-bar{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:12px 16px;margin-bottom:20px;
+}
+
+/* ── CLIENT JOURNEY OVERLAY ─────────────────────────────── */
+.cj-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(10px);
+  z-index:3000;
+  display:flex;align-items:flex-start;
+  justify-content:center;padding:20px;
+  overflow-y:auto;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.cj-box{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  width:100%;max-width:900px;
+  margin:auto;
+  overflow:hidden;
+  animation:slideUp .35s cubic-bezier(.34,1.2,.64,1);
+  box-shadow:0 40px 100px rgba(0,0,0,.8);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* ── JOURNEY HERO ───────────────────────────────────────── */
+.cj-hero{
+  height:180px;position:relative;overflow:hidden;
+}
+.cj-hero-bg{position:absolute;inset:0;background-size:200% 200%;animation:gradShift 8s ease infinite}
+.cj-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(0,0,0,.5))}
+.cj-hero-hexes{position:absolute;inset:0;opacity:.08;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34z' fill='none' stroke='white' stroke-width='1'/%3E%3Cpath d='M28 100L0 84V50l28-16 28 16v34z' fill='none' stroke='white' stroke-width='1'/%3E%3C/svg%3E")}
+.cj-hero-particles{position:absolute;inset:0;pointer-events:none}
+.cj-hero-particle{
+  position:absolute;border-radius:50%;
+  animation:particleFloat linear infinite;
+}
+@keyframes particleFloat{
+  0%{transform:translateY(100%) scale(0);opacity:0}
+  10%{opacity:.6}
+  90%{opacity:.3}
+  100%{transform:translateY(-20px) scale(1);opacity:0}
+}
+.cj-avatar{
+  position:absolute;bottom:-30px;left:28px;
+  width:72px;height:72px;border-radius:50%;
+  border:4px solid var(--card);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.5);
+  z-index:2;animation:avatarPop .5s .2s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes avatarPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.cj-name{
+  position:absolute;bottom:16px;left:116px;
+  color:#fff;font-size:22px;font-weight:800;letter-spacing:.3px;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.cj-subtitle{
+  position:absolute;bottom:2px;left:116px;
+  color:rgba(255,255,255,.7);font-size:12px;
+}
+.cj-close{
+  position:absolute;top:14px;right:16px;
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);
+  border-radius:50%;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:#fff;
+  transition:background .2s;z-index:5;
+}
+.cj-close:hover{background:rgba(255,0,0,.4)}
+
+/* ── JOURNEY TABS ───────────────────────────────────────── */
+.cj-tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  padding:0 24px;background:var(--surface);
+  overflow-x:auto;gap:0;flex-shrink:0;
+}
+.cj-tab{
+  padding:13px 18px;font-size:12px;font-weight:700;
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .18s;color:var(--muted);white-space:nowrap;
+  letter-spacing:.4px;
+}
+.cj-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.cj-tab:hover{color:var(--text)}
+
+/* ── JOURNEY BODY ───────────────────────────────────────── */
+.cj-body{padding:26px;max-height:65vh;overflow-y:auto}
+.cj-body::-webkit-scrollbar{width:4px}
+.cj-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.cj-panel{display:none;animation:panelFade .25s ease}
+.cj-panel.active{display:block}
+@keyframes panelFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TIMELINE ───────────────────────────────────────────── */
+.tl-wrap{position:relative;padding-left:32px}
+.tl-line{
+  position:absolute;left:10px;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,var(--accent),var(--border2));
+  border-radius:2px;
+}
+.tl-item{
+  position:relative;margin-bottom:28px;
+  animation:tlSlide .4s cubic-bezier(.34,1.2,.64,1) both;
+}
+@keyframes tlSlide{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+.tl-dot{
+  position:absolute;left:-26px;top:4px;
+  width:16px;height:16px;border-radius:50%;
+  border:3px solid var(--card);
+  box-shadow:0 0 0 2px var(--border2);
+  transition:box-shadow .3s;
+}
+.tl-item:hover .tl-dot{box-shadow:0 0 0 4px rgba(212,255,0,.2)}
+.tl-date{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.tl-card{
+  background:var(--bg);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;transition:border-color .2s,transform .2s;
+}
+.tl-item:hover .tl-card{border-color:var(--border2);transform:translateX(4px)}
+.tl-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.tl-body{font-size:12px;color:var(--muted);line-height:1.5}
+.tl-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+
+/* ── STAT PANELS ────────────────────────────────────────── */
+.cj-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+.cj-kpi{
+  background:var(--bg);border:1px solid var(--border);border-radius:12px;
+  padding:14px;text-align:center;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s;
+}
+.cj-kpi:hover{transform:translateY(-3px);border-color:var(--border2)}
+.cj-kpi-val{
+  font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;
+  background:linear-gradient(135deg,var(--accent),#ffffff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cj-kpi-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.cj-kpi-sub{font-size:10px;color:var(--muted2);margin-top:2px}
+.cj-kpi-glow{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+
+/* ── CIRCULAR PROGRESS ──────────────────────────────────── */
+.circ-prog{position:relative;width:90px;height:90px;flex-shrink:0}
+.circ-prog svg{transform:rotate(-90deg);width:90px;height:90px}
+.circ-track{fill:none;stroke:var(--border2);stroke-width:7}
+.circ-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.4s cubic-bezier(.34,1.2,.64,1)}
+.circ-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.circ-val{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1}
+.circ-sub{font-size:9px;color:var(--muted);text-align:center;line-height:1.2}
+
+/* ── MEASUREMENT CHART ──────────────────────────────────── */
+.ms-chart-bar{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.ms-chart-label{font-size:12px;color:var(--muted);min-width:80px}
+.ms-chart-track{flex:1;height:8px;background:var(--border2);border-radius:4px;overflow:hidden}
+.ms-chart-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.34,1.2,.64,1)}
+.ms-chart-val{font-size:12px;font-weight:700;min-width:50px;text-align:right}
+
+/* ── SESSION HEATMAP ────────────────────────────────────── */
+.heatmap-grid{display:flex;gap:3px;flex-wrap:wrap;margin:10px 0}
+.hm-cell{
+  width:16px;height:16px;border-radius:3px;
+  transition:transform .15s;cursor:default;
+}
+.hm-cell:hover{transform:scale(1.4)}
+.hm-0{background:var(--border)}
+.hm-1{background:rgba(212,255,0,.25)}
+.hm-2{background:rgba(212,255,0,.5)}
+.hm-3{background:rgba(212,255,0,.75)}
+.hm-4{background:var(--accent)}
+
+/* ── RATING DISPLAY ─────────────────────────────────────── */
+.rating-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rating-bar-track{flex:1;height:6px;background:var(--border2);border-radius:3px;overflow:hidden}
+.rating-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--yellow),var(--accent));transition:width 1.2s cubic-bezier(.34,1.2,.64,1)}
+
+/* ── ANIMATIONS DELAY ───────────────────────────────────── */
+.tl-item:nth-child(1){animation-delay:.05s}
+.tl-item:nth-child(2){animation-delay:.10s}
+.tl-item:nth-child(3){animation-delay:.15s}
+.tl-item:nth-child(4){animation-delay:.20s}
+.tl-item:nth-child(5){animation-delay:.25s}
+.tl-item:nth-child(6){animation-delay:.30s}
+.tl-item:nth-child(7){animation-delay:.35s}
+.tl-item:nth-child(8){animation-delay:.40s}
+.cl-card:nth-child(1){animation-delay:.04s}
+.cl-card:nth-child(2){animation-delay:.08s}
+.cl-card:nth-child(3){animation-delay:.12s}
+.cl-card:nth-child(4){animation-delay:.16s}
+.cl-card:nth-child(5){animation-delay:.20s}
+.cl-card:nth-child(6){animation-delay:.24s}
+.cl-card:nth-child(7){animation-delay:.28s}
+.cl-card:nth-child(8){animation-delay:.32s}
+@media(max-width:768px){.cl-grid{grid-template-columns:1fr}.cj-box{border-radius:14px}.cj-body{padding:16px}}
+  `;
+  document.head.appendChild(s);
+})();
+
+// ── COLOR PALETTE PER PLAN ────────────────────────────────────
+const PLAN_GRADIENTS={
+  'Silver'     :'linear-gradient(135deg,#888 0%,#ccc 50%,#888 100%)',
+  'Gold'       :'linear-gradient(135deg,#b8860b 0%,#ffd700 50%,#b8860b 100%)',
+  'Platinum'   :'linear-gradient(135deg,#6a0dad 0%,#aa66ff 50%,#6a0dad 100%)',
+  'Platinum Plus':'linear-gradient(135deg,#1a237e 0%,#4d9fff 50%,#1a237e 100%)',
+  'Couple'     :'linear-gradient(135deg,#880e4f 0%,#ff69b4 50%,#880e4f 100%)',
+  'Corporate Fitness':'linear-gradient(135deg,#004d40 0%,#00e676 50%,#004d40 100%)',
+};
+const PLAN_COLORS={
+  'Silver':'#cccccc','Gold':'#ffd700','Platinum':'#aa66ff',
+  'Platinum Plus':'#4d9fff','Couple':'#ff69b4','Corporate Fitness':'#00e676',
+};
+function planGrad(p){return PLAN_GRADIENTS[p]||'linear-gradient(135deg,#333,#666)';}
+function planColor(p){return PLAN_COLORS[p]||'#888';}
+
+// ── CLIENTS MAIN ──────────────────────────────────────────────
+async function clients(){
+  $('page').innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted)"><div class="spin" style="width:32px;height:32px;margin:0 auto 12px"></div><div style="font-size:13px">Loading clients…</div></div>`;
+
+  let data;
+  if(CR==='trainer')      data=await fsGetAll('clients',fn().where('trainerId','==',auth().currentUser.uid));
+  else if(CR==='coordinator'){const mu=auth().currentUser.uid;data=await fsGetAll('clients',fn().where('coordinatorId','==',mu));}
+  else                    data=await fsGetAll('clients');
+
+  const[allSessions,allAttendance,allRatings]=await Promise.all([
+    fsGetAll('sessions'),fsGetAll('attendance'),fsGetAll('trainerratings')
+  ]);
+
+  window._clientsData=data;
+  window._allSessions=allSessions;
+  window._allAttendance=allAttendance;
+  window._allRatings=allRatings;
+
+  renderClientsPage(data,allSessions,allAttendance,allRatings);
+}
+
+function renderClientsPage(data,allSessions,allAttendance,allRatings){
+  const active=data.filter(c=>c.active!==false);
+  const inactive=data.filter(c=>c.active===false);
+
+  $('page').innerHTML=`
+    <!-- Stats row -->
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="sc sc-a"><div class="sc-ico">🏃</div><div class="sc-lbl">Active</div><div class="sc-val">${active.length}</div></div>
+      <div class="sc sc-r"><div class="sc-ico">📦</div><div class="sc-lbl">Inactive</div><div class="sc-val">${inactive.length}</div></div>
+      <div class="sc sc-g"><div class="sc-ico">📅</div><div class="sc-lbl">Sessions Total</div><div class="sc-val">${allSessions.length}</div></div>
+      <div class="sc sc-b"><div class="sc-ico">📊</div><div class="sc-lbl">Attendance Records</div><div class="sc-val">${allAttendance.length}</div></div>
+    </div>
+
+    <!-- Search + Filter bar -->
+    <div class="cl-search-bar">
+      <input class="fi" id="cl-search" placeholder="🔍 Search by name, phone, trainer…" oninput="filterClients()" style="flex:1;min-width:180px;margin:0">
+      <select class="fs" id="cl-filter-plan" onchange="filterClients()" style="max-width:150px">
+        <option value="">All Plans</option>
+        ${['Silver','Gold','Platinum','Platinum Plus','Couple','Corporate Fitness'].map(p=>`<option>${p}</option>`).join('')}
+      </select>
+      <select class="fs" id="cl-filter-status" onchange="filterClients()" style="max-width:130px">
+        <option value="">All Status</option>
+        <option value="active">✅ Active</option>
+        <option value="inactive">📦 Inactive</option>
+      </select>
+      <select class="fs" id="cl-view-mode" onchange="filterClients()" style="max-width:120px">
+        <option value="cards">🃏 Cards</option>
+        <option value="table">📋 Table</option>
+      </select>
+      ${CR!=='trainer'&&CR!=='client'?`<button class="btn btn-p btn-sm" onclick="openAddClient()" style="flex-shrink:0">+ Add Client</button>`:''}
+    </div>
+
+    <!-- Client list -->
+    <div id="cl-view"></div>`;
+
+  filterClients();
+}
+
+function filterClients(){
+  const search=($('cl-search')?.value||'').toLowerCase().trim();
+  const plan=$('cl-filter-plan')?.value||'';
+  const status=$('cl-filter-status')?.value||'';
+  const mode=$('cl-view-mode')?.value||'cards';
+
+  let data=(window._clientsData||[]).filter(c=>{
+    if(search&&!(c.name||'').toLowerCase().includes(search)&&!(c.phone||'').includes(search)&&!(c.trainerName||'').toLowerCase().includes(search))return false;
+    if(plan&&c.plan!==plan)return false;
+    if(status==='active'&&c.active===false)return false;
+    if(status==='inactive'&&c.active!==false)return false;
+    return true;
+  });
+
+  const view=$('cl-view');if(!view)return;
+
+  if(!data.length){view.innerHTML=emptyState('🏃','No clients found','Try adjusting your search or filters.',CR!=='trainer'&&CR!=='client'?'+ Add Client':'',CR!=='trainer'&&CR!=='client'?'openAddClient()':'');return;}
+
+  if(mode==='table'){
+    view.innerHTML=`<div class="card" style="padding:0"><div class="tbl-wrap">${renderClientsTable(data)}</div></div>`;
+    return;
+  }
+
+  // Cards view
+  view.innerHTML=`<div class="cl-grid">${data.map((c,i)=>buildClientCard(c,i)).join('')}</div>`;
+
+  // Animate progress bars after render
+  setTimeout(()=>{
+    document.querySelectorAll('.cl-progress-fill[data-pct]').forEach(el=>{
+      el.style.width=el.dataset.pct+'%';
+    });
+  },100);
+}
+
+function buildClientCard(c,idx){
+  const allSessions=window._allSessions||[];
+  const allAttendance=window._allAttendance||[];
+  const allRatings=window._allRatings||[];
+
+  const cSessions=allSessions.filter(s=>s.clientId===c.id);
+  const cAttend=allAttendance.filter(a=>a.clientId===c.id);
+  const present=cAttend.filter(a=>a.status==='present').length;
+  const attRate=cAttend.length?Math.round(present/cAttend.length*100):0;
+  const completed=cSessions.filter(s=>s.status==='completed').length;
+  const trainerRatings=allRatings.filter(r=>r.trainerId===c.trainerId);
+  const avgRating=trainerRatings.length?(trainerRatings.reduce((s,r)=>s+(r.rating||0),0)/trainerRatings.length).toFixed(1):null;
+
+  const ini=(c.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const grad=planGrad(c.plan);
+  const pColor=planColor(c.plan);
+  const isActive=c.active!==false;
+
+  // Days since start
+  let daysSince='—';let daysNum=0;
+  if(c.startDate){daysNum=Math.floor((new Date()-new Date(c.startDate))/86400000);daysSince=daysNum>0?daysNum+' days':'Today';}
+
+  return`<div class="cl-card" onclick="openClientJourney('${c.id}')">
+    <div class="cl-card-glow"></div>
+
+    <!-- Banner -->
+    <div class="cl-banner">
+      <div class="cl-banner-bg" style="background:${grad}"></div>
+      <div class="cl-banner-hexes"></div>
+      <div class="cl-banner-pattern"></div>
+      <!-- Plan badge -->
+      <div style="position:absolute;top:10px;right:12px;z-index:2">
+        ${planBadge(c.plan)}
+      </div>
+      <!-- Active badge -->
+      <div style="position:absolute;top:10px;left:12px;z-index:2">
+        <span class="badge ${isActive?'b-g':'b-r'}" style="font-size:10px">${isActive?'● Active':'● Inactive'}</span>
+      </div>
+      <!-- Avatar -->
+      <div class="cl-avatar-wrap">
+        <div class="cl-avatar" style="background:${pColor}22;color:${pColor}">${ini}</div>
+      </div>
+      <div class="cl-status-dot ${isActive?'active':'inactive'}"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="cl-body">
+      <div class="cl-name">${c.name||'—'}</div>
+      <div class="cl-role">${c.trainerName?'🧑‍🏫 '+c.trainerName:'No trainer'} ${c.coordinatorName?'· 🧑‍💼 '+c.coordinatorName:''}</div>
+
+      <div class="cl-tags">
+        ${c.goal?`<span class="badge b-gray" style="font-size:10px">🎯 ${c.goal}</span>`:''}
+        ${c.sessionsPerWeek?`<span class="badge b-b" style="font-size:10px">📅 ${c.sessionsPerWeek}x/wk</span>`:''}
+        ${c.country?`<span class="badge b-gray" style="font-size:10px">🌍 ${c.country}</span>`:''}
+      </div>
+
+      <!-- Mini stats -->
+      <div class="cl-mini-stats">
+        <div class="cl-mini-stat">
+          <div class="cl-mini-stat-val" style="color:var(--accent)">${completed}</div>
+          <div class="cl-mini-stat-lbl">Sessions</div>
+        </div>
+        <div class="cl-mini-stat">
+          <div class="cl-mini-stat-val" style="color:${attRate>=80?'var(--green)':attRate>=60?'var(--yellow)':'var(--red)'}">${attRate}%</div>
+          <div class="cl-mini-stat-lbl">Attendance</div>
+        </div>
+        <div class="cl-mini-stat">
+          <div class="cl-mini-stat-val" style="color:var(--muted)">${daysSince==='—'?'—':daysNum}</div>
+          <div class="cl-mini-stat-lbl">Days In</div>
+        </div>
+      </div>
+
+      <!-- Attendance bar -->
+      <div style="font-size:10px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:4px">
+        <span>Attendance Rate</span><span style="color:${attRate>=80?'var(--green)':attRate>=60?'var(--yellow)':'var(--red)'}">${attRate}%</span>
+      </div>
+      <div class="cl-progress-bar">
+        <div class="cl-progress-fill" data-pct="${attRate}" style="width:0%;background:${attRate>=80?'var(--green)':attRate>=60?'var(--yellow)':'var(--red)'}"></div>
+      </div>
+
+      ${avgRating?`<div style="font-size:11px;color:var(--muted);margin:8px 0 4px">Trainer Rating</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="flex:1;height:4px;background:var(--border2);border-radius:2px;overflow:hidden">
+          <div style="width:${(avgRating/5*100)}%;height:100%;background:linear-gradient(90deg,var(--yellow),var(--accent));border-radius:2px;transition:width 1.2s ease"></div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:var(--yellow)">⭐ ${avgRating}</span>
+      </div>`:''}
+
+      <!-- Actions -->
+      <div class="cl-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-p btn-sm" style="flex:1" onclick="openClientJourney('${c.id}')">🗺 Journey</button>
+        ${CR!=='trainer'&&CR!=='client'?`<button class="btn btn-g btn-sm" onclick="openEditClient('${c.id}')">Edit</button>`:''}
+        ${CR==='admin'?`<button class="btn btn-d btn-sm" onclick="delClient('${c.id}')">Del</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── CLIENT JOURNEY MODAL ───────────────────────────────────────
+async function openClientJourney(clientId){
+  // Remove existing
+  document.getElementById('cj-overlay')?.remove();
+
+  // Loading overlay
+  const ov=document.createElement('div');
+  ov.className='cj-overlay';ov.id='cj-overlay';
+  ov.innerHTML=`<div class="cj-box" style="padding:60px;text-align:center"><div class="spin" style="width:32px;height:32px;margin:0 auto 14px"></div><div style="color:var(--muted)">Loading client journey…</div></div>`;
+  document.body.appendChild(ov);
+
+  const[c,sessions,attendance,measurements,ratings,feedback,diet,checkins]=await Promise.all([
+    fsGet('clients',clientId),
+    fsGetAll('sessions',fn().where('clientId','==',clientId)),
+    fsGetAll('attendance',fn().where('clientId','==',clientId)),
+    fsGetAll('measurements',fn().where('clientId','==',clientId)),
+    c2=>fsGetAll('trainerratings',fn().where('trainerId','==','_')),// placeholder
+    fsGetAll('sessionfeedback'),
+    fsGet('dietplans',clientId),
+    fsGetAll('qrcheckins',fn().where('clientId','==',clientId))
+  ].map((fn2,i)=>i===4?fsGetAll('trainerratings',fn().where('trainerId','==','_')):fn2));
+
+  if(!c){ov.remove();toast('Client not found','error');return;}
+
+  // Re-fetch ratings properly
+  const trainerRatings=c.trainerId?await fsGetAll('trainerratings',fn().where('trainerId','==',c.trainerId)):[];
+
+  const grad=planGrad(c.plan);
+  const pColor=planColor(c.plan);
+  const ini=(c.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const isActive=c.active!==false;
+
+  // Computed stats
+  const completed=sessions.filter(s=>s.status==='completed').length;
+  const missed=sessions.filter(s=>s.status==='missed').length;
+  const present=attendance.filter(a=>a.status==='present').length;
+  const attRate=attendance.length?Math.round(present/attendance.length*100):0;
+  const avgRat=trainerRatings.length?(trainerRatings.reduce((s,r)=>s+(r.rating||0),0)/trainerRatings.length).toFixed(1):null;
+  const daysIn=c.startDate?Math.floor((new Date()-new Date(c.startDate))/86400000):null;
+  const streak=calcStreak(attendance);
+  measurements.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const latestMs=measurements[0]||null;
+  const bmi=latestMs?.weight&&latestMs?.height?((latestMs.weight/((latestMs.height/100)**2)).toFixed(1)):null;
+
+  // Build timeline events
+  const tlEvents=buildTimeline(c,sessions,attendance,measurements,checkins);
+
+  // Build heatmap (last 12 weeks)
+  const heatmapHtml=buildHeatmap(sessions,attendance);
+
+  ov.innerHTML=`
+  <div class="cj-box">
+    <!-- Hero -->
+    <div class="cj-hero">
+      <div class="cj-hero-bg" style="background:${grad}"></div>
+      <div class="cj-hero-hexes"></div>
+      <div class="cj-hero-overlay"></div>
+      <div class="cj-hero-particles" id="hero-particles"></div>
+      <div class="cj-avatar" style="background:${pColor}22;color:${pColor}">${ini}</div>
+      <div class="cj-name">${c.name||'—'} ${isActive?'<span style="font-size:12px;opacity:.7">● Active</span>':'<span style="font-size:12px;opacity:.7;color:#ff8888">● Inactive</span>'}</div>
+      <div class="cj-subtitle">${c.plan||'—'} Plan · ${c.goal||'No goal set'} · Started ${c.startDate||'—'}</div>
+      <div class="cj-close" onclick="document.getElementById('cj-overlay').remove()">✕</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="cj-tabs">
+      <div class="cj-tab active" onclick="cjTab(this,'cjp-overview')">📊 Overview</div>
+      <div class="cj-tab" onclick="cjTab(this,'cjp-journey')">🗺 Journey</div>
+      <div class="cj-tab" onclick="cjTab(this,'cjp-sessions')">📅 Sessions</div>
+      <div class="cj-tab" onclick="cjTab(this,'cjp-body')">📏 Body Stats</div>
+      <div class="cj-tab" onclick="cjTab(this,'cjp-diet')">🥗 Diet Plan</div>
+      <div class="cj-tab" onclick="cjTab(this,'cjp-info')">👤 Profile</div>
+    </div>
+
+    <!-- Body -->
+    <div class="cj-body">
+
+      <!-- ① OVERVIEW ─────────────────────────────────────── -->
+      <div id="cjp-overview" class="cj-panel active">
+        <!-- KPIs -->
+        <div class="cj-kpi-grid">
+          ${[
+            {label:'Days In',val:daysIn!==null?daysIn:'—',sub:c.startDate||'No start date',glow:true},
+            {label:'Sessions Done',val:completed,sub:`${missed} missed`,glow:false},
+            {label:'Attendance',val:attRate+'%',sub:`${present}/${attendance.length} present`,glow:attRate>=80},
+            {label:'Streak',val:streak,sub:'days in a row',glow:streak>5},
+            {label:'Trainer Rating',val:avgRat?avgRat+'★':'—',sub:`${trainerRatings.length} reviews`,glow:false},
+            {label:'Measurements',val:measurements.length,sub:'body records',glow:false},
+          ].map(k=>`<div class="cj-kpi">
+            ${k.glow?'<div class="cj-kpi-glow"></div>':''}
+            <div class="cj-kpi-val">${k.val}</div>
+            <div class="cj-kpi-lbl">${k.label}</div>
+            <div class="cj-kpi-sub">${k.sub}</div>
+          </div>`).join('')}
+        </div>
+
+        <!-- Attendance visual -->
+        <div style="display:flex;gap:20px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;flex-wrap:wrap">
+          <div class="circ-prog">
+            <svg viewBox="0 0 90 90">
+              <circle class="circ-track" cx="45" cy="45" r="38"/>
+              <circle class="circ-fill" cx="45" cy="45" r="38"
+                stroke="${attRate>=80?'var(--green)':attRate>=60?'var(--yellow)':'var(--red)'}"
+                stroke-dasharray="${2*Math.PI*38}"
+                stroke-dashoffset="${2*Math.PI*38*(1-attRate/100)}"
+                id="circ-att-${clientId}"/>
+            </svg>
+            <div class="circ-label">
+              <div class="circ-val" style="color:${attRate>=80?'var(--green)':attRate>=60?'var(--yellow)':'var(--red)'}">${attRate}%</div>
+              <div class="circ-sub">Attendance<br>Rate</div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px">Attendance Breakdown</div>
+            ${[['Present',present,'var(--green)'],['Absent',attendance.filter(a=>a.status==='absent').length,'var(--red)'],['Late',attendance.filter(a=>a.status==='late').length,'var(--yellow)']].map(([lbl,cnt,col])=>`
+              <div class="rating-bar-row">
+                <div style="font-size:12px;min-width:60px;color:var(--muted)">${lbl}</div>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${attendance.length?cnt/attendance.length*100:0}%;background:${col}"></div></div>
+                <div style="font-size:12px;font-weight:700;min-width:28px;text-align:right;color:${col}">${cnt}</div>
+              </div>`).join('')}
+          </div>
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px">Session Breakdown</div>
+            ${[['Completed',completed,'var(--accent)'],['Missed',missed,'var(--red)'],['On Air',sessions.filter(s=>s.status==='onair').length,'var(--green)'],['Pending',sessions.filter(s=>s.status==='not-started').length,'var(--muted)']].map(([lbl,cnt,col])=>`
+              <div class="rating-bar-row">
+                <div style="font-size:12px;min-width:70px;color:var(--muted)">${lbl}</div>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${sessions.length?cnt/sessions.length*100:0}%;background:${col}"></div></div>
+                <div style="font-size:12px;font-weight:700;min-width:28px;text-align:right;color:${col}">${cnt}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Activity heatmap -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px">📆 Activity Heatmap (Last 12 Weeks)</div>
+          ${heatmapHtml}
+          <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)">
+            Less <div class="hm-cell hm-0" style="width:12px;height:12px;display:inline-block"></div>
+            <div class="hm-cell hm-1" style="width:12px;height:12px;display:inline-block"></div>
+            <div class="hm-cell hm-2" style="width:12px;height:12px;display:inline-block"></div>
+            <div class="hm-cell hm-3" style="width:12px;height:12px;display:inline-block"></div>
+            <div class="hm-cell hm-4" style="width:12px;height:12px;display:inline-block"></div> More
+          </div>
+        </div>
+
+        <!-- Body snapshot -->
+        ${latestMs?`<div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px">📏 Latest Body Snapshot (${latestMs.date||'—'})</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px">
+            ${[['Weight',latestMs.weight,'kg','var(--accent)'],['BMI',bmi,'','bmi>=25?var(--yellow)':bmi>=30?'var(--red)':'var(--green)'],['Body Fat',latestMs.bodyFat,'%','var(--blue)'],['Chest',latestMs.chest,'cm','var(--muted)'],['Waist',latestMs.waist,'cm','var(--muted)'],['Arms',latestMs.arms,'cm','var(--muted)']].filter(r=>r[1]).map(([lbl,val,unit,col])=>`
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${typeof col==='string'?col:'var(--accent)'}">${val}${unit?'<span style="font-size:13px">'+unit+'</span>':''}</div>
+                <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">${lbl}</div>
+              </div>`).join('')}
+          </div>
+        </div>`:''}
+      </div>
+
+      <!-- ② JOURNEY TIMELINE ──────────────────────────────── -->
+      <div id="cjp-journey" class="cj-panel">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:18px">
+          📍 Complete journey from <strong>${c.startDate||'Day 1'}</strong> until today — every milestone, session, measurement and achievement.
+        </div>
+        ${tlEvents.length===0
+          ?emptyState('🗺','No journey data yet','Start logging sessions and measurements to build the journey timeline.','','')
+          :`<div class="tl-wrap"><div class="tl-line"></div>${tlEvents}</div>`}
+      </div>
+
+      <!-- ③ SESSIONS ──────────────────────────────────────── -->
+      <div id="cjp-sessions" class="cj-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;font-weight:700">All Sessions (${sessions.length})</div>
+          ${CR!=='client'?`<button class="btn btn-p btn-sm" onclick="document.getElementById('cj-overlay').remove();navTo('sessions');setTimeout(openAddSession,400)">+ Schedule</button>`:''}
+        </div>
+        ${sessions.length===0?emptyState('📅','No sessions yet','','',''):
+        `<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Time</th><th>Trainer</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+        ${sessions.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(s=>`<tr>
+          <td style="font-size:12px">${s.date||'—'}</td>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)">${to12h(s.time)}</td>
+          <td style="font-size:12px">${s.trainerName||'—'}</td>
+          <td style="font-size:12px">${s.type||'—'}</td>
+          <td>${statusBadge(s.status)}</td>
+          <td><button class="btn btn-bl btn-sm" onclick="document.getElementById('cj-overlay').remove();setTimeout(()=>openSessionDetail('${s.id}'),200)">📋 Detail</button></td>
+        </tr>`).join('')}
+        </tbody></table></div>`}
+      </div>
+
+      <!-- ④ BODY STATS ─────────────────────────────────────── -->
+      <div id="cjp-body" class="cj-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;font-weight:700">Body Measurements (${measurements.length} records)</div>
+          ${CR!=='client'?`<button class="btn btn-p btn-sm" onclick="openAddMeasurementFromJourney('${clientId}','${(c.name||'').replace(/'/g,"\\'")}')">+ Add</button>`:''}
+        </div>
+        ${measurements.length===0?emptyState('📏','No measurements yet','','',''):
+        `<!-- Progress bars for latest vs first -->
+        ${measurements.length>=2?buildProgressComparison(measurements):''}
+        <div style="overflow-x:auto;margin-top:14px"><table><thead><tr>
+          <th>Date</th><th>Weight</th><th>BMI</th><th>Chest</th><th>Waist</th><th>Hips</th><th>Arms</th><th>Body Fat</th><th></th>
+        </tr></thead><tbody>
+        ${measurements.map(m=>{const b=m.weight&&m.height?((m.weight/((m.height/100)**2)).toFixed(1)):'—';const bc=b==='—'?'var(--muted)':Number(b)<18.5?'var(--blue)':Number(b)<25?'var(--green)':Number(b)<30?'var(--yellow)':'var(--red)';
+          return`<tr>
+            <td style="font-size:12px">${m.date||'—'}</td>
+            <td style="font-weight:600">${m.weight?m.weight+' kg':'—'}</td>
+            <td style="color:${bc};font-weight:700">${b}</td>
+            <td>${m.chest||'—'}</td><td>${m.waist||'—'}</td><td>${m.hips||'—'}</td>
+            <td>${m.arms||'—'}</td><td>${m.bodyFat?m.bodyFat+'%':'—'}</td>
+            <td>${CR!=='client'?`<button class="btn btn-d btn-sm" onclick="delMeasurementJ('${m.id}','${clientId}')">Del</button>`:'—'}</td>
+          </tr>`;}).join('')}
+        </tbody></table></div>`}
+      </div>
+
+      <!-- ⑤ DIET PLAN ──────────────────────────────────────── -->
+      <div id="cjp-diet" class="cj-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:13px;font-weight:700">Nutrition & Diet Plan</div>
+          ${CR!=='client'?`<button class="btn btn-p btn-sm" onclick="openClientDiet('${clientId}','${(c.name||'').replace(/'/g,"\\'")}')">✏️ Edit Plan</button>`:''}
+        </div>
+        ${diet?`
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px">
+            ${[['🔥 Calories',diet.calories,'kcal'],['💪 Protein',diet.protein,'g'],['🍞 Carbs',diet.carbs,'g'],['🥑 Fat',diet.fat,'g']].map(([lbl,val,unit])=>val?`
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">
+                <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${lbl}</div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)">${val}</div>
+                <div style="font-size:10px;color:var(--muted)">${unit}/day</div>
+              </div>`:'').join('')}
+          </div>
+          ${diet.mealPlan?`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Meal Plan</div><div style="font-size:13px;white-space:pre-wrap;line-height:1.6">${diet.mealPlan}</div></div>`:''}
+          ${diet.avoid?`<div style="background:var(--red-dim);border:1px solid rgba(255,68,68,.2);border-radius:10px;padding:12px;margin-bottom:10px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--red);margin-bottom:5px">🚫 Foods to Avoid</div><div style="font-size:13px">${diet.avoid}</div></div>`:''}
+          ${diet.supplements?`<div style="background:var(--blue-dim);border:1px solid rgba(77,159,255,.2);border-radius:10px;padding:12px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:5px">💊 Supplements</div><div style="font-size:13px">${diet.supplements}</div></div>`:''}
+        `:`<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:10px">🥗</div><div style="font-size:14px;font-weight:600">No diet plan yet</div>${CR!=='client'?`<div style="margin-top:12px"><button class="btn btn-p btn-sm" onclick="openClientDiet('${clientId}','${(c.name||'').replace(/'/g,"\\'")}')">+ Create Diet Plan</button></div>`:''}</div>`}
+      </div>
+
+      <!-- ⑥ PROFILE ────────────────────────────────────────── -->
+      <div id="cjp-info" class="cj-panel">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          ${[
+            ['👤 Full Name',c.name],['📱 Phone',c.phone],['📧 Email',c.email],
+            ['🎂 Age',c.age?c.age+' years':'—'],['⚧ Gender',c.gender],['🌍 Country',c.country],
+            ['🏙 City',c.city],['🏢 Company',c.company],['📋 Plan',c.plan],
+            ['🎯 Goal',c.goal],['📅 Sessions/Week',c.sessionsPerWeek],
+            ['📅 Start Date',c.startDate],['📅 End Date',c.endDate||'Ongoing'],
+            ['🧑‍🏫 Trainer',c.trainerName],['🧑‍💼 Coordinator',c.coordinatorName],
+          ].map(([label,val])=>`
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:3px">${label}</div>
+              <div style="font-size:13px;font-weight:600">${val||'—'}</div>
+            </div>`).join('')}
+        </div>
+        ${c.medical?`<div style="background:var(--yellow-dim);border:1px solid rgba(255,187,0,.2);border-radius:10px;padding:12px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">⚕️ Medical / Health Notes</div><div style="font-size:13px">${c.medical}</div></div>`:''}
+        ${CR!=='client'?`<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn btn-p btn-sm" onclick="document.getElementById('cj-overlay').remove();openEditClient('${clientId}')">✏️ Edit Profile</button>
+          ${isActive?`<button class="btn btn-d btn-sm" onclick="deactivateClientJ('${clientId}')">🔒 Deactivate</button>`:`<button class="btn btn-gr btn-sm" onclick="reactivateClient('${clientId}')">✅ Reactivate</button>`}
+        </div>`:''}
+      </div>
+
+    </div><!-- cj-body -->
+  </div><!-- cj-box -->`;
+
+  // Start hero particles
+  startHeroParticles(pColor);
+
+  // Animate circles
+  setTimeout(()=>{
+    document.querySelectorAll('.circ-fill').forEach(el=>{
+      const dasharray=parseFloat(el.getAttribute('stroke-dasharray'));
+      const offset=parseFloat(el.getAttribute('stroke-dashoffset'));
+      el.style.transition='stroke-dashoffset 1.4s cubic-bezier(.34,1.2,.64,1)';
+    });
+    document.querySelectorAll('.rating-bar-fill,.cl-progress-fill,.ms-chart-fill').forEach(el=>{
+      if(el.dataset.pct){el.style.width=el.dataset.pct+'%';}
+    });
+  },100);
+
+  // Close on overlay click
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+}
+
+function cjTab(tabEl,panelId){
+  const box=tabEl.closest('.cj-box');
+  box.querySelectorAll('.cj-tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  box.querySelectorAll('.cj-panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById(panelId);if(panel)panel.classList.add('active');
+}
+
+// ── HERO PARTICLES ─────────────────────────────────────────────
+function startHeroParticles(color){
+  const container=document.getElementById('hero-particles');if(!container)return;
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');
+    p.className='cj-hero-particle';
+    const size=Math.random()*5+2;
+    p.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${Math.random()>0.5?color:'rgba(255,255,255,0.6)'};
+      animation-duration:${3+Math.random()*4}s;
+      animation-delay:${Math.random()*3}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ── TIMELINE BUILDER ───────────────────────────────────────────
+function buildTimeline(c,sessions,attendance,measurements,checkins){
+  const events=[];
+
+  // Start event
+  if(c.startDate){
+    events.push({date:c.startDate,type:'start',icon:'🚀',title:'Journey Begins',body:`Started ${c.plan||'—'} Plan with trainer ${c.trainerName||'—'}. Goal: ${c.goal||'—'}`,color:'var(--accent)'});
+  }
+
+  // Sessions
+  sessions.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(s=>{
+    const icon=s.status==='completed'?'✅':s.status==='missed'?'❌':s.status==='onair'?'🟢':'📅';
+    const color=s.status==='completed'?'var(--green)':s.status==='missed'?'var(--red)':s.status==='onair'?'var(--accent)':'var(--muted)';
+    events.push({date:s.date||'',type:'session',icon,title:`${s.type||'Session'} — ${s.status?.replace('-',' ')}`,body:`With ${s.trainerName||'—'} at ${to12h(s.time)}`,color,badge:statusBadge(s.status)});
+  });
+
+  // Measurements
+  measurements.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(m=>{
+    const bmi=m.weight&&m.height?((m.weight/((m.height/100)**2)).toFixed(1)):null;
+    events.push({date:m.date||'',type:'measurement',icon:'📏',title:'Body Measurement Logged',body:`Weight: ${m.weight?m.weight+'kg':'—'} · Height: ${m.height?m.height+'cm':'—'}${bmi?` · BMI: ${bmi}`:''}${m.bodyFat?` · Body Fat: ${m.bodyFat}%`:''}`,color:'var(--blue)'});
+  });
+
+  // QR Checkins
+  checkins.forEach(ch=>{
+    events.push({date:ch.sessionDate||'',type:'qr',icon:'📱',title:'QR Code Check-in',body:`Scanned QR code for attendance at ${to12h(ch.sessionDate||'')}`,color:'var(--purple)'});
+  });
+
+  // Sort all by date
+  events.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+
+  if(!events.length)return'';
+
+  return events.map((e,i)=>`
+    <div class="tl-item" style="animation-delay:${i*.06}s">
+      <div class="tl-dot" style="background:${e.color}"></div>
+      <div class="tl-date">${e.date||'—'}</div>
+      <div class="tl-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:18px">${e.icon}</span>
+          <div class="tl-title">${e.title}</div>
+          ${e.badge?e.badge:''}
+        </div>
+        <div class="tl-body">${e.body}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── HEATMAP ────────────────────────────────────────────────────
+function buildHeatmap(sessions,attendance){
+  const today=new Date();const weeks=12;const days=weeks*7;
+  const dateMap={};
+  const start=new Date(today);start.setDate(start.getDate()-days);
+  sessions.forEach(s=>{if(s.date&&s.status==='completed')dateMap[s.date]=(dateMap[s.date]||0)+2;});
+  attendance.forEach(a=>{if(a.date&&a.status==='present')dateMap[a.date]=(dateMap[a.date]||0)+1;});
+  const cells=[];
+  for(let i=0;i<days;i++){
+    const d=new Date(start);d.setDate(d.getDate()+i);
+    const key=d.toISOString().split('T')[0];
+    const val=dateMap[key]||0;
+    const lvl=val===0?0:val===1?1:val===2?2:val<=3?3:4;
+    cells.push(`<div class="hm-cell hm-${lvl}" title="${key}: ${val} activities"></div>`);
+  }
+  const days_labels=['S','M','T','W','T','F','S'];
+  return`<div style="display:flex;gap:3px">
+    <div style="display:flex;flex-direction:column;gap:3px;margin-right:4px;padding-top:2px">
+      ${days_labels.map(d=>`<div style="font-size:9px;color:var(--muted);height:16px;display:flex;align-items:center">${d}</div>`).join('')}
+    </div>
+    <div style="flex:1;overflow-x:auto">
+      <div style="display:grid;grid-template-rows:repeat(7,16px);grid-auto-flow:column;gap:3px;min-width:max-content">${cells.join('')}</div>
+    </div>
+  </div>`;
+}
+
+// ── PROGRESS COMPARISON ────────────────────────────────────────
+function buildProgressComparison(measurements){
+  const first=measurements[measurements.length-1];
+  const latest=measurements[0];
+  const fields=[['⚖️ Weight','weight','kg'],['📐 Waist','waist','cm'],['💪 Arms','arms','cm'],['🦵 Thighs','thighs','cm']];
+  return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px">
+    <div style="font-size:13px;font-weight:700;margin-bottom:14px">📈 Progress: First vs Latest</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${fields.filter(([,key])=>first[key]&&latest[key]).map(([icon,key,unit])=>{
+        const diff=parseFloat(latest[key])-parseFloat(first[key]);
+        const better=key==='waist'||key==='thighs'||key==='weight'?diff<0:diff>0;
+        const diffStr=(diff>=0?'+':'')+diff.toFixed(1)+unit;
+        return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${icon}</div>
+          <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:6px">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent)">${latest[key]}<span style="font-size:14px">${unit}</span></div>
+            <div style="font-size:11px;color:${better?'var(--green)':'var(--red)'};font-weight:700;margin-bottom:4px">${diffStr}</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted)">Was ${first[key]}${unit} → Now ${latest[key]}${unit}</div>
+        </div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+// ── STREAK CALCULATOR ──────────────────────────────────────────
+function calcStreak(attendance){
+  if(!attendance.length)return 0;
+  const presentDates=new Set(attendance.filter(a=>a.status==='present').map(a=>a.date));
+  let streak=0;const today=new Date();
+  for(let i=0;i<60;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    if(presentDates.has(key))streak++;
+    else if(i>0)break;
+  }
+  return streak;
+}
+
+// ── HELPERS ────────────────────────────────────────────────────
+async function deactivateClientJ(clientId){
+  if(!confirm('Deactivate this client?'))return;
+  try{await fsUpdate('clients',clientId,{active:false});toast('Client deactivated','success');document.getElementById('cj-overlay')?.remove();clients();}
+  catch(e){toast('Error','error');}
+}
+
+async function openAddMeasurementFromJourney(clientId,clientName){
+  openM1(`ADD MEASUREMENT — ${clientName.toUpperCase()}`,`
+    <div class="fr">
+      <div class="fg"><label class="fl">Date *</label><input class="fi" id="ms-date" type="date" value="${getTodayStr()}"></div>
+      <div class="fg"><label class="fl">Weight (kg)</label><input class="fi" id="ms-weight" type="number" step="0.1" placeholder="72.5"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Height (cm)</label><input class="fi" id="ms-height" type="number" placeholder="170"></div>
+      <div class="fg"><label class="fl">Body Fat %</label><input class="fi" id="ms-bf" type="number" step="0.1" placeholder="18.5"></div>
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Circumference (cm)</div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Chest</label><input class="fi" id="ms-chest" type="number" step="0.1"></div>
+      <div class="fg"><label class="fl">Waist</label><input class="fi" id="ms-waist" type="number" step="0.1"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Hips</label><input class="fi" id="ms-hips" type="number" step="0.1"></div>
+      <div class="fg"><label class="fl">Arms</label><input class="fi" id="ms-arms" type="number" step="0.1"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Thighs</label><input class="fi" id="ms-thighs" type="number" step="0.1"></div>
+      <div class="fg"><label class="fl">Shoulders</label><input class="fi" id="ms-shoulders" type="number" step="0.1"></div>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="ms-notes" style="min-height:55px"></textarea></div>
+    <div class="mo-foot">
+      <button class="btn btn-g" onclick="closeM1()">Cancel</button>
+      <button class="btn btn-p" onclick="saveMeasurementJ('${clientId}','${clientName.replace(/'/g,"\\'")}')">Save</button>
+    </div>`);
+}
+
+async function saveMeasurementJ(clientId,clientName){
+  const date=document.getElementById('ms-date')?.value;
+  if(!date){toast('Date required','error');return;}
+  try{
+    await fsAdd('measurements',{
+      clientId,clientName,date,
+      weight:document.getElementById('ms-weight')?.value||null,
+      height:document.getElementById('ms-height')?.value||null,
+      bodyFat:document.getElementById('ms-bf')?.value||null,
+      chest:document.getElementById('ms-chest')?.value||null,
+      waist:document.getElementById('ms-waist')?.value||null,
+      hips:document.getElementById('ms-hips')?.value||null,
+      arms:document.getElementById('ms-arms')?.value||null,
+      thighs:document.getElementById('ms-thighs')?.value||null,
+      shoulders:document.getElementById('ms-shoulders')?.value||null,
+      notes:document.getElementById('ms-notes')?.value||'',
+      recordedBy:CU.name||''
+    });
+    closeM1();toast('📏 Measurement saved!','success');
+    // Refresh journey
+    openClientJourney(clientId);
+  }catch(e){toast('Error: '+e.message,'error');}
+}
+
+async function delMeasurementJ(id,clientId){
+  if(!confirm('Delete this measurement?'))return;
+  try{await fsDel('measurements',id);toast('Deleted','success');openClientJourney(clientId);}
+  catch(e){toast('Error','error');}
+}
+
+// ── DIET PLAN (used from journey) ──────────────────────────────
+async function openClientDiet(clientId,clientName){
+  const doc=await fsGet('dietplans',clientId);
+  openM2(`🥗 DIET PLAN — ${clientName.toUpperCase()}`,`
+    <div class="fg"><label class="fl">Calorie Target (kcal/day)</label><input class="fi" id="dp-cal" type="number" value="${doc?.calories||''}" placeholder="2000"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Protein (g)</label><input class="fi" id="dp-protein" type="number" value="${doc?.protein||''}"></div>
+      <div class="fg"><label class="fl">Carbs (g)</label><input class="fi" id="dp-carbs" type="number" value="${doc?.carbs||''}"></div>
+      <div class="fg"><label class="fl">Fat (g)</label><input class="fi" id="dp-fat" type="number" value="${doc?.fat||''}"></div>
+    </div>
+    <div class="fg"><label class="fl">Meal Plan</label><textarea class="fta" id="dp-plan" style="min-height:110px" placeholder="Breakfast: ...\nLunch: ...\nDinner: ...\nSnacks: ...">${doc?.mealPlan||''}</textarea></div>
+    <div class="fg"><label class="fl">Foods to Avoid</label><textarea class="fta" id="dp-avoid" style="min-height:55px" placeholder="e.g. Fried foods, sugary drinks">${doc?.avoid||''}</textarea></div>
+    <div class="fg"><label class="fl">Supplements</label><input class="fi" id="dp-supps" value="${doc?.supplements||''}" placeholder="e.g. Whey protein, Creatine, Vitamin D"></div>
+    <div class="fg" style="margin-bottom:0"><label class="fl">Notes</label><textarea class="fta" id="dp-notes" style="min-height:55px">${doc?.notes||''}</textarea></div>
+    <div class="mo-foot">
+      <button class="btn btn-g" onclick="closeM2()">Cancel</button>
+      <button class="btn btn-p" onclick="saveDietPlanJ('${clientId}','${clientName.replace(/'/g,"\\'")}')">💾 Save Diet Plan</button>
+    </div>`);
+}
+
+async function saveDietPlanJ(clientId,clientName){
+  try{
+    await fn().setDoc(fn().doc(db(),'dietplans',clientId),{
+      clientId,clientName,
+      calories:document.getElementById('dp-cal')?.value||'',
+      protein:document.getElementById('dp-protein')?.value||'',
+      carbs:document.getElementById('dp-carbs')?.value||'',
+      fat:document.getElementById('dp-fat')?.value||'',
+      mealPlan:document.getElementById('dp-plan')?.value||'',
+      avoid:document.getElementById('dp-avoid')?.value||'',
+      supplements:document.getElementById('dp-supps')?.value||'',
+      notes:document.getElementById('dp-notes')?.value||'',
+      updatedBy:CU.name||'',updatedAt:fn().serverTimestamp()
+    });
+    closeM2();toast('🥗 Diet plan saved!','success');
+    openClientJourney(clientId);
+  }catch(e){toast('Error: '+e.message,'error');}
+}
+
+// ── TABLE VIEW (fallback) ─────────────────────────────────────
+function renderClientsTable(data){
+  if(!data.length)return emptyState('🏃','No clients','','','');
+  return`<table><thead><tr><th>Name</th><th>Phone</th><th>Plan</th><th>Trainer</th><th>Coordinator</th><th>Goal</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+  ${data.map(c=>`<tr>
+    <td><strong>${c.name||'—'}</strong></td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.phone||'—'}</td>
+    <td>${planBadge(c.plan)}</td>
+    <td style="font-size:12px">${c.trainerName||'—'}</td>
+    <td style="font-size:12px">${c.coordinatorName||'—'}</td>
+    <td style="font-size:12px">${c.goal||'—'}</td>
+    <td>${c.active!==false?`<span class="badge b-g">Active</span>`:`<span class="badge b-r">Inactive</span>`}</td>
+    <td><div class="td-actions">
+      <button class="btn btn-p btn-sm" onclick="openClientJourney('${c.id}')">🗺 Journey</button>
+      ${CR!=='trainer'&&CR!=='client'?`<button class="btn btn-g btn-sm" onclick="openEditClient('${c.id}')">Edit</button>`:``}
+      ${CR==='admin'?`<button class="btn btn-d btn-sm" onclick="delClient('${c.id}')">Del</button>`:''}
+    </div></td>
+  </tr>`).join('')}
+  </tbody></table>`;
+}
+
+// ── ADD / EDIT CLIENT (unchanged) ─────────────────────────────
+async function openAddClient(){const html=await clientForm();openM2('ADD CLIENT',html);initClientFormAC();}
+async function openEditClient(id){const c=await fsGet('clients',id);if(!c){toast('Client not found','error');return;}const html=await clientForm(c);openM2('EDIT CLIENT',html);initClientFormAC(c);}
+function initClientFormAC(c={}){
+  initCountryAC('cf-country');
+  const planSel=$('cf-plan');
+  if(planSel){planSel.addEventListener('change',()=>{const cw=$('couple-wrap');if(cw)cw.style.display=planSel.value==='Couple'?'block':'none';});}
+  const ti=document.getElementById('cf-trainer-inp');
+  if(ti){fsGetAll('users',fn().where('role','==','trainer')).then(trainers=>{createAutocomplete(ti,trainers.map(t=>({id:t.id,label:(t.name||t.email)+' ('+(t.gender||'Any')+')',sub:t.gender||''})),{minChars:0,onSelect(it){const h=document.getElementById('cf-trainer-id');if(h)h.value=it.id;}});});}
+  const ci=document.getElementById('cf-coord-inp');
+  if(ci){fsGetAll('users',fn().where('role','==','coordinator')).then(coords=>{createAutocomplete(ci,coords.map(c=>({id:c.id,label:c.name||c.email,sub:'Coordinator'})),{minChars:0,onSelect(it){const h=document.getElementById('cf-coord-id');if(h)h.value=it.id;}});});}
+}
+async function clientForm(c={}){
+  const isCouple=c.plan==='Couple';
+  return`<div class="fr"><div><label class="fl">Full Name (Primary) *</label><input class="fi" id="cf-name" value="${c.name||''}" placeholder="Client full name"></div><div><label class="fl">Phone *</label><input class="fi" id="cf-phone" value="${c.phone||''}" placeholder="10-digit number"></div></div><div class="fr"><div><label class="fl">Email</label><input class="fi" id="cf-email" type="email" value="${c.email||''}"></div><div><label class="fl">Age</label><input class="fi" id="cf-age" type="number" value="${c.age||''}"></div></div><div class="fr"><div><label class="fl">Plan *</label><select class="fs" id="cf-plan" onchange="toggleCouplePlan(this)"><option value="">— Select —</option>${PLANS.map(p=>`<option ${c.plan===p?'selected':''}>${p}</option>`).join('')}</select></div><div><label class="fl">Country</label>${acCountryField('cf-country',c.country||'')}</div></div><div id="couple-wrap" style="display:${isCouple?'block':'none'};background:var(--pink-dim);border:1px solid var(--pink);border-radius:10px;padding:14px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--pink);margin-bottom:10px">👫 Couple Plan — Partner Details</div><div class="fr"><div><label class="fl">Partner Full Name</label><input class="fi" id="cf-partner-name" value="${c.partnerName||''}"></div><div><label class="fl">Partner Phone</label><input class="fi" id="cf-partner-phone" value="${c.partnerPhone||''}"></div></div></div><div class="fr"><div><label class="fl">Assign Trainer</label><input class="fi" id="cf-trainer-inp" placeholder="Type trainer name…" value="${c.trainerName||''}" autocomplete="off"><input type="hidden" id="cf-trainer-id" value="${c.trainerId||''}"></div><div><label class="fl">Assign Coordinator</label><input class="fi" id="cf-coord-inp" placeholder="Type coordinator name…" value="${c.coordinatorName||''}" autocomplete="off"><input type="hidden" id="cf-coord-id" value="${c.coordinatorId||''}"></div></div><div class="fr"><div><label class="fl">Gender</label><select class="fs" id="cf-gender"><option value="">— Select —</option>${['Male','Female','Other'].map(g=>`<option ${c.gender===g?'selected':''}>${g}</option>`).join('')}</select></div><div><label class="fl">Fitness Goal</label><select class="fs" id="cf-goal"><option value="">— Select —</option>${['Weight Loss','Fat Loss','Muscle Gain','Toning','Strength','General Fitness','Rehabilitation','Couple Fitness','Corporate Fitness'].map(g=>`<option ${c.goal===g?'selected':''}>${g}</option>`).join('')}</select></div></div><div class="fr"><div><label class="fl">Sessions Per Week</label><input class="fi" id="cf-spw" type="number" value="${c.sessionsPerWeek||''}" min="1" max="14"></div><div><label class="fl">Date of Birth</label><input class="fi" id="cf-dob" type="date" value="${c.dob||''}"></div></div><div class="fr"><div><label class="fl">Start Date</label><input class="fi" id="cf-start" type="date" value="${c.startDate||''}"></div><div><label class="fl">End Date</label><input class="fi" id="cf-end" type="date" value="${c.endDate||''}"></div></div><div class="fr"><div><label class="fl">City</label><input class="fi" id="cf-city" value="${c.city||''}"></div><div><label class="fl">Company</label><input class="fi" id="cf-company" value="${c.company||''}"></div></div><div style="margin-bottom:14px"><label class="fl">Medical Conditions / Notes</label><textarea class="fta" id="cf-med">${c.medical||''}</textarea></div><div class="fr" style="margin-bottom:14px"><div><label class="fl">Status</label><select class="fs" id="cf-active"><option value="true" ${c.active!==false?'selected':''}>Active</option><option value="false" ${c.active===false?'selected':''}>Inactive</option></select></div></div><div class="mo-foot"><button class="btn btn-g" onclick="closeM2()">Cancel</button><button class="btn btn-p" onclick="saveClient('${c.id||''}')">Save Client</button></div>`;
+}
+function toggleCouplePlan(sel){const w=$('couple-wrap');if(w)w.style.display=sel.value==='Couple'?'block':'none';}
+async function saveClient(existingId=''){
+  const name=$('cf-name').value.trim(),phone=$('cf-phone').value.trim();
+  if(!name||!phone){toast('Name and phone are required','error');return;}
+  const plan=$('cf-plan').value;
+  const data={name,phone,email:$('cf-email').value.trim(),plan,dob:document.getElementById('cf-dob')?.value||'',
+    trainerId:document.getElementById('cf-trainer-id')?.value||'',
+    trainerName:($('cf-trainer-inp')?.value||'').replace(/\s*\([^)]*\)\s*$/,'').trim()||'',
+    coordinatorId:document.getElementById('cf-coord-id')?.value||'',
+    coordinatorName:$('cf-coord-inp')?.value.trim()||'',
+    gender:$('cf-gender').value,goal:$('cf-goal').value,
+    weight:null,height:null,
+    startDate:$('cf-start').value,endDate:$('cf-end').value,
+    medical:$('cf-med').value,active:$('cf-active').value==='true',
+    sessionsPerWeek:$('cf-spw').value,city:$('cf-city').value.trim(),
+    company:$('cf-company').value.trim(),
+    country:$('cf-country')?.value.trim()||'',
+    age:Number($('cf-age')?.value)||null,addedBy:auth().currentUser.uid};
+  if(plan==='Couple'){data.partnerName=document.getElementById('cf-partner-name')?.value.trim()||'';data.partnerPhone=document.getElementById('cf-partner-phone')?.value.trim()||'';}
+  try{
+    if(existingId){await fsUpdate('clients',existingId,data);toast('Client updated! ✅','success');}
+    else{await fsAdd('clients',data);toast('Client added! ✅','success');}
+    closeM2();clients();
+  }catch(e){toast('Error: '+e.message,'error');}
+}
+async function delClient(id){
+  if(!confirm('Delete this client?'))return;
+  try{await fsDel('clients',id);toast('Client deleted','success');clients();}
+  catch(e){toast('Error: '+e.message,'error');}
+}
+async function reactivateClient(id){
+  if(!confirm('Reactivate this client?'))return;
+  try{await fsUpdate('clients',id,{active:true});toast('Client reactivated! ✅','success');document.getElementById('cj-overlay')?.remove();clients();}
+  catch(e){toast('Error: '+e.message,'error');}
+}// ══════ USERS ══════
 async function users(){
   $('page').innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto"></div></div>`;
   async function loadTab(role){const q=role==='all'?[]:[fn().where('role','==',role)];const data=await fsGetAll('users',...q);document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));const tab=document.querySelector(`.tab[data-role="${role}"]`);if(tab)tab.classList.add('active');$('users-tbl').innerHTML=renderUsersTable(data);window._usersData=data;}
