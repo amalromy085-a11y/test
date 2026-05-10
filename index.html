@@ -1190,13 +1190,68 @@ function pgAgents(el){
         </div>
         ${bar(convRate,100,rc())}
         ${selectedRole==="admin"?`<div style="display:flex;gap:7px;margin-top:10px">
+          <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()};flex:1;padding:8px" onclick="showAgentClients('${ag.name.replace(/'/g,"\\'")}')">👥 Clients</button>
           <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()};flex:1;padding:8px" onclick="showEditAgentModal('${ag.id}')">✏️ Edit</button>
-          <button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;flex:1;padding:8px" onclick="confirmDelete('Remove agent <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\')')">🗑 Remove</button>
+          <button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;flex:1;padding:8px" onclick="confirmDelete('Remove agent <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\')')">🗑</button>
         </div>`:""}
       </div>`;
     }).join("")}
   </div>`;
 }
+function showAgentClients(agentName){
+  const agLeads=leads.filter(l=>l.agentName===agentName);
+  const grouped={};
+  STAGES.forEach(s=>grouped[s]=[]);
+  agLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
+  const totalRev=agLeads.filter(l=>l.status==="Closed").reduce((s,l)=>s+Number(l.value||0),0);
+
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👥 ${agentName}'s Clients</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:18px;font-weight:800;color:var(--white)">${agLeads.length}</div>
+        <div style="font-size:10px;color:var(--text)">Total</div>
+      </div>
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:18px;font-weight:800;color:#16a34a">${agLeads.filter(l=>l.status==="Closed").length}</div>
+        <div style="font-size:10px;color:var(--text)">Closed</div>
+      </div>
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:800;color:#f59e0b">${fmtCur(totalRev)}</div>
+        <div style="font-size:10px;color:var(--text)">Revenue</div>
+      </div>
+    </div>
+    ${agLeads.length===0
+      ?`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">📭</div><p>No clients assigned yet</p></div>`
+      :STAGES.filter(s=>grouped[s].length>0).map(s=>`
+        <div style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
+            <div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]}"></div>
+            <span style="font-weight:700;font-size:12px;color:var(--white)">${s}</span>
+            <span style="background:var(--input-bg);border-radius:99px;padding:1px 7px;font-size:10px;color:var(--text)">${grouped[s].length}</span>
+          </div>
+          ${grouped[s].map(l=>`
+            <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:9px;margin-bottom:5px;border:1px solid var(--border);cursor:pointer" onclick="closeModal();openLead('${l.id}')">
+              ${av(initials(l.name),30)}
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div>
+                <div style="font-size:10px;color:var(--text);display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+                  <span>${l.phone||"No phone"}</span>
+                  ${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}" style="font-size:9px">${PLANS[l.plan]?.icon} ${l.plan}</span>`:""}
+                  ${l.enquiryDate?`<span>📅 ${new Date(l.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}</span>`:""}
+                </div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                <div style="font-size:12px;font-weight:700;color:#16a34a">${fmtCur(l.value)}</div>
+                <div style="font-size:9px;color:var(--text)">${l.source||""}</div>
+              </div>
+            </div>`).join("")}
+        </div>`).join("")}
+    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Close</button>
+  </div>`);
+}
+
 function showAddAgentModal(){_agentModal(null);}
 function showEditAgentModal(id){_agentModal(agents.find(a=>a.id===id));}
 function _agentModal(ag){
