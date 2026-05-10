@@ -15,19 +15,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--w
 input,select,button,textarea{font-family:inherit;color:var(--white)}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:99px}
 select option{background:var(--surface);color:var(--white)}
-
-/* GYM BG */
-.gym-bg{position:fixed;inset:0;z-index:0;background:
-  linear-gradient(135deg,rgba(15,17,23,.92) 0%,rgba(26,29,39,.88) 100%),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23111'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Ccircle cx='100' cy='20' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Crect x='28' y='16' width='64' height='8' rx='4' fill='%23222'/%3E%3Ccircle cx='20' cy='100' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Crect x='28' y='96' width='64' height='8' rx='4' fill='%23222'/%3E%3Crect x='55' y='24' width='10' height='72' rx='3' fill='%231a1a2e'/%3E%3C/svg%3E");
-  background-size:cover,120px 120px;
-  pointer-events:none}
-[data-theme="light"] .gym-bg{background:
-  linear-gradient(135deg,rgba(240,242,245,.95) 0%,rgba(255,255,255,.92) 100%),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23f0f2f5'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Ccircle cx='100' cy='20' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Crect x='28' y='16' width='64' height='8' rx='4' fill='%23ddd'/%3E%3Ccircle cx='20' cy='100' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Crect x='28' y='96' width='64' height='8' rx='4' fill='%23ddd'/%3E%3Crect x='55' y='24' width='10' height='72' rx='3' fill='%23e8e8e8'/%3E%3C/svg%3E");
-  background-size:cover,120px 120px;pointer-events:none}
-
-/* LOGIN */
+.gym-bg{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,rgba(15,17,23,.92),rgba(26,29,39,.88)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23111'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Ccircle cx='100' cy='20' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Crect x='28' y='16' width='64' height='8' rx='4' fill='%23222'/%3E%3Ccircle cx='20' cy='100' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Crect x='28' y='96' width='64' height='8' rx='4' fill='%23222'/%3E%3Crect x='55' y='24' width='10' height='72' rx='3' fill='%231a1a2e'/%3E%3C/svg%3E");background-size:cover,120px 120px;pointer-events:none}
+[data-theme="light"] .gym-bg{background:linear-gradient(135deg,rgba(240,242,245,.95),rgba(255,255,255,.92)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23f0f2f5'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Ccircle cx='100' cy='20' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Crect x='28' y='16' width='64' height='8' rx='4' fill='%23ddd'/%3E%3Ccircle cx='20' cy='100' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Crect x='28' y='96' width='64' height='8' rx='4' fill='%23ddd'/%3E%3Crect x='55' y='24' width='10' height='72' rx='3' fill='%23e8e8e8'/%3E%3C/svg%3E");background-size:cover,120px 120px;pointer-events:none}
 #loginWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:100;transition:opacity .4s;overflow-y:auto}
 #loginWrap.hide{opacity:0;pointer-events:none}
 .login-card{width:100%;max-width:400px;position:relative;z-index:1}
@@ -44,8 +33,6 @@ select option{background:var(--surface);color:var(--white)}
 .err-msg{color:#ef4444;font-size:11px;margin-bottom:8px;display:none;padding:8px;background:rgba(239,68,68,.08);border-radius:7px;border:1px solid rgba(239,68,68,.2)}
 .login-footer{color:var(--text);font-size:11px;text-align:center;margin-top:16px;opacity:.5}
 .theme-toggle-login{position:absolute;top:16px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--white);box-shadow:var(--shadow);z-index:101}
-
-/* APP */
 #app{display:flex;height:100dvh;overflow:hidden;opacity:0;transition:opacity .4s;flex-direction:column;position:relative;z-index:1}
 #app.show{opacity:1}
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 14px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:var(--shadow);z-index:50;backdrop-filter:blur(10px)}
@@ -57,8 +44,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0}
 .hamburger{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:6px}
 .ham-line{width:20px;height:2px;background:var(--white);border-radius:99px}
-
-/* DRAWER */
 #drawer{position:fixed;inset:0;z-index:200;pointer-events:none}
 #drawerBg{position:absolute;inset:0;background:var(--modal-bg);opacity:0;transition:opacity .3s}
 #drawerPanel{position:absolute;left:0;top:0;bottom:0;width:260px;background:var(--surface);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.2);backdrop-filter:blur(10px)}
@@ -76,20 +61,14 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .nav-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
 .drawer-foot{padding:12px 10px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px}
 .logout-btn{margin-left:auto;background:none;border:none;color:var(--text);font-size:13px;cursor:pointer}
-
-/* MAIN */
 main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .page{padding:14px;animation:fadeUp .25s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-/* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
 .card-title{font-weight:700;font-size:13px;margin-bottom:12px;color:var(--white)}
 .card+.card{margin-top:12px}
 .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .section-title{font-weight:700;font-size:13px;color:var(--white)}
-
-/* STATS */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .stat-card{border-radius:14px;padding:14px;position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:-16px;right:-16px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)}
@@ -97,15 +76,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .stat-val{font-size:20px;font-weight:800;color:#fff}
 .stat-label{color:rgba(255,255,255,.75);font-size:11px}
 .stat-delta{display:inline-block;margin-top:5px;background:rgba(255,255,255,.2);border-radius:99px;padding:1px 7px;font-size:10px;color:#fff}
-
-/* MISC */
 .pill{border-radius:99px;padding:2px 9px;font-size:10px;font-weight:600;white-space:nowrap}
 .bar-track{background:var(--border);border-radius:99px;height:3px;margin-top:4px}
 .bar-fill{height:3px;border-radius:99px;transition:width .9s ease}
 .two-col{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
 @media(min-width:600px){.two-col{grid-template-columns:1fr 1fr}}
-
-/* LEADS */
 .lead-row{display:flex;align-items:center;gap:10px;padding:8px 9px;border-radius:9px;cursor:pointer;transition:background .15s;margin-bottom:2px}
 .lead-row:hover{background:var(--card-hover)}
 .list-search{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:8px 12px;color:var(--white);font-size:14px;outline:none}
@@ -115,14 +90,10 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .lead-item{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
 .lead-item:active{background:var(--card-hover)}
 .plat-dot{position:absolute;bottom:0;right:0;font-size:8px}
-
-/* PLAN BADGES */
 .plan-silver{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff}
 .plan-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
 .plan-platinum{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff}
 .plan-couple{background:linear-gradient(135deg,#ec4899,#be185d);color:#fff}
-
-/* CHAT */
 .chat-view{display:flex;flex-direction:column;height:100%;overflow:hidden}
 .chat-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface);flex-shrink:0}
 .chat-back{background:none;border:none;color:var(--white);font-size:20px;cursor:pointer;padding:4px}
@@ -139,8 +110,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .emoji-btn{background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:14px;flex-shrink:0}
 .msg-input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:9px 12px;color:var(--white);font-size:14px;outline:none}
 .send-btn{border:none;border-radius:9px;padding:9px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0}
-
-/* DETAIL SHEET */
 .detail-sheet{position:fixed;inset:0;z-index:150;pointer-events:none}
 .detail-bg{position:absolute;inset:0;background:var(--modal-bg);opacity:0;transition:opacity .3s}
 .detail-panel{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:20px 20px 0 0;max-height:85dvh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding:20px 16px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
@@ -152,8 +121,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .detail-key{color:var(--text);font-size:10px;margin-bottom:2px}
 .detail-val{font-size:12px;font-weight:600;color:var(--white)}
 .ghost-btn{width:100%;padding:10px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:7px;background:transparent;border:none}
-
-/* PIPELINE / KANBAN */
 .pipeline-wrap{padding:14px;overflow-x:auto;animation:fadeUp .25s ease;user-select:none}
 .kanban{display:flex;gap:10px;min-width:max-content;align-items:flex-start}
 .col-wrap{width:200px;flex-shrink:0}
@@ -167,7 +134,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .k-card{background:var(--input-bg);border:1.5px solid var(--border);border-radius:10px;padding:10px;cursor:grab;transition:box-shadow .15s,transform .15s,opacity .15s;position:relative}
 .k-card:active{cursor:grabbing}
 .k-card.dragging{opacity:.4;transform:scale(.97)}
-.k-card.drag-ghost{box-shadow:0 8px 32px rgba(0,0,0,.25);transform:rotate(1.5deg) scale(1.03);z-index:999;opacity:1}
 .k-card-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
 .k-name{font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--white);flex:1}
 .k-val{color:#16a34a;font-size:13px;font-weight:800;margin:3px 0}
@@ -176,11 +142,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .k-act-btn{flex:1;border:none;border-radius:6px;padding:4px 0;font-size:10px;font-weight:600;cursor:pointer}
 .drop-zone{border:1.5px dashed var(--border);border-radius:8px;min-height:50px;display:flex;align-items:center;justify-content:center;color:var(--text);font-size:11px;opacity:.5;transition:all .2s}
 .drop-zone.active{border-color:var(--rc);opacity:1;background:rgba(124,58,237,.05)}
-/* Demo column special style */
-.demo-col .col-inner{border-color:#f59e0b44;background:rgba(245,158,11,.03)}
-.demo-col .col-head{background:rgba(245,158,11,.06)}
-
-/* AGENTS */
 .agent-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px;animation:fadeUp .25s ease}
 @media(min-width:500px){.agent-grid{grid-template-columns:1fr 1fr}}
 .agent-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
@@ -192,8 +153,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .agent-stat{background:var(--input-bg);border-radius:8px;padding:8px 0;text-align:center}
 .agent-stat-val{font-weight:700;font-size:12px;color:var(--white)}
 .agent-stat-key{color:var(--text);font-size:10px}
-
-/* FOLLOWUPS */
 .fu-counters{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}
 .fu-counter{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
 .fu-num{font-size:28px;font-weight:800}
@@ -204,14 +163,10 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .task-info{color:var(--text);font-size:10px;margin-top:1px}
 .task-actions{display:flex;gap:4px;margin-left:auto;flex-shrink:0}
 .task-btn{border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer}
-
-/* AUTOMATION */
 .auto-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;border:1px solid var(--border)}
 .tag{padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700}
 .toggle{width:40px;height:21px;border-radius:99px;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
 .toggle-knob{position:absolute;top:2.5px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-
-/* CAMPAIGNS */
 .campaign-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .camp-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--shadow)}
 .camp-stat-icon{font-size:20px}
@@ -223,8 +178,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .camp-metric{text-align:center;min-width:50px}
 .camp-metric-val{font-weight:700;font-size:12px;color:var(--white)}
 .camp-metric-key{color:var(--text);font-size:10px}
-
-/* TEMPLATES */
 .tpl-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px;animation:fadeUp .25s ease}
 @media(min-width:500px){.tpl-grid{grid-template-columns:1fr 1fr}}
 .tpl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
@@ -234,8 +187,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .tpl-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 .tpl-uses{color:var(--text);font-size:11px}
 .tpl-add{border:1.5px dashed var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:120px;transition:border-color .2s}
-
-/* MODAL */
 .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--surface);border-radius:20px 20px 0 0;padding:22px 20px;width:100%;max-width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.3);max-height:90dvh;overflow-y:auto;padding-bottom:max(22px,env(safe-area-inset-bottom))}
@@ -249,48 +200,29 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .form-row input,.form-row select,.form-row textarea{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:11px 12px;color:var(--white);font-size:14px;outline:none;transition:border-color .2s}
 .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--rc)}
 .form-row textarea{resize:vertical;min-height:80px}
-
-/* USER MGMT */
 .user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;border:1px solid var(--border)}
-
-/* ACCESS */
 .access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;color:var(--text)}
 .access-denied .ad-icon{font-size:48px;opacity:.4}
-
-/* TOAST */
 .toast{position:fixed;bottom:max(80px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#111;border-radius:12px;padding:11px 18px;font-size:13px;color:#fff;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.3);animation:slideUp .3s ease;display:flex;align-items:center;gap:9px;white-space:nowrap;max-width:90vw}
 [data-theme="dark"] .toast{background:#2a2d3a;border:1px solid var(--border)}
 @keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-/* REMINDER POPUP */
 .reminder-popup{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9998;background:var(--surface);border:2px solid #f59e0b;border-radius:16px;padding:16px 20px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(245,158,11,.3);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 .reminder-popup-title{font-weight:800;font-size:14px;color:#f59e0b;margin-bottom:6px}
 .reminder-popup-body{font-size:13px;color:var(--white);margin-bottom:12px}
 .reminder-finish-btn{width:100%;padding:10px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:9px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
-
-/* STATUS */
-.status-dot-inline{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .stage-btn{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input-bg);color:var(--white);font-size:13px;text-align:left;cursor:pointer;margin-bottom:6px;transition:all .15s;display:flex;align-items:center;gap:9px}
 .stage-btn.current{border-color:var(--rc);background:var(--card-hover)}
-
-/* BOTTOM NAV */
 #bottomNav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:max(6px,env(safe-area-inset-bottom));box-shadow:0 -2px 12px rgba(0,0,0,.1)}
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border:none;background:transparent;cursor:pointer;gap:3px;touch-action:manipulation;transition:all .15s;color:var(--text)}
 .bnav-btn.active{color:var(--rc)}
 .bnav-icon{font-size:18px}
 .bnav-label{font-size:9px;font-weight:600}
-
-/* SPINNER */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* SETTINGS */
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border);margin-bottom:6px}
 .settings-row-label{font-size:13px;font-weight:600;color:var(--white)}
 .settings-row-sub{font-size:11px;color:var(--text);margin-top:2px}
-
-/* PLAN REVENUE TABLE */
 .plan-rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .plan-rev-card{border-radius:12px;padding:14px;text-align:center;position:relative;overflow:hidden}
 .plan-rev-val{font-size:18px;font-weight:800;color:#fff;margin:4px 0 2px}
@@ -300,20 +232,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 </head>
 <body>
 <div class="gym-bg"></div>
-
 <div id="loginWrap">
   <button class="theme-toggle-login" onclick="toggleTheme()" id="themeToggleLogin">🌙</button>
   <div class="login-card">
     <div class="login-header">
       <div class="logo-circle">
-        <svg width="52" height="48" viewBox="0 0 220 200" fill="none">
-          <path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="22" y="112" width="26" height="65" rx="9" fill="white"/>
-          <rect x="48" y="125" width="20" height="42" rx="8" fill="white"/>
-          <rect x="68" y="142" width="84" height="14" rx="7" fill="white"/>
-          <rect x="152" y="125" width="20" height="42" rx="8" fill="white"/>
-          <rect x="172" y="112" width="26" height="65" rx="9" fill="white"/>
-        </svg>
+        <svg width="52" height="48" viewBox="0 0 220 200" fill="none"><path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><rect x="22" y="112" width="26" height="65" rx="9" fill="white"/><rect x="48" y="125" width="20" height="42" rx="8" fill="white"/><rect x="68" y="142" width="84" height="14" rx="7" fill="white"/><rect x="152" y="125" width="20" height="42" rx="8" fill="white"/><rect x="172" y="112" width="26" height="65" rx="9" fill="white"/></svg>
       </div>
       <h1>Sales Command Center</h1>
       <p>HomeGym™ — Powered by SalesCMD</p>
@@ -328,52 +252,28 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
         <label style="font-size:11px;color:var(--text);font-weight:600;display:block;margin-bottom:5px;letter-spacing:.4px">PASSWORD</label>
         <input id="passInput" class="field-input" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
       </div>
-      <p class="err-msg" id="errMsg">Invalid credentials.</p>
+      <p class="err-msg" id="errMsg"></p>
       <button class="btn-main" id="signInBtn" onclick="doLogin()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">Sign In →</button>
       <p style="color:var(--text);font-size:11px;text-align:center;margin-top:10px">New user? Contact your admin for access.</p>
     </div>
-    <p class="login-footer">© 2026 HomeGym™ · Sales Command Center v4.0</p>
+    <p class="login-footer">© 2026 HomeGym™ · Sales Command Center v4.1</p>
   </div>
 </div>
 
 <div id="app">
   <header>
-    <button class="hamburger" onclick="toggleDrawer()">
-      <div class="ham-line"></div><div class="ham-line"></div><div class="ham-line"></div>
-    </button>
-    <div class="logo-sm">
-      <svg width="22" height="20" viewBox="0 0 220 200" fill="none">
-        <path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-        <rect x="22" y="112" width="26" height="65" rx="9" fill="white"/>
-        <rect x="48" y="125" width="20" height="42" rx="8" fill="white"/>
-        <rect x="68" y="142" width="84" height="14" rx="7" fill="white"/>
-        <rect x="152" y="125" width="20" height="42" rx="8" fill="white"/>
-        <rect x="172" y="112" width="26" height="65" rx="9" fill="white"/>
-      </svg>
-    </div>
-    <div class="topbar-title">
-      <p id="pageTitle">Dashboard</p>
-      <small id="pageDate"></small>
-    </div>
+    <button class="hamburger" onclick="toggleDrawer()"><div class="ham-line"></div><div class="ham-line"></div><div class="ham-line"></div></button>
+    <div class="logo-sm"><svg width="22" height="20" viewBox="0 0 220 200" fill="none"><path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><rect x="22" y="112" width="26" height="65" rx="9" fill="white"/><rect x="48" y="125" width="20" height="42" rx="8" fill="white"/><rect x="68" y="142" width="84" height="14" rx="7" fill="white"/><rect x="152" y="125" width="20" height="42" rx="8" fill="white"/><rect x="172" y="112" width="26" height="65" rx="9" fill="white"/></svg></div>
+    <div class="topbar-title"><p id="pageTitle">Dashboard</p><small id="pageDate"></small></div>
     <button class="icon-btn" onclick="toggleTheme()" id="themeToggleApp">🌙</button>
     <button class="icon-btn" id="bellBtn" onclick="showReminderModal()" style="position:relative;margin-left:2px">🔔<span id="bellBadge" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:#ef4444;border-radius:50%"></span></button>
     <div class="av" id="topAv" style="width:32px;height:32px;font-size:13px"></div>
   </header>
-
   <div id="drawer">
     <div id="drawerBg" onclick="closeDrawer()"></div>
     <div id="drawerPanel">
       <div class="drawer-head">
-        <div class="logo-sm">
-          <svg width="22" height="20" viewBox="0 0 220 200" fill="none">
-            <path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="22" y="112" width="26" height="65" rx="9" fill="white"/>
-            <rect x="48" y="125" width="20" height="42" rx="8" fill="white"/>
-            <rect x="68" y="142" width="84" height="14" rx="7" fill="white"/>
-            <rect x="152" y="125" width="20" height="42" rx="8" fill="white"/>
-            <rect x="172" y="112" width="26" height="65" rx="9" fill="white"/>
-          </svg>
-        </div>
+        <div class="logo-sm"><svg width="22" height="20" viewBox="0 0 220 200" fill="none"><path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><rect x="22" y="112" width="26" height="65" rx="9" fill="white"/><rect x="48" y="125" width="20" height="42" rx="8" fill="white"/><rect x="68" y="142" width="84" height="14" rx="7" fill="white"/><rect x="152" y="125" width="20" height="42" rx="8" fill="white"/><rect x="172" y="112" width="26" height="65" rx="9" fill="white"/></svg></div>
         <div class="drawer-brand"><p>SalesCMD</p><small>HomeGym™</small></div>
       </div>
       <div class="drawer-nav" id="drawerNav"></div>
@@ -387,11 +287,9 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
       </div>
     </div>
   </div>
-
   <main id="mainContent"></main>
   <div id="bottomNav"></div>
 </div>
-
 <div id="detailSheet" class="detail-sheet">
   <div class="detail-bg" onclick="closeDetailSheet()"></div>
   <div class="detail-panel" id="detailPanel"><div class="detail-handle"></div></div>
@@ -403,301 +301,117 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 /* ══ FIREBASE ══ */
 const firebaseConfig={apiKey:"AIzaSyAaryFhV7yH9NAUO9TlmINcTn9UxuIIebg",authDomain:"gym-sales.firebaseapp.com",projectId:"gym-sales",storageBucket:"gym-sales.firebasestorage.app",messagingSenderId:"253046066659",appId:"1:253046066699:web:60c96dde428eed01bd64d6"};
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.firestore();
+const auth=firebase.auth(), db=firebase.firestore();
 
-/* ══ CORE HELPERS ══ */
-function $(id){return document.getElementById(id);}
-function rc(){return (ROLES[selectedRole]||ROLES.agent).color;}
-function initials(n){return (n||"?").split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);}
-function nowT(){return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});}
-function today(){return new Date().toLocaleDateString("en-IN",{weekday:"short",month:"short",day:"numeric"});}
-function todayStr(){return new Date().toISOString().slice(0,10);}
-function av(t,sz,g){sz=sz||34;const grad=g||`${rc()},${rc()}99`;return `<div class="av" style="width:${sz}px;height:${sz}px;font-size:${Math.max(sz*.3,10)}px;background:linear-gradient(135deg,${grad})">${t}</div>`;}
-function pill(label,color){return `<span class="pill" style="background:${color}22;color:${color};border:1px solid ${color}44">${label}</span>`;}
-function bar(v,max,color){max=max||100;return `<div class="bar-track"><div class="bar-fill" style="width:${Math.min((v/(max||1))*100,100)}%;background:${color||rc()}"></div></div>`;}
-function showToast(msg,dur){
-  dur=dur||3000;const t=document.createElement("div");t.className="toast";t.innerHTML=msg;document.body.appendChild(t);
-  setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300);},dur);
+/* ══ STAGE CONFIG ══ */
+const DEFAULT_STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Demo":"#06b6d4","Interested":"#8b5cf6","Payment Pending":"#f97316","Closed":"#16a34a","Not Interested":"#ef4444"};
+const DEFAULT_STAGES=["New Lead","Contacted","Demo","Interested","Payment Pending","Closed","Not Interested"];
+const PALETTE=["#3b82f6","#f59e0b","#8b5cf6","#f97316","#16a34a","#ef4444","#06b6d4","#ec4899","#14b8a6","#f43f5e","#a855f7","#84cc16"];
+let customStages=JSON.parse(localStorage.getItem("customStages")||"[]");
+let STAGES=[...DEFAULT_STAGES,...customStages.map(s=>s.name)];
+let STAGE_COLORS={...DEFAULT_STAGE_COLORS};
+customStages.forEach(s=>{STAGE_COLORS[s.name]=s.color;});
+function refreshStageCfg(){
+  STAGES=[...DEFAULT_STAGES,...customStages.map(s=>s.name)];
+  STAGE_COLORS={...DEFAULT_STAGE_COLORS};
+  customStages.forEach(s=>{STAGE_COLORS[s.name]=s.color;});
 }
-function closeModal(){$("modalContainer").innerHTML="";}
-function showModal(html){$("modalContainer").innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">${html}</div>`;}
-function accessDenied(l){return `<div class="access-denied"><div class="ad-icon">🔒</div><p style="font-weight:700;font-size:15px;color:var(--white)">Access Restricted</p><p>Your role doesn't include ${l||"this feature"}.</p></div>`;}
-function fmtCur(v){return v?("₹"+Number(v).toLocaleString("en-IN")):"—";}
-function confirmDelete(msg,fn){
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" style="color:#ef4444">🗑 Confirm Delete</div>
-    <p style="color:var(--text2);font-size:14px;margin-bottom:4px">${msg}</p>
-    <p style="color:var(--text);font-size:12px">This action cannot be undone.</p>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" style="background:#ef4444" onclick="closeModal();${fn}">Delete</button>
-    </div>
-  </div>`);
-}
+function saveCustomStages(){localStorage.setItem("customStages",JSON.stringify(customStages));refreshStageCfg();}
 
 /* ══ PLAN CONFIG ══ */
-const PLANS={
-  Silver:{color:"#64748b",gradient:"#94a3b8,#64748b",icon:"🥈"},
-  Gold:{color:"#d97706",gradient:"#f59e0b,#d97706",icon:"🥇"},
-  Platinum:{color:"#7c3aed",gradient:"#8b5cf6,#6d28d9",icon:"💎"},
-  Couple:{color:"#be185d",gradient:"#ec4899,#be185d",icon:"💑"}
-};
+const PLANS={Silver:{color:"#64748b",gradient:"#94a3b8,#64748b",icon:"🥈"},Gold:{color:"#d97706",gradient:"#f59e0b,#d97706",icon:"🥇"},Platinum:{color:"#7c3aed",gradient:"#8b5cf6,#6d28d9",icon:"💎"},Couple:{color:"#be185d",gradient:"#ec4899,#be185d",icon:"💑"}};
 const PLAN_NAMES=Object.keys(PLANS);
 
-/* ══ THEME ══ */
-let darkMode=localStorage.getItem("theme")==="dark";
-function applyTheme(){
-  document.documentElement.setAttribute("data-theme",darkMode?"dark":"light");
-  const icon=darkMode?"☀️":"🌙";
-  const tl=$("themeToggleLogin"),ta=$("themeToggleApp");
-  if(tl)tl.textContent=icon;if(ta)ta.textContent=icon;
-  localStorage.setItem("theme",darkMode?"dark":"light");
-}
-function toggleTheme(){darkMode=!darkMode;applyTheme();}
-applyTheme();
-
 /* ══ CONSTANTS ══ */
-const STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Interested":"#8b5cf6","Payment Pending":"#f97316","Closed":"#16a34a","Not Interested":"#ef4444","Demo":"#06b6d4"};
-const STAGES=["New Lead","Contacted","Demo","Interested","Payment Pending","Closed","Not Interested"];
 const PLATFORMS=["WhatsApp","Instagram"];
 const SOURCES=["Meta Ad","Organic","Referral","WhatsApp","Instagram","Google Ad"];
 const ROLES={admin:{label:"Admin / CSO",icon:"👑",color:"#7c3aed"},manager:{label:"Manager",icon:"🧑‍💼",color:"#0ea5e9"},agent:{label:"Sales Agent",icon:"💬",color:"#16a34a"}};
 const ROLE_NAV={admin:["dashboard","inbox","pipeline","agents","followups","automation","campaigns","templates","settings"],manager:["dashboard","inbox","pipeline","agents","followups","templates"],agent:["inbox","pipeline","followups","templates"]};
 const BOTTOM_NAV={admin:["dashboard","inbox","pipeline","followups"],manager:["dashboard","inbox","pipeline","followups"],agent:["inbox","pipeline","followups","templates"]};
 const TITLES={dashboard:"Dashboard",inbox:"Inbox",pipeline:"Pipeline",agents:"Agents",followups:"Follow-ups",automation:"Automation",campaigns:"Campaigns",templates:"Templates",settings:"User Management"};
+const TRIGGERS=["New lead arrives","No reply in 24h","Call not answered","Stage → Interested","Stage → Demo","Stage → Closed","Stage → Payment Pending"];
+const ACTIONS=["Send welcome message","Send follow-up reminder","Schedule retry call","Assign to agent","Create task","Send notification"];
 
 /* ══ STATE ══ */
 let currentUser=null,selectedRole=null,curPage="dashboard",selectedLead=null,chatView=false;
 let leads=[],agents=[],tasks=[],templates=[],autos=[],campaigns=[],managedUsers=[],reminders=[];
 let unsubLeads=null,unsubAgents=null,unsubTasks=null,unsubTemplates=null,unsubAutos=null,unsubCampaigns=null,unsubMessages=null,unsubReminders=null;
 let reminderCheckInterval=null;
-
-/* ══ FIRESTORE REFS ══ */
-const COL={
-  leads:()=>db.collection("leads"),
-  agents:()=>db.collection("agents"),
-  tasks:()=>db.collection("tasks"),
-  templates:()=>db.collection("templates"),
-  autos:()=>db.collection("automations"),
-  campaigns:()=>db.collection("campaigns"),
-  messages:(lid)=>db.collection("leads").doc(lid).collection("messages"),
-  users:()=>db.collection("users"),
-  reminders:()=>db.collection("reminders")
-};
-
-/* ══ LISTENERS ══ */
 let dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false};
 let initialRenderDone=false;
 
-function checkInitialRender(){
-  if(initialRenderDone)return;
-  if(Object.values(dataReady).every(Boolean)){
-    initialRenderDone=true;
-    hideAppLoader();
-    renderPage(selectedRole==="agent"?"inbox":"dashboard");
-  }
-}
+/* ══ FIRESTORE ══ */
+const COL={
+  leads:()=>db.collection("leads"),agents:()=>db.collection("agents"),tasks:()=>db.collection("tasks"),
+  templates:()=>db.collection("templates"),autos:()=>db.collection("automations"),
+  campaigns:()=>db.collection("campaigns"),messages:(lid)=>db.collection("leads").doc(lid).collection("messages"),
+  users:()=>db.collection("users"),reminders:()=>db.collection("reminders")
+};
 
-function showAppLoader(){
-  const m=$("mainContent");
-  if(m) m.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;padding:40px">
-    <div style="width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--rc);border-radius:50%;animation:spin .8s linear infinite"></div>
-    <p style="color:var(--text);font-size:13px;font-weight:600">Loading your data…</p>
-  </div>`;
-}
+/* ══ HELPERS ══ */
+function $(id){return document.getElementById(id);}
+function rc(){return(ROLES[selectedRole]||ROLES.agent).color;}
+function initials(n){return(n||"?").split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);}
+function nowT(){return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});}
+function today(){return new Date().toLocaleDateString("en-IN",{weekday:"short",month:"short",day:"numeric"});}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function av(t,sz,g){sz=sz||34;const grad=g||`${rc()},${rc()}99`;return `<div class="av" style="width:${sz}px;height:${sz}px;font-size:${Math.max(sz*.3,10)}px;background:linear-gradient(135deg,${grad})">${t}</div>`;}
+function pill(label,color){return `<span class="pill" style="background:${color}22;color:${color};border:1px solid ${color}44">${label}</span>`;}
+function bar(v,max,color){max=max||100;return `<div class="bar-track"><div class="bar-fill" style="width:${Math.min((v/(max||1))*100,100)}%;background:${color||rc()}"></div></div>`;}
+function showToast(msg,dur){dur=dur||3000;const t=document.createElement("div");t.className="toast";t.innerHTML=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(()=>t.remove(),300);},dur);}
+function closeModal(){$("modalContainer").innerHTML="";}
+function showModal(html){$("modalContainer").innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">${html}</div>`;}
+function accessDenied(l){return `<div class="access-denied"><div class="ad-icon">🔒</div><p style="font-weight:700;font-size:15px;color:var(--white)">Access Restricted</p><p>Your role doesn't include ${l||"this feature"}.</p></div>`;}
+function fmtCur(v){return v?("₹"+Number(v).toLocaleString("en-IN")):"—";}
+function confirmDelete(msg,fn){showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#ef4444">🗑 Confirm Delete</div><p style="color:var(--text2);font-size:14px;margin-bottom:4px">${msg}</p><p style="color:var(--text);font-size:12px">This action cannot be undone.</p><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:#ef4444" onclick="closeModal();${fn}">Delete</button></div></div>`);}
 
-function hideAppLoader(){/* content replaced by renderPage */}
+/* ══ THEME ══ */
+let darkMode=localStorage.getItem("theme")==="dark";
+function applyTheme(){document.documentElement.setAttribute("data-theme",darkMode?"dark":"light");const icon=darkMode?"☀️":"🌙";const tl=$("themeToggleLogin"),ta=$("themeToggleApp");if(tl)tl.textContent=icon;if(ta)ta.textContent=icon;localStorage.setItem("theme",darkMode?"dark":"light");}
+function toggleTheme(){darkMode=!darkMode;applyTheme();}
+applyTheme();
 
+/* ══ LISTENERS ══ */
+function checkInitialRender(){if(initialRenderDone)return;if(Object.values(dataReady).every(Boolean)){initialRenderDone=true;renderPage(selectedRole==="agent"?"inbox":"dashboard");}}
+function showAppLoader(){const m=$("mainContent");if(m)m.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;padding:40px"><div style="width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--rc);border-radius:50%;animation:spin .8s linear infinite"></div><p style="color:var(--text);font-size:13px;font-weight:600">Loading…</p></div>`;}
 function startListeners(){
   showAppLoader();
-  unsubLeads=COL.leads().orderBy("createdAt","desc").onSnapshot(snap=>{
-    leads=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dataReady.leads){dataReady.leads=true;checkInitialRender();}
-    else if(initialRenderDone&&!chatView)safeRender(["dashboard","inbox","pipeline"]);
-  },()=>{dataReady.leads=true;checkInitialRender();});
-
-  unsubAgents=COL.agents().orderBy("createdAt").onSnapshot(snap=>{
-    agents=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dataReady.agents){dataReady.agents=true;checkInitialRender();}
-    else if(initialRenderDone)safeRender(["agents","dashboard"]);
-  },()=>{dataReady.agents=true;checkInitialRender();});
-
-  unsubTasks=COL.tasks().orderBy("createdAt","desc").onSnapshot(snap=>{
-    tasks=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dataReady.tasks){dataReady.tasks=true;checkInitialRender();}
-    else if(initialRenderDone)safeRender(["followups"]);
-  },()=>{dataReady.tasks=true;checkInitialRender();});
-
-  unsubTemplates=COL.templates().orderBy("createdAt").onSnapshot(snap=>{
-    templates=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dataReady.templates){dataReady.templates=true;checkInitialRender();}
-    else if(initialRenderDone)safeRender(["templates"]);
-  },()=>{dataReady.templates=true;checkInitialRender();});
-
-  unsubAutos=COL.autos().orderBy("createdAt").onSnapshot(snap=>{
-    autos=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dataReady.autos){dataReady.autos=true;checkInitialRender();}
-    else if(initialRenderDone)safeRender(["automation"]);
-  },()=>{dataReady.autos=true;checkInitialRender();});
-
-  unsubCampaigns=COL.campaigns().orderBy("createdAt","desc").onSnapshot(snap=>{
-    campaigns=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dataReady.campaigns){dataReady.campaigns=true;checkInitialRender();}
-    else if(initialRenderDone)safeRender(["campaigns"]);
-  },()=>{dataReady.campaigns=true;checkInitialRender();});
-
-  unsubReminders=COL.reminders().where("userId","==",currentUser.uid).where("done","==",false).onSnapshot(snap=>{
-    reminders=snap.docs.map(d=>({id:d.id,...d.data()}));
-    checkReminders();updateBellBadge();
-  },()=>{});
-
+  unsubLeads=COL.leads().orderBy("createdAt","desc").onSnapshot(snap=>{leads=snap.docs.map(d=>({id:d.id,...d.data()}));if(!dataReady.leads){dataReady.leads=true;checkInitialRender();}else if(initialRenderDone&&!chatView)safeRender(["dashboard","inbox","pipeline"]);},()=>{dataReady.leads=true;checkInitialRender();});
+  unsubAgents=COL.agents().orderBy("createdAt").onSnapshot(snap=>{agents=snap.docs.map(d=>({id:d.id,...d.data()}));if(!dataReady.agents){dataReady.agents=true;checkInitialRender();}else if(initialRenderDone)safeRender(["agents","dashboard"]);},()=>{dataReady.agents=true;checkInitialRender();});
+  unsubTasks=COL.tasks().orderBy("createdAt","desc").onSnapshot(snap=>{tasks=snap.docs.map(d=>({id:d.id,...d.data()}));if(!dataReady.tasks){dataReady.tasks=true;checkInitialRender();}else if(initialRenderDone)safeRender(["followups"]);},()=>{dataReady.tasks=true;checkInitialRender();});
+  unsubTemplates=COL.templates().orderBy("createdAt").onSnapshot(snap=>{templates=snap.docs.map(d=>({id:d.id,...d.data()}));if(!dataReady.templates){dataReady.templates=true;checkInitialRender();}else if(initialRenderDone)safeRender(["templates"]);},()=>{dataReady.templates=true;checkInitialRender();});
+  unsubAutos=COL.autos().orderBy("createdAt").onSnapshot(snap=>{autos=snap.docs.map(d=>({id:d.id,...d.data()}));if(!dataReady.autos){dataReady.autos=true;checkInitialRender();}else if(initialRenderDone)safeRender(["automation"]);},()=>{dataReady.autos=true;checkInitialRender();});
+  unsubCampaigns=COL.campaigns().orderBy("createdAt","desc").onSnapshot(snap=>{campaigns=snap.docs.map(d=>({id:d.id,...d.data()}));if(!dataReady.campaigns){dataReady.campaigns=true;checkInitialRender();}else if(initialRenderDone)safeRender(["campaigns"]);},()=>{dataReady.campaigns=true;checkInitialRender();});
+  unsubReminders=COL.reminders().where("userId","==",currentUser.uid).where("done","==",false).onSnapshot(snap=>{reminders=snap.docs.map(d=>({id:d.id,...d.data()}));checkReminders();updateBellBadge();},()=>{});
   reminderCheckInterval=setInterval(checkReminders,60000);
-
-  // Fallback: force render after 6s even if some collections are slow/empty
-  setTimeout(()=>{
-    if(!initialRenderDone){
-      Object.keys(dataReady).forEach(k=>dataReady[k]=true);
-      checkInitialRender();
-    }
-  },6000);
+  setTimeout(()=>{if(!initialRenderDone){Object.keys(dataReady).forEach(k=>dataReady[k]=true);checkInitialRender();}},6000);
 }
-function stopListeners(){
-  [unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders].forEach(u=>u&&u());
-  if(reminderCheckInterval)clearInterval(reminderCheckInterval);
-  dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false};
-  initialRenderDone=false;
-}
+function stopListeners(){[unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders].forEach(u=>u&&u());if(reminderCheckInterval)clearInterval(reminderCheckInterval);dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false};initialRenderDone=false;}
 function safeRender(pages){if(pages.includes(curPage))renderPage(curPage);}
 
-/* ══ REMINDERS ENGINE ══ */
-function checkReminders(){
-  const now=new Date();
-  const nowStr=now.toISOString().slice(0,16); // YYYY-MM-DDTHH:MM
-  const due=reminders.filter(r=>!r.done && r.datetime<=nowStr && !r.popped);
-  due.forEach(r=>showReminderPopup(r));
-}
-function updateBellBadge(){
-  const b=$("bellBadge");
-  if(b) b.style.display=reminders.length>0?"block":"none";
-}
-function showReminderPopup(r){
-  const existing=document.getElementById("rpop-"+r.id);
-  if(existing)return;
-  const div=document.createElement("div");
-  div.className="reminder-popup";
-  div.id="rpop-"+r.id;
-  div.innerHTML=`<div class="reminder-popup-title">⏰ Reminder</div>
-    <div class="reminder-popup-body"><b>${r.leadName||"General"}</b> — ${r.note||"Follow up!"}<br><span style="font-size:11px;color:var(--text)">${r.datetime?.replace("T"," ")}</span></div>
-    <button class="reminder-finish-btn" onclick="finishReminder('${r.id}')">✅ Done / Finish</button>`;
-  $("reminderContainer").appendChild(div);
-}
-async function finishReminder(id){
-  try{
-    await COL.reminders().doc(id).update({done:true});
-    const el=document.getElementById("rpop-"+id);
-    if(el){el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300);}
-    showToast("Reminder marked done ✅");
-  } catch(e){showToast("❌ "+e.message);}
-}
-
-/* ══ REMINDER MODAL (bell icon) ══ */
-function showReminderModal(){
-  const pending=reminders.filter(r=>!r.done);
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⏰ My Reminders</div>
-    <button onclick="closeModal();showAddReminderModal()" style="width:100%;padding:10px;background:${rc()};border:none;border-radius:9px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px">+ Add Reminder</button>
-    ${pending.length?pending.map(r=>`
-      <div style="background:var(--input-bg);border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;border:1px solid ${r.datetime<=new Date().toISOString().slice(0,16)?"#f59e0b44":"var(--border)"}">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px;color:var(--white)">${r.leadName||"General"}</div>
-          <div style="color:var(--text);font-size:11px">${r.note||""}</div>
-          <div style="color:#f59e0b;font-size:10px;margin-top:2px">📅 ${r.datetime?.replace("T"," ")}</div>
-        </div>
-        <button onclick="finishReminder('${r.id}')" style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:7px;padding:5px 9px;color:#16a34a;font-size:11px;font-weight:700;cursor:pointer">✅ Done</button>
-      </div>`).join(""):`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">✅</div><p>No pending reminders</p></div>`}
-    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:6px">Close</button>
-  </div>`);
-}
-function showAddReminderModal(leadName){
-  const defaultDt=new Date(Date.now()+3600000).toISOString().slice(0,16);
-  const safeLeadName=(leadName||"").replace(/"/g,"&quot;");
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⏰ Add Reminder</div>
-    <div class="form-row"><label>LEAD / TOPIC</label><input id="rem_ln" list="rLeadNames" value="${safeLeadName}" placeholder="Lead name or topic"/><datalist id="rLeadNames">${leads.map(l=>`<option value="${l.name.replace(/"/g,"&quot;")}">`)  .join("")}</datalist></div>
-    <div class="form-row"><label>NOTE</label><input id="rem_note" placeholder="e.g. Call back after 5pm"/></div>
-    <div class="form-row"><label>DATE & TIME</label><input id="rem_dt" type="datetime-local" value="${defaultDt}"/></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" style="background:${rc()}" onclick="addReminder()">Set Reminder</button>
-    </div>
-  </div>`);
-}
-async function addReminder(){
-  const lnEl=document.getElementById("rem_ln");
-  const noteEl=document.getElementById("rem_note");
-  const dtEl=document.getElementById("rem_dt");
-  if(!lnEl||!dtEl){showToast("❌ Form error, please try again");return;}
-  const leadName=(lnEl.value||"").trim();
-  const note=(noteEl?.value||"").trim();
-  const datetime=dtEl.value;
-  if(!datetime){showToast("Please set a date & time");return;}
-  try{
-    await COL.reminders().add({leadName,note,datetime,userId:currentUser.uid,done:false,createdAt:new Date().toISOString()});
-    closeModal();showToast("⏰ Reminder set!");
-  } catch(e){showToast("❌ "+e.message);}
-}
+/* ══ REMINDERS ══ */
+function checkReminders(){const nowStr=new Date().toISOString().slice(0,16);reminders.filter(r=>!r.done&&r.datetime<=nowStr).forEach(r=>showReminderPopup(r));}
+function updateBellBadge(){const b=$("bellBadge");if(b)b.style.display=reminders.length>0?"block":"none";}
+function showReminderPopup(r){if(document.getElementById("rpop-"+r.id))return;const div=document.createElement("div");div.className="reminder-popup";div.id="rpop-"+r.id;div.innerHTML=`<div class="reminder-popup-title">⏰ Reminder</div><div class="reminder-popup-body"><b>${r.leadName||"General"}</b> — ${r.note||"Follow up!"}<br><span style="font-size:11px;color:var(--text)">${(r.datetime||"").replace("T"," ")}</span></div><button class="reminder-finish-btn" onclick="finishReminder('${r.id}')">✅ Done / Finish</button>`;$("reminderContainer").appendChild(div);}
+async function finishReminder(id){try{await COL.reminders().doc(id).update({done:true});const el=document.getElementById("rpop-"+id);if(el){el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300);}showToast("Reminder done ✅");}catch(e){showToast("❌ "+e.message);}}
+function showReminderModal(){const pending=reminders.filter(r=>!r.done);showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">⏰ My Reminders</div><button onclick="closeModal();showAddReminderModal()" style="width:100%;padding:10px;background:${rc()};border:none;border-radius:9px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px">+ Add Reminder</button>${pending.length?pending.map(r=>`<div style="background:var(--input-bg);border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;border:1px solid ${r.datetime<=new Date().toISOString().slice(0,16)?"#f59e0b44":"var(--border)"}"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--white)">${r.leadName||"General"}</div><div style="color:var(--text);font-size:11px">${r.note||""}</div><div style="color:#f59e0b;font-size:10px;margin-top:2px">📅 ${(r.datetime||"").replace("T"," ")}</div></div><button onclick="finishReminder('${r.id}')" style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:7px;padding:5px 9px;color:#16a34a;font-size:11px;font-weight:700;cursor:pointer">✅</button></div>`).join(""):`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">✅</div><p>No pending reminders</p></div>`}<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:6px">Close</button></div>`);}
+function showAddReminderModal(leadName){const defaultDt=new Date(Date.now()+3600000).toISOString().slice(0,16);const safe=(leadName||"").replace(/"/g,"&quot;");showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">⏰ Add Reminder</div><div class="form-row"><label>LEAD / TOPIC</label><input id="rem_ln" list="rLeadNames" value="${safe}" placeholder="Lead name or topic"/><datalist id="rLeadNames">${leads.map(l=>`<option value="${l.name.replace(/"/g,"&quot;")}">`).join("")}</datalist></div><div class="form-row"><label>NOTE</label><input id="rem_note" placeholder="e.g. Call back after 5pm"/></div><div class="form-row"><label>DATE & TIME</label><input id="rem_dt" type="datetime-local" value="${defaultDt}"/></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:${rc()}" onclick="addReminder()">Set Reminder</button></div></div>`);}
+async function addReminder(){const lnEl=document.getElementById("rem_ln"),noteEl=document.getElementById("rem_note"),dtEl=document.getElementById("rem_dt");if(!lnEl||!dtEl){showToast("❌ Form error");return;}const leadName=(lnEl.value||"").trim(),note=(noteEl?.value||"").trim(),datetime=dtEl.value;if(!datetime){showToast("Please set a date & time");return;}try{await COL.reminders().add({leadName,note,datetime,userId:currentUser.uid,done:false,createdAt:new Date().toISOString()});closeModal();showToast("⏰ Reminder set!");}catch(e){showToast("❌ "+e.message);}}
 
 /* ══ AUTH ══ */
 auth.onAuthStateChanged(async user=>{
   if(user){
     try{
-      const docRef=COL.users().doc(user.uid);
-      const snap=await docRef.get();
-      if(snap.exists){
-        const d=snap.data();
-        currentUser={uid:user.uid,email:user.email,name:d.name||user.email,role:d.role||"agent"};
-        selectedRole=currentUser.role;initApp();
-      } else {
-        const all=await COL.users().limit(1).get();
-        if(all.empty){
-          const name=user.email.split("@")[0];
-          await docRef.set({name,email:user.email,role:"admin",createdAt:new Date().toISOString()});
-          currentUser={uid:user.uid,email:user.email,name,role:"admin"};selectedRole="admin";
-          initApp();setTimeout(()=>showToast("👑 You are now Admin — first login!",5000),800);
-        } else {
-          await auth.signOut();showLoginScreen();showErrMsg("No account found. Contact your admin.");
-        }
-      }
-    } catch(e){await auth.signOut();showLoginScreen();showErrMsg("Error: "+e.message);}
-  } else {showLoginScreen();}
+      const docRef=COL.users().doc(user.uid),snap=await docRef.get();
+      if(snap.exists){const d=snap.data();currentUser={uid:user.uid,email:user.email,name:d.name||user.email,role:d.role||"agent"};selectedRole=currentUser.role;initApp();}
+      else{const all=await COL.users().limit(1).get();if(all.empty){const name=user.email.split("@")[0];await docRef.set({name,email:user.email,role:"admin",createdAt:new Date().toISOString()});currentUser={uid:user.uid,email:user.email,name,role:"admin"};selectedRole="admin";initApp();setTimeout(()=>showToast("👑 First login — you are Admin!",5000),800);}else{await auth.signOut();showLoginScreen();showErrMsg("No account found. Contact your admin.");}}
+    }catch(e){await auth.signOut();showLoginScreen();showErrMsg("Error: "+e.message);}
+  }else{showLoginScreen();}
 });
-function showLoginScreen(){
-  stopListeners();$("app").style.opacity="0";$("app").style.display="none";$("app").classList.remove("show");
-  $("loginWrap").style.display="flex";$("loginWrap").classList.remove("hide");
-  const btn=$("signInBtn");if(btn){btn.textContent="Sign In →";btn.disabled=false;}
-}
+function showLoginScreen(){stopListeners();$("app").style.opacity="0";$("app").style.display="none";$("app").classList.remove("show");$("loginWrap").style.display="flex";$("loginWrap").classList.remove("hide");const btn=$("signInBtn");if(btn){btn.textContent="Sign In →";btn.disabled=false;}}
 function showErrMsg(msg){const e=$("errMsg");if(e){e.style.display="block";e.textContent=msg;}}
-async function doLogin(){
-  const email=($("emailInput").value||"").trim(),pass=$("passInput").value||"";
-  if(!email||!pass){showErrMsg("Please enter email and password.");return;}
-  const btn=$("signInBtn");btn.innerHTML=`<span class="spinner"></span>Signing in…`;btn.disabled=true;
-  $("errMsg").style.display="none";
-  try{await auth.signInWithEmailAndPassword(email,pass);}
-  catch(e){
-    const msgs={"auth/user-not-found":"No account with this email.","auth/wrong-password":"Incorrect password.","auth/invalid-email":"Invalid email.","auth/too-many-requests":"Too many attempts.","auth/invalid-credential":"Invalid email or password."};
-    showErrMsg(msgs[e.code]||"Login failed: "+e.message);btn.textContent="Sign In →";btn.disabled=false;
-  }
-}
-async function doLogout(){
-  $("app").style.opacity="0";stopListeners();
-  leads=[];agents=[];tasks=[];templates=[];autos=[];campaigns=[];managedUsers=[];reminders=[];
-  currentUser=null;selectedRole=null;selectedLead=null;chatView=false;
-  await auth.signOut();
-}
+async function doLogin(){const email=($("emailInput").value||"").trim(),pass=$("passInput").value||"";if(!email||!pass){showErrMsg("Please enter email and password.");return;}const btn=$("signInBtn");btn.innerHTML=`<span class="spinner"></span>Signing in…`;btn.disabled=true;$("errMsg").style.display="none";try{await auth.signInWithEmailAndPassword(email,pass);}catch(e){const msgs={"auth/user-not-found":"No account with this email.","auth/wrong-password":"Incorrect password.","auth/invalid-email":"Invalid email.","auth/too-many-requests":"Too many attempts.","auth/invalid-credential":"Invalid email or password."};showErrMsg(msgs[e.code]||"Login failed: "+e.message);btn.textContent="Sign In →";btn.disabled=false;}}
+async function doLogout(){$("app").style.opacity="0";stopListeners();leads=[];agents=[];tasks=[];templates=[];autos=[];campaigns=[];managedUsers=[];reminders=[];currentUser=null;selectedRole=null;selectedLead=null;chatView=false;await auth.signOut();}
 
 /* ══ APP INIT ══ */
 function initApp(){
@@ -706,9 +420,7 @@ function initApp(){
   setTimeout(()=>{$("loginWrap").style.display="none";$("app").style.display="flex";setTimeout(()=>$("app").classList.add("show"),10);},400);
   const r=ROLES[selectedRole];
   [$("topAv"),$("drawerAv")].forEach(el=>{if(el){el.textContent=initials(currentUser.name);el.style.background=`linear-gradient(135deg,${r.color},${r.color}88)`;}});
-  $("drawerUserName").textContent=currentUser.name;
-  $("drawerUserEmail").textContent=currentUser.email||"";
-  $("pageDate").textContent=today();
+  $("drawerUserName").textContent=currentUser.name;$("drawerUserEmail").textContent=currentUser.email||"";$("pageDate").textContent=today();
   buildDrawerNav();buildBottomNav();startListeners();applyTheme();
 }
 
@@ -719,21 +431,13 @@ function buildDrawerNav(){
   const nav=$("drawerNav");nav.innerHTML="";
   const pages=ROLE_NAV[selectedRole]||ROLE_NAV.agent;
   const all=[{id:"dashboard",icon:"▣",label:"Dashboard"},{id:"inbox",icon:"✉",label:"Inbox"},{id:"pipeline",icon:"◈",label:"Pipeline"},{id:"agents",icon:"◉",label:"Agents"},{id:"followups",icon:"◷",label:"Follow-ups"},{id:"automation",icon:"⚙",label:"Automation"},{id:"campaigns",icon:"◎",label:"Campaigns"},{id:"templates",icon:"◧",label:"Templates"},{id:"settings",icon:"⚡",label:"User Management"}];
-  all.filter(n=>pages.includes(n.id)).forEach(n=>{
-    const btn=document.createElement("button");btn.className="nav-btn"+(n.id===curPage?" active":"");
-    btn.innerHTML=`<div class="nav-dot"></div><span class="nav-icon">${n.icon}</span><span>${n.label}</span>`;
-    btn.onclick=()=>{renderPage(n.id);closeDrawer();};nav.appendChild(btn);
-  });
+  all.filter(n=>pages.includes(n.id)).forEach(n=>{const btn=document.createElement("button");btn.className="nav-btn"+(n.id===curPage?" active":"");btn.innerHTML=`<div class="nav-dot"></div><span class="nav-icon">${n.icon}</span><span>${n.label}</span>`;btn.onclick=()=>{renderPage(n.id);closeDrawer();};nav.appendChild(btn);});
 }
 function buildBottomNav(){
   const bn=$("bottomNav");bn.innerHTML="";
   const pages=BOTTOM_NAV[selectedRole]||BOTTOM_NAV.agent;
   const all=[{id:"dashboard",icon:"▣",label:"Home"},{id:"inbox",icon:"✉",label:"Inbox"},{id:"pipeline",icon:"◈",label:"Pipeline"},{id:"followups",icon:"◷",label:"Tasks"},{id:"templates",icon:"◧",label:"Templates"}];
-  all.filter(n=>pages.includes(n.id)).forEach(n=>{
-    const btn=document.createElement("button");btn.className="bnav-btn"+(n.id===curPage?" active":"");
-    btn.innerHTML=`<span class="bnav-icon">${n.icon}</span><span class="bnav-label">${n.label}</span>`;
-    btn.onclick=()=>renderPage(n.id);bn.appendChild(btn);
-  });
+  all.filter(n=>pages.includes(n.id)).forEach(n=>{const btn=document.createElement("button");btn.className="bnav-btn"+(n.id===curPage?" active":"");btn.innerHTML=`<span class="bnav-icon">${n.icon}</span><span class="bnav-label">${n.label}</span>`;btn.onclick=()=>renderPage(n.id);bn.appendChild(btn);});
 }
 function renderPage(id){
   curPage=id;if(id!=="inbox")chatView=false;
@@ -744,99 +448,38 @@ function renderPage(id){
   ({dashboard:pgDashboard,inbox:pgInbox,pipeline:pgPipeline,agents:pgAgents,followups:pgFollowups,automation:pgAutomation,campaigns:pgCampaigns,templates:pgTemplates,settings:pgSettings}[id]||pgDashboard)(m);
 }
 
-/* ══════════════════════════════
-   DASHBOARD
-══════════════════════════════ */
+/* ══ DASHBOARD ══ */
 function pgDashboard(el){
   const closed=leads.filter(l=>l.status==="Closed");
   const conv=leads.length?Math.round(closed.length/leads.length*100):0;
   const revenue=closed.reduce((s,l)=>s+Number(l.value||0),0);
   const showRev=selectedRole==="admin";
-
-  // Fixed leaderboard: count closed deals per agent from leads data
   const agentStats={};
-  agents.forEach(ag=>{
-    const myLeads=leads.filter(l=>l.agentName===ag.name);
-    const myClosed=myLeads.filter(l=>l.status==="Closed");
-    const myConv=myLeads.length?Math.round(myClosed.length/myLeads.length*100):0;
-    agentStats[ag.name]={...ag,leadsCount:myLeads.length,closedCount:myClosed.length,convRate:myConv,revenue:myClosed.reduce((s,l)=>s+Number(l.value||0),0)};
-  });
+  agents.forEach(ag=>{const myL=leads.filter(l=>l.agentName===ag.name);const myC=myL.filter(l=>l.status==="Closed");agentStats[ag.name]={...ag,leadsCount:myL.length,closedCount:myC.length,convRate:myL.length?Math.round(myC.length/myL.length*100):0,revenue:myC.reduce((s,l)=>s+Number(l.value||0),0)};});
   const leaderboard=Object.values(agentStats).sort((a,b)=>b.convRate-a.convRate||b.closedCount-a.closedCount);
-
-  // Plan revenue breakdown (admin only)
-  const planRevHtml=showRev?`
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-title">💎 Revenue by Plan</div>
-      <div class="plan-rev-grid">
-        ${PLAN_NAMES.map(p=>{
-          const pl=leads.filter(l=>l.status==="Closed"&&l.plan===p);
-          const rev=pl.reduce((s,l)=>s+Number(l.value||0),0);
-          const plan=PLANS[p];
-          return `<div class="plan-rev-card" style="background:linear-gradient(135deg,${plan.gradient})">
-            <div style="font-size:20px">${plan.icon}</div>
-            <div class="plan-rev-val">${fmtCur(rev)}</div>
-            <div class="plan-rev-key">${p} Plan</div>
-            <div class="plan-rev-count">${pl.length} member${pl.length!==1?"s":""}</div>
-          </div>`;
-        }).join("")}
-      </div>
-    </div>`:"";
-
-  const stats=[
-    {label:"Total Leads",val:leads.length,delta:"All time",icon:"👥",a:"#6366f1",b:"#4f46e5"},
-    {label:"Closed Deals",val:closed.length,delta:"Converted",icon:"🎯",a:"#16a34a",b:"#15803d"},
-    {label:"Conversion",val:conv+"%",delta:"Rate",icon:"📈",a:"#0ea5e9",b:"#0284c7"},
-    {label:"Revenue",val:showRev?fmtCur(revenue):"🔒",delta:showRev?"Total closed":"Admin only",icon:"💰",a:"#f97316",b:"#ea580c"},
-  ];
-
+  const planRevHtml=showRev?`<div class="card" style="margin-bottom:14px"><div class="card-title">💎 Revenue by Plan</div><div class="plan-rev-grid">${PLAN_NAMES.map(p=>{const pl=leads.filter(l=>l.status==="Closed"&&l.plan===p);const rev=pl.reduce((s,l)=>s+Number(l.value||0),0);const plan=PLANS[p];return `<div class="plan-rev-card" style="background:linear-gradient(135deg,${plan.gradient})"><div style="font-size:20px">${plan.icon}</div><div class="plan-rev-val">${fmtCur(rev)}</div><div class="plan-rev-key">${p}</div><div class="plan-rev-count">${pl.length} member${pl.length!==1?"s":""}</div></div>`;}).join("")}</div></div>`:"";
+  const stats=[{label:"Total Leads",val:leads.length,delta:"All time",icon:"👥",a:"#6366f1",b:"#4f46e5"},{label:"Closed Deals",val:closed.length,delta:"Converted",icon:"🎯",a:"#16a34a",b:"#15803d"},{label:"Conversion",val:conv+"%",delta:"Rate",icon:"📈",a:"#0ea5e9",b:"#0284c7"},{label:"Revenue",val:showRev?fmtCur(revenue):"🔒",delta:showRev?"Total closed":"Admin only",icon:"💰",a:"#f97316",b:"#ea580c"}];
   el.innerHTML=`<div class="page">
     <div class="stat-grid">${stats.map(s=>`<div class="stat-card" style="background:linear-gradient(135deg,${s.a},${s.b});box-shadow:0 4px 16px ${s.a}33"><div class="stat-icon">${s.icon}</div><div class="stat-val">${s.val}</div><div class="stat-label">${s.label}</div><span class="stat-delta">${s.delta}</span></div>`).join("")}</div>
     ${planRevHtml}
     <div class="two-col">
-      <div class="card">
-        <div class="card-title">🏆 Leaderboard</div>
-        ${leaderboard.length?leaderboard.slice(0,5).map((ag,i)=>{
-          const medals=["🥇","🥈","🥉"];
-          return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <span style="font-size:${i<3?16:11}px;width:20px;text-align:center">${medals[i]||"#"+(i+1)}</span>
-            ${av(initials(ag.name),28,i===0?"#f59e0b,#f97316":i===1?"#94a3b8,#64748b":i===2?"#f97316,#c2410c":null)}
-            <div style="flex:1">
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--white)">
-                <span>${ag.name}</span>
-                <span style="color:var(--text)">${ag.convRate}% · ${ag.closedCount}✓</span>
-              </div>
-              ${bar(ag.convRate,100,i===0?"#f59e0b":rc())}
-            </div>
-          </div>`;
-        }).join(""):`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No agents yet</p>`}
-      </div>
-      <div class="card">
-        <div class="card-title">🔥 Recent Leads</div>
-        ${leads.slice(0,5).map(l=>`<div class="lead-row" onclick="openLead('${l.id}')">${av(initials(l.name),28)}<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div><div style="color:var(--text);font-size:10px">${l.plan?`${PLANS[l.plan]?.icon||""} ${l.plan} · `:""}${l.source||""}</div></div>${pill(l.status,STAGE_COLORS[l.status]||rc())}</div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No leads yet</p>`}
-      </div>
+      <div class="card"><div class="card-title">🏆 Leaderboard</div>${leaderboard.length?leaderboard.slice(0,5).map((ag,i)=>{const medals=["🥇","🥈","🥉"];return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-size:${i<3?16:11}px;width:20px;text-align:center">${medals[i]||"#"+(i+1)}</span>${av(initials(ag.name),28,i===0?"#f59e0b,#f97316":i===1?"#94a3b8,#64748b":i===2?"#f97316,#c2410c":null)}<div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--white)"><span>${ag.name}</span><span style="color:var(--text)">${ag.convRate}% · ${ag.closedCount}✓</span></div>${bar(ag.convRate,100,i===0?"#f59e0b":rc())}</div></div>`;}).join(""):`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No agents yet</p>`}</div>
+      <div class="card"><div class="card-title">🔥 Recent Leads</div>${leads.slice(0,5).map(l=>`<div class="lead-row" onclick="openLead('${l.id}')">${av(initials(l.name),28)}<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div><div style="color:var(--text);font-size:10px">${l.plan?`${PLANS[l.plan]?.icon||""} ${l.plan} · `:""}${l.source||""}</div></div>${pill(l.status,STAGE_COLORS[l.status]||rc())}</div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No leads yet</p>`}</div>
     </div>
-    <div class="card">
-      <div class="card-title">📊 Pipeline Summary</div>
-      ${STAGES.map(s=>{const c=leads.filter(l=>l.status===s).length,mx=Math.max(...STAGES.map(st=>leads.filter(l=>l.status===st).length),1);return `<div style="display:flex;align-items:center;gap:9px;margin-bottom:7px"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div><span style="font-size:12px;color:var(--white);flex:1">${s}</span><span style="font-size:12px;font-weight:700;color:var(--white);min-width:24px;text-align:right">${c}</span><div style="flex:2">${bar(c,mx,STAGE_COLORS[s])}</div></div>`;}).join("")}
-    </div>
+    <div class="card"><div class="card-title">📊 Pipeline Summary</div>${STAGES.map(s=>{const c=leads.filter(l=>l.status===s).length,mx=Math.max(...STAGES.map(st=>leads.filter(l=>l.status===st).length),1);return `<div style="display:flex;align-items:center;gap:9px;margin-bottom:7px"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div><span style="font-size:12px;color:var(--white);flex:1">${s}</span><span style="font-size:12px;font-weight:700;color:var(--white);min-width:24px;text-align:right">${c}</span><div style="flex:2">${bar(c,mx,STAGE_COLORS[s])}</div></div>`;}).join("")}</div>
   </div>`;
 }
 function openLead(id){selectedLead=leads.find(l=>l.id===id)||null;chatView=true;renderPage("inbox");}
 
-/* ══════════════════════════════
-   INBOX
-══════════════════════════════ */
+/* ══ INBOX ══ */
 function pgInbox(el){
   const myLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
-  if(chatView&&selectedLead){
-    el.style.height="100%";el.style.overflow="hidden";
-    el.innerHTML=renderChatView();loadChatMessages(selectedLead.id);return;
-  }
+  if(chatView&&selectedLead){el.style.height="100%";el.style.overflow="hidden";el.innerHTML=renderChatView();loadChatMessages(selectedLead.id);return;}
   el.innerHTML=`<div style="height:100%;display:flex;flex-direction:column;overflow:hidden">
     <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface)">
       <div style="display:flex;gap:7px;align-items:center">
         <input class="list-search" id="leadSearch" placeholder="Search leads…" oninput="filterLeads(this.value)" style="flex:1"/>
-        ${selectedRole!=="agent"?`<button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;color:#fff;font-size:20px;width:36px;height:36px;cursor:pointer;flex-shrink:0">+</button>`:`<button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;color:#fff;font-size:20px;width:36px;height:36px;cursor:pointer;flex-shrink:0">+</button>`}
+        <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;color:#fff;font-size:20px;width:36px;height:36px;cursor:pointer;flex-shrink:0">+</button>
       </div>
       <div class="tab-row">
         <button class="tab-btn active-tab" onclick="filterPlatform('all',this)">All</button>
@@ -849,25 +492,17 @@ function pgInbox(el){
 }
 function renderLeadList(arr){
   if(!arr.length)return`<div style="text-align:center;padding:40px 16px;color:var(--text)"><div style="font-size:40px;margin-bottom:10px">📭</div><p>No leads yet</p></div>`;
-  return arr.map(l=>`
-    <div class="lead-item">
-      <div style="position:relative" onclick="selectLead('${l.id}')">${av(initials(l.name),36)}<span class="plat-dot" style="color:${l.platform==="WhatsApp"?"#16a34a":"#ec4899"}">●</span></div>
-      <div style="flex:1;min-width:0" onclick="selectLead('${l.id}')">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${l.name}</span>
-          <span style="color:var(--text);font-size:10px;flex-shrink:0">${l.enquiryDate||l.createdAt?new Date(l.enquiryDate||l.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short"}):""}</span>
-        </div>
-        <div style="color:var(--text);font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-          ${pill(l.status,STAGE_COLORS[l.status]||rc())}
-          ${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}">${PLANS[l.plan]?.icon||""} ${l.plan}</span>`:""}
-          <span>${l.agentName||"Unassigned"}</span>
-        </div>
-      </div>
-      <div style="display:flex;gap:5px;flex-shrink:0">
-        ${selectedRole!=="agent"?`<button onclick="showEditLeadModal('${l.id}')" style="background:${rc()}15;border:1px solid ${rc()}33;border-radius:7px;padding:5px 8px;color:${rc()};font-size:11px;font-weight:600;cursor:pointer">✏️</button>`:""}
-        <button onclick="selectLead('${l.id}')" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:7px;padding:5px 8px;color:var(--text2);font-size:11px;cursor:pointer">💬</button>
-      </div>
-    </div>`).join("");
+  return arr.map(l=>`<div class="lead-item">
+    <div style="position:relative" onclick="selectLead('${l.id}')">${av(initials(l.name),36)}<span class="plat-dot" style="color:${l.platform==="WhatsApp"?"#16a34a":"#ec4899"}">●</span></div>
+    <div style="flex:1;min-width:0" onclick="selectLead('${l.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${l.name}</span><span style="color:var(--text);font-size:10px;flex-shrink:0">${l.enquiryDate?new Date(l.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short"}):""}</span></div>
+      <div style="color:var(--text);font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">${pill(l.status,STAGE_COLORS[l.status]||rc())}${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}">${PLANS[l.plan]?.icon||""} ${l.plan}</span>`:""}<span>${l.agentName||"Unassigned"}</span></div>
+    </div>
+    <div style="display:flex;gap:5px;flex-shrink:0">
+      ${selectedRole!=="agent"?`<button onclick="showEditLeadModal('${l.id}')" style="background:${rc()}15;border:1px solid ${rc()}33;border-radius:7px;padding:5px 8px;color:${rc()};font-size:11px;cursor:pointer">✏️</button>`:""}
+      <button onclick="selectLead('${l.id}')" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:7px;padding:5px 8px;color:var(--text2);font-size:11px;cursor:pointer">💬</button>
+    </div>
+  </div>`).join("");
 }
 function renderChatView(){
   const sl=selectedLead;
@@ -875,13 +510,10 @@ function renderChatView(){
     <div class="chat-head">
       <button class="chat-back" onclick="chatView=false;renderPage('inbox')">‹</button>
       ${av(initials(sl.name),34)}
-      <div style="flex:1;min-width:0">
-        <div class="chat-name">${sl.name} ${sl.plan?`<span class="pill plan-${sl.plan.toLowerCase()}" style="margin-left:4px">${PLANS[sl.plan]?.icon||""} ${sl.plan}</span>`:""}</div>
-        <div class="chat-sub">${sl.phone||sl.source||""}</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="chat-name">${sl.name}${sl.plan?` <span class="pill plan-${sl.plan.toLowerCase()}" style="margin-left:4px">${PLANS[sl.plan]?.icon||""} ${sl.plan}</span>`:""}</div><div class="chat-sub">${sl.phone||sl.source||""}</div></div>
       <div class="chat-hactions">
         <button class="action-btn" onclick="showAddReminderModal('${sl.name.replace(/'/g,"\\'")}')">⏰</button>
-        ${selectedRole!=="agent"?`<button class="action-btn" onclick="showEditLeadModal('${sl.id}')">✏️ Edit</button>`:""}
+        ${selectedRole!=="agent"?`<button class="action-btn" onclick="showEditLeadModal('${sl.id}')">✏️</button>`:""}
         <button class="action-btn" onclick="openDetailSheet('${sl.id}')">⋯</button>
         <button class="action-btn" onclick="showStageModal('${sl.id}')">${pill(sl.status,STAGE_COLORS[sl.status]||rc())}</button>
       </div>
@@ -902,36 +534,22 @@ function loadChatMessages(lid){
     const sl=leads.find(l=>l.id===lid)||selectedLead;
     const noteHtml=sl&&sl.notes?`<div style="text-align:center;margin-bottom:8px"><span style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2);border-radius:99px;padding:3px 12px;font-size:11px">📌 ${sl.notes}</span></div>`:"";
     const dateHtml=sl&&sl.enquiryDate?`<div style="text-align:center;margin-bottom:8px"><span style="background:rgba(59,130,246,.1);color:#3b82f6;border:1px solid rgba(59,130,246,.2);border-radius:99px;padding:3px 12px;font-size:11px">📅 Enquiry: ${new Date(sl.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</span></div>`:"";
-    box.innerHTML=dateHtml+noteHtml+(msgs.length?msgs.map(m=>`<div style="display:flex;justify-content:${m.from==="agent"?"flex-end":"flex-start"}"><div class="msg-bubble ${m.from==="agent"?"msg-out":"msg-in"}" style="${m.from==="agent"?`background:linear-gradient(135deg,${rc()},${rc()}cc)`:""}"> ${m.text}<div class="msg-time">${m.time||""}</div></div></div>`).join(""):`<div style="text-align:center;color:var(--text);padding:40px 20px;font-size:13px">No messages yet.</div>`);
+    box.innerHTML=dateHtml+noteHtml+(msgs.length?msgs.map(m=>`<div style="display:flex;justify-content:${m.from==="agent"?"flex-end":"flex-start"}"><div class="msg-bubble ${m.from==="agent"?"msg-out":"msg-in"}" style="${m.from==="agent"?`background:linear-gradient(135deg,${rc()},${rc()}cc)`:""}">${m.text}<div class="msg-time">${m.time||""}</div></div></div>`).join(""):`<div style="text-align:center;color:var(--text);padding:40px 20px;font-size:13px">No messages yet.</div>`);
     box.scrollTop=box.scrollHeight;
   });
 }
 function selectLead(id){selectedLead=leads.find(l=>l.id===id)||null;chatView=true;renderPage("inbox");}
-async function sendMsg(){
-  const inp=$("msgInput");if(!inp||!inp.value.trim()||!selectedLead)return;
-  const text=inp.value.trim();inp.value="";
-  try{await COL.messages(selectedLead.id).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});}
-  catch(e){showToast("❌ "+e.message);}
-}
-function filterLeads(val){
-  const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
-  const li=$("leadItems");if(li)li.innerHTML=renderLeadList(val?my.filter(l=>l.name.toLowerCase().includes(val.toLowerCase())||(l.phone&&l.phone.includes(val))):my);
-}
-function filterPlatform(plat,btn){
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active-tab"));btn.classList.add("active-tab");
-  const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
-  const li=$("leadItems");if(li)li.innerHTML=renderLeadList(plat==="all"?my:my.filter(l=>l.platform===plat));
-}
+async function sendMsg(){const inp=$("msgInput");if(!inp||!inp.value.trim()||!selectedLead)return;const text=inp.value.trim();inp.value="";try{await COL.messages(selectedLead.id).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});}catch(e){showToast("❌ "+e.message);}}
+function filterLeads(val){const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;const li=$("leadItems");if(li)li.innerHTML=renderLeadList(val?my.filter(l=>l.name.toLowerCase().includes(val.toLowerCase())||(l.phone&&l.phone.includes(val))):my);}
+function filterPlatform(plat,btn){document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active-tab"));btn.classList.add("active-tab");const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;const li=$("leadItems");if(li)li.innerHTML=renderLeadList(plat==="all"?my:my.filter(l=>l.platform===plat));}
 
 /* ── LEAD MODALS ── */
 function showAddLeadModal(){_leadModal(null);}
 function showEditLeadModal(id){_leadModal(leads.find(l=>l.id===id));}
 function _leadModal(l){
-  const isEdit=!!l;
-  const canAssign=selectedRole!=="agent";
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isEdit?"✏️ Edit Lead":"➕ Add Lead"}</div>
+  refreshStageCfg();
+  const isEdit=!!l,canAssign=selectedRole!=="agent";
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">${isEdit?"✏️ Edit Lead":"➕ Add Lead"}</div>
     <div class="form-row"><label>FULL NAME *</label><input id="ln" value="${l?l.name:""}" placeholder="Rajesh Kumar"/></div>
     <div class="form-row"><label>PHONE</label><input id="lp" type="tel" value="${l?l.phone||"":""}" placeholder="+91 98765 43210"/></div>
     <div class="form-row"><label>INSTAGRAM</label><input id="lig" value="${l?l.instagram||"":""}" placeholder="@handle"/></div>
@@ -944,46 +562,26 @@ function _leadModal(l){
     ${isEdit?`<div class="form-row"><label>STATUS</label><select id="lst">${STAGES.map(s=>`<option${l.status===s?" selected":""}>${s}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>NOTES</label><textarea id="lnotes">${l?l.notes||"":""}</textarea></div>
     <div class="modal-footer">
-      ${isEdit&&selectedRole!=="agent"?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${l.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateLead('${l.id}')`:"addLead()"}">${isEdit?"Save Changes":"Add Lead"}</button>
+      ${isEdit&&selectedRole!=="agent"?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${l.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateLead('${l.id}')`:"addLead()"}">${isEdit?"Save":"Add Lead"}</button>
     </div>
   </div>`);
 }
 async function addLead(){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
-  const phone=($("lp").value||"").trim();
-  const instagram=($("lig").value||"").trim();
-
-  // Duplicate check
+  const phone=($("lp").value||"").trim(),instagram=($("lig").value||"").trim();
   const dupes=leads.filter(l=>{
-    const nameMatch=l.name.toLowerCase()===name.toLowerCase();
-    const phoneMatch=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");
-    const igMatch=instagram&&l.instagram&&l.instagram.toLowerCase()===instagram.toLowerCase();
-    return nameMatch||phoneMatch||igMatch;
+    const nm=l.name.toLowerCase()===name.toLowerCase();
+    const ph=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");
+    const ig=instagram&&l.instagram&&l.instagram.toLowerCase()===instagram.toLowerCase();
+    return nm||ph||ig;
   });
-
   if(dupes.length>0){
     const d=dupes[0];
-    const matchReason=
-      (d.name.toLowerCase()===name.toLowerCase()?"Name":"")||
-      (phone&&d.phone&&d.phone.replace(/\s/g,"")===phone.replace(/\s/g,"")?"Phone":"")||
-      (instagram&&d.instagram&&d.instagram.toLowerCase()===instagram.toLowerCase()?"Instagram":"");
-    showModal(`<div class="modal">
-      <div class="modal-handle"></div>
-      <div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>${matchReason}</b> already exists:</p>
-      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-        ${av(initials(d.name),38)}
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div>
-          <div style="font-size:11px;color:var(--text);margin-top:2px">${d.phone||""}${d.instagram?" · "+d.instagram:""}</div>
-          <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">
-            ${pill(d.status,STAGE_COLORS[d.status]||rc())}
-            ${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}
-            <span style="font-size:10px;color:var(--text)">${d.agentName||"Unassigned"}</span>
-          </div>
-        </div>
-      </div>
+    const why=d.name.toLowerCase()===name.toLowerCase()?"Name":(phone&&d.phone&&d.phone.replace(/\s/g,"")===phone.replace(/\s/g,""))?"Phone":"Instagram";
+    showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>${why}</b> already exists:</p>
+      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">${av(initials(d.name),38)}<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div><div style="font-size:11px;color:var(--text);margin-top:2px">${d.phone||""}${d.instagram?" · "+d.instagram:""}</div><div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">${pill(d.status,STAGE_COLORS[d.status]||rc())}${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}<span style="font-size:10px;color:var(--text)">${d.agentName||"Unassigned"}</span></div></div></div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <button onclick="closeModal();openLead('${d.id}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">👁 View Existing Lead</button>
         <button onclick="closeModal();_doAddLead()" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--white);font-weight:700;font-size:13px;cursor:pointer">➕ Add as New Anyway</button>
@@ -994,55 +592,25 @@ async function addLead(){
   }
   await _doAddLead();
 }
-
 async function _doAddLead(){
   const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
-  const data={
-    name,phone:($("lp")?.value||"").trim(),instagram:($("lig")?.value||"").trim(),
-    enquiryDate:$("ledate")?.value||todayStr(),
-    source:$("ls")?.value||"",platform:$("lpl")?.value||"",
-    plan:$("lplan")?.value||"",
-    agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
-    value:Number($("lv")?.value)||0,status:"New Lead",
-    notes:$("lnotes")?.value||"",createdAt:new Date().toISOString()
-  };
-  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added`);}
-  catch(e){showToast("❌ "+e.message);}
+  const data={name,phone:($("lp")?.value||"").trim(),instagram:($("lig")?.value||"").trim(),enquiryDate:$("ledate")?.value||todayStr(),source:$("ls")?.value||"",platform:$("lpl")?.value||"",plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv")?.value)||0,status:"New Lead",notes:$("lnotes")?.value||"",createdAt:new Date().toISOString()};
+  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added`);}catch(e){showToast("❌ "+e.message);}
 }
 async function updateLead(id){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
-  const data={
-    name,phone:$("lp").value||"",instagram:$("lig").value||"",
-    enquiryDate:$("ledate").value||todayStr(),
-    source:$("ls").value,platform:$("lpl").value,
-    plan:$("lplan").value||"",
-    agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
-    value:Number($("lv").value)||0,
-    status:$("lst")?$("lst").value:(leads.find(l=>l.id===id)?.status||"New Lead"),
-    notes:$("lnotes").value||"",updatedAt:new Date().toISOString()
-  };
-  try{
-    await COL.leads().doc(id).update(data);closeModal();showToast("✅ Lead updated");
-    if(chatView){selectedLead=leads.find(l=>l.id===id);renderPage("inbox");}
-  } catch(e){showToast("❌ "+e.message);}
+  const data={name,phone:$("lp").value||"",instagram:$("lig").value||"",enquiryDate:$("ledate")?.value||todayStr(),source:$("ls").value,platform:$("lpl").value,plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv").value)||0,status:$("lst")?$("lst").value:(leads.find(l=>l.id===id)?.status||"New Lead"),notes:$("lnotes").value||"",updatedAt:new Date().toISOString()};
+  try{await COL.leads().doc(id).update(data);closeModal();showToast("✅ Lead updated");if(chatView){selectedLead=leads.find(l=>l.id===id);renderPage("inbox");}}catch(e){showToast("❌ "+e.message);}
 }
-async function deleteLead(id){
-  try{await COL.leads().doc(id).delete();chatView=false;selectedLead=null;renderPage("inbox");showToast("Lead deleted");}
-  catch(e){showToast("❌ "+e.message);}
-}
+async function deleteLead(id){try{await COL.leads().doc(id).delete();chatView=false;selectedLead=null;renderPage("inbox");showToast("Lead deleted");}catch(e){showToast("❌ "+e.message);}}
 
 /* ── DETAIL SHEET ── */
 function openDetailSheet(lid){
   const l=leads.find(x=>x.id===lid);if(!l)return;
-  $("detailPanel").innerHTML=`
-    <div class="detail-handle"></div>
-    <div style="text-align:center;margin-bottom:16px">
-      ${av(initials(l.name),48,`${rc()},${rc()}88`)}
-      <p style="font-weight:700;font-size:14px;margin:9px 0 6px;color:var(--white)">${l.name}</p>
-      <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap">${pill(l.status,STAGE_COLORS[l.status]||rc())}${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}">${PLANS[l.plan]?.icon||""} ${l.plan}</span>`:""}</div>
-    </div>
+  $("detailPanel").innerHTML=`<div class="detail-handle"></div>
+    <div style="text-align:center;margin-bottom:16px">${av(initials(l.name),48,`${rc()},${rc()}88`)}<p style="font-weight:700;font-size:14px;margin:9px 0 6px;color:var(--white)">${l.name}</p><div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap">${pill(l.status,STAGE_COLORS[l.status]||rc())}${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}">${PLANS[l.plan]?.icon||""} ${l.plan}</span>`:""}</div></div>
     <div class="detail-block"><div class="detail-key">📞 Phone</div><div class="detail-val">${l.phone||"—"}</div></div>
     <div class="detail-block"><div class="detail-key">📸 Instagram</div><div class="detail-val">${l.instagram||"—"}</div></div>
     <div class="detail-block"><div class="detail-key">📅 Enquiry Date</div><div class="detail-val">${l.enquiryDate?new Date(l.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}):"—"}</div></div>
@@ -1055,87 +623,56 @@ function openDetailSheet(lid){
     <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()}" onclick="closeDetailSheet();showEditLeadModal('${lid}')">✏️ Edit Lead</button>
     <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()}" onclick="closeDetailSheet();showStageModal('${lid}')">🔄 Change Stage</button>
     ${selectedRole!=="agent"?`<button class="ghost-btn" style="border:1px solid var(--border);background:var(--input-bg);color:var(--text2)" onclick="closeDetailSheet();showReassignModal('${lid}')">👤 Reassign</button>`:""}
-    ${selectedRole!=="agent"?`<button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444" onclick="closeDetailSheet();confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${lid}\\')')">🗑 Delete Lead</button>`:""}
-  `;
+    ${selectedRole!=="agent"?`<button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444" onclick="closeDetailSheet();confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${lid}\\')')">🗑 Delete Lead</button>`:""}`;
   $("detailSheet").classList.add("open");
 }
 function closeDetailSheet(){$("detailSheet").classList.remove("open");}
 function showStageModal(lid){
+  refreshStageCfg();
   const l=leads.find(x=>x.id===lid);if(!l)return;
-  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Change Stage — ${l.name}</div>
-    ${STAGES.map(s=>`<button class="stage-btn${l.status===s?" current":""}" onclick="changeStage('${lid}','${s}')"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div>${s}</button>`).join("")}
-    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button>
-  </div>`);
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Change Stage — ${l.name}</div>${STAGES.map(s=>`<button class="stage-btn${l.status===s?" current":""}" onclick="changeStage('${lid}','${s}')"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div>${s}</button>`).join("")}<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>`);
 }
-async function changeStage(lid,stage){
-  try{await COL.leads().doc(lid).update({status:stage});closeModal();showToast(`✅ Moved to ${stage}`);}
-  catch(e){showToast("❌ "+e.message);}
-}
-function showReassignModal(lid){
-  const l=leads.find(x=>x.id===lid);if(!l)return;
-  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Reassign — ${l.name}</div>
-    ${agents.length?agents.map(ag=>`<button class="stage-btn${l.agentName===ag.name?" current":""}" onclick="reassignLead('${lid}','${ag.name}')">👤 ${ag.name}</button>`).join(""):`<p style="color:var(--text);font-size:13px;padding:12px 0">No agents added yet.</p>`}
-    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button>
-  </div>`);
-}
-async function reassignLead(lid,agentName){
-  try{await COL.leads().doc(lid).update({agentName});closeModal();showToast(`✅ Reassigned to ${agentName}`);}
-  catch(e){showToast("❌ "+e.message);}
-}
-function showTemplatePicker(lid){
-  if(!templates.length){showToast("No templates yet!");return;}
-  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">📋 Use Template</div>
-    ${templates.map(t=>`<button class="stage-btn" onclick="useTemplate('${lid}','${t.id}')">📄 ${t.title}</button>`).join("")}
-    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button>
-  </div>`);
-}
-async function useTemplate(lid,tid){
-  const t=templates.find(x=>x.id===tid),l=leads.find(x=>x.id===lid);if(!t||!l)return;
-  const text=t.content.replace(/{{name}}/g,l.name);
-  try{await COL.messages(lid).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});closeModal();showToast("Template sent ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
+async function changeStage(lid,stage){try{await COL.leads().doc(lid).update({status:stage});closeModal();showToast(`✅ Moved to ${stage}`);}catch(e){showToast("❌ "+e.message);}}
+function showReassignModal(lid){const l=leads.find(x=>x.id===lid);if(!l)return;showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Reassign — ${l.name}</div>${agents.length?agents.map(ag=>`<button class="stage-btn${l.agentName===ag.name?" current":""}" onclick="reassignLead('${lid}','${ag.name}')">👤 ${ag.name}</button>`).join(""):`<p style="color:var(--text);font-size:13px;padding:12px 0">No agents yet.</p>`}<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>`);}
+async function reassignLead(lid,agentName){try{await COL.leads().doc(lid).update({agentName});closeModal();showToast(`✅ Reassigned to ${agentName}`);}catch(e){showToast("❌ "+e.message);}}
+function showTemplatePicker(lid){if(!templates.length){showToast("No templates yet!");return;}showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">📋 Use Template</div>${templates.map(t=>`<button class="stage-btn" onclick="useTemplate('${lid}','${t.id}')">📄 ${t.title}</button>`).join("")}<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>`);}
+async function useTemplate(lid,tid){const t=templates.find(x=>x.id===tid),l=leads.find(x=>x.id===lid);if(!t||!l)return;const text=t.content.replace(/{{name}}/g,l.name);try{await COL.messages(lid).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});closeModal();showToast("Template sent ✅");}catch(e){showToast("❌ "+e.message);}}
 
-/* ══════════════════════════════
-   PIPELINE — ALL ROLES + DEMO COL
-══════════════════════════════ */
+/* ══ PIPELINE ══ */
 let dragLead=null;
 function pgPipeline(el){
-  // Agents see only their leads; others see all
+  refreshStageCfg();
   const visibleLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
-  const grouped={};STAGES.forEach(s=>grouped[s]=[]);
+  const grouped={};STAGES.forEach(s=>{grouped[s]=[];});
   visibleLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
-
   el.innerHTML=`<div class="pipeline-wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <p style="color:var(--text);font-size:12px">← Scroll · Drag to move · ${selectedRole==="agent"?"Showing your leads":"All leads"}</p>
-      <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ New Lead</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px">
+      <p style="color:var(--text);font-size:12px">${selectedRole==="agent"?"Your leads":"All leads"} · Drag to move</p>
+      <div style="display:flex;gap:7px;flex-shrink:0">
+        ${selectedRole==="admin"?`<button onclick="showManageStagesModal()" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer">⚙️ Stages</button>`:""}
+        <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ New Lead</button>
+      </div>
     </div>
     <div class="kanban" id="kanban">
       ${STAGES.map(col=>`
-        <div class="col-wrap${col==="Demo"?" demo-col":""}">
-          <div class="col-inner" id="col-${col.replace(/ /g,'-')}"
-            ondragover="pipeDragOver(event,'${col}')"
-            ondragleave="pipeDragLeave(event)"
-            ondrop="pipeDrop(event,'${col}')">
+        <div class="col-wrap">
+          <div class="col-inner" id="col-${col.replace(/ /g,'-')}" ondragover="pipeDragOver(event,'${col}')" ondragleave="pipeDragLeave(event)" ondrop="pipeDrop(event,'${col}')">
             <div class="col-head">
-              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}${col==="Demo"?" 🎯":""}</div>
-              <div style="display:flex;align-items:center;gap:6px">
+              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}</div>
+              <div style="display:flex;align-items:center;gap:4px">
                 <span class="col-count">${grouped[col].length}</span>
                 <button onclick="showAddLeadInStage('${col}')" style="background:${STAGE_COLORS[col]}22;border:1px solid ${STAGE_COLORS[col]}44;border-radius:5px;width:18px;height:18px;color:${STAGE_COLORS[col]};font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
               </div>
             </div>
             <div class="col-body">
               ${grouped[col].length?grouped[col].map(c=>`
-                <div class="k-card" id="kcard-${c.id}" draggable="true"
-                  ondragstart="pipeDragStart(event,'${c.id}','${col}')"
-                  ondragend="pipeDragEnd(event)">
+                <div class="k-card" id="kcard-${c.id}" draggable="true" ondragstart="pipeDragStart(event,'${c.id}','${col}')" ondragend="pipeDragEnd(event)">
                   <div class="k-card-top">${av(initials(c.name),22)}<span class="k-name">${c.name}</span>${c.plan?`<span class="pill plan-${c.plan.toLowerCase()}" style="font-size:9px;padding:1px 5px">${PLANS[c.plan]?.icon}</span>`:""}</div>
                   <div class="k-val">${fmtCur(c.value)}</div>
                   <div class="k-src">${c.source||"—"} · ${c.agentName||"Unassigned"}</div>
                   ${c.enquiryDate?`<div style="color:var(--text);font-size:9px;margin-top:2px">📅 ${new Date(c.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}</div>`:""}
                   <div class="k-actions">
-                    <button class="k-act-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="selectLead('${c.id}');renderPage('inbox')">💬 Chat</button>
+                    <button class="k-act-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="selectLead('${c.id}');renderPage('inbox')">💬</button>
                     <button class="k-act-btn" style="background:var(--input-bg);color:var(--text2);border:1px solid var(--border)" onclick="showEditLeadModal('${c.id}')">✏️</button>
                     <button class="k-act-btn" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.3)" onclick="showAddReminderModal('${c.name.replace(/'/g,"\\'")}')">⏰</button>
                   </div>
@@ -1146,40 +683,69 @@ function pgPipeline(el){
     </div>
   </div>`;
 }
-function pipeDragStart(e,id,fromCol){
-  dragLead={id,fromCol};
-  const el=document.getElementById("kcard-"+id);if(el)el.classList.add("dragging");
-  e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",id);
+
+/* ── MANAGE STAGES ── */
+function showManageStagesModal(){
+  refreshStageCfg();
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">⚙️ Manage Pipeline Stages</div>
+    <p style="color:var(--text);font-size:12px;margin-bottom:12px">Default stages cannot be deleted. Custom stages can be added or removed.</p>
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:8px">DEFAULT STAGES</div>
+      ${DEFAULT_STAGES.map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:8px;margin-bottom:5px;border:1px solid var(--border)"><div style="width:10px;height:10px;border-radius:50%;background:${DEFAULT_STAGE_COLORS[s]};flex-shrink:0"></div><span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s}</span><span style="font-size:10px;color:var(--text);background:rgba(127,127,127,.15);padding:2px 7px;border-radius:5px">Default</span></div>`).join("")}
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:8px">CUSTOM STAGES</div>
+      <div id="customStageList">${renderCustomStageList()}</div>
+    </div>
+    <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:10px">ADD NEW STAGE</div>
+      <div class="form-row" style="margin-bottom:8px"><input id="newStageName" placeholder="Stage name e.g. Trial" style="width:100%;background:var(--surface);border:1px solid var(--input-border);border-radius:8px;padding:9px 11px;color:var(--white);font-size:13px;outline:none"/></div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:var(--text);margin-bottom:6px">COLOUR</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="colorPicker">${PALETTE.map((c,i)=>`<div onclick="selectStageColor('${c}')" data-color="${c}" style="width:24px;height:24px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:all .15s" title="${c}"></div>`).join("")}</div>
+      </div>
+      <input type="hidden" id="newStageColor" value="${PALETTE[0]}"/>
+      <button onclick="addCustomStage()" style="width:100%;padding:10px;background:${rc()};border:none;border-radius:8px;color:#fff;font-weight:700;font-size:13px;cursor:pointer">+ Add Stage</button>
+    </div>
+    <button class="btn-cancel" onclick="closeModal();renderPage('pipeline')" style="width:100%;margin-top:10px">Done</button>
+  </div>`);
+  setTimeout(()=>selectStageColor(PALETTE[0]),50);
 }
-function pipeDragEnd(e){
-  dragLead=null;
-  document.querySelectorAll(".k-card").forEach(c=>c.classList.remove("dragging"));
-  document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
-  document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));
+function renderCustomStageList(){
+  if(!customStages.length)return`<div style="text-align:center;padding:14px;color:var(--text);font-size:12px">No custom stages yet</div>`;
+  return customStages.map((s,i)=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:8px;margin-bottom:5px;border:1px solid var(--border)"><div style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0"></div><span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s.name}</span><span style="font-size:11px;color:var(--text)">${leads.filter(l=>l.status===s.name).length} leads</span><button onclick="deleteCustomStage(${i})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:3px 8px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button></div>`).join("");
 }
-function pipeDragOver(e,col){
-  e.preventDefault();e.dataTransfer.dropEffect="move";
-  if(!dragLead||dragLead.fromCol===col)return;
-  document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
-  const colEl=document.getElementById("col-"+col.replace(/ /g,"-"));
-  if(colEl)colEl.classList.add("drag-over");
-  document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));
-  const dz=document.getElementById("dz-"+col.replace(/ /g,"-"));
-  if(dz)dz.classList.add("active");
+function selectStageColor(color){
+  const inp=document.getElementById("newStageColor");if(inp)inp.value=color;
+  document.querySelectorAll("#colorPicker div").forEach(d=>{const sel=d.dataset.color===color;d.style.border=sel?"3px solid var(--white)":"2px solid transparent";d.style.transform=sel?"scale(1.25)":"scale(1)";});
 }
-function pipeDragLeave(e){if(!e.currentTarget.contains(e.relatedTarget)){e.currentTarget.classList.remove("drag-over");}}
-async function pipeDrop(e,toCol){
-  e.preventDefault();
-  document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
-  if(!dragLead||dragLead.fromCol===toCol){dragLead=null;return;}
-  const {id}=dragLead;dragLead=null;
-  try{await COL.leads().doc(id).update({status:toCol});showToast(`✅ Moved to ${toCol}`);}
-  catch(err){showToast("❌ "+err.message);}
+function addCustomStage(){
+  const nameEl=document.getElementById("newStageName"),colorEl=document.getElementById("newStageColor");
+  const name=(nameEl?.value||"").trim(),color=colorEl?.value||PALETTE[0];
+  if(!name){showToast("Enter a stage name");return;}
+  if(STAGES.includes(name)){showToast("Stage already exists");return;}
+  customStages.push({name,color});saveCustomStages();
+  if(nameEl)nameEl.value="";
+  const list=document.getElementById("customStageList");if(list)list.innerHTML=renderCustomStageList();
+  showToast(`✅ "${name}" added`);
 }
+function deleteCustomStage(i){
+  const s=customStages[i],count=leads.filter(l=>l.status===s.name).length;
+  if(count>0){showToast(`⚠️ Move ${count} lead(s) out of "${s.name}" first`);return;}
+  customStages.splice(i,1);saveCustomStages();
+  const list=document.getElementById("customStageList");if(list)list.innerHTML=renderCustomStageList();
+  showToast(`"${s.name}" removed`);
+}
+
+/* ── PIPELINE DRAG ── */
+function pipeDragStart(e,id,fromCol){dragLead={id,fromCol};const el=document.getElementById("kcard-"+id);if(el)el.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",id);}
+function pipeDragEnd(){dragLead=null;document.querySelectorAll(".k-card").forEach(c=>c.classList.remove("dragging"));document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));}
+function pipeDragOver(e,col){e.preventDefault();e.dataTransfer.dropEffect="move";if(!dragLead||dragLead.fromCol===col)return;document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));const colEl=document.getElementById("col-"+col.replace(/ /g,"-"));if(colEl)colEl.classList.add("drag-over");document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));const dz=document.getElementById("dz-"+col.replace(/ /g,"-"));if(dz)dz.classList.add("active");}
+function pipeDragLeave(e){if(!e.currentTarget.contains(e.relatedTarget))e.currentTarget.classList.remove("drag-over");}
+async function pipeDrop(e,toCol){e.preventDefault();document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));if(!dragLead||dragLead.fromCol===toCol){dragLead=null;return;}const{id}=dragLead;dragLead=null;try{await COL.leads().doc(id).update({status:toCol});showToast(`✅ Moved to ${toCol}`);}catch(err){showToast("❌ "+err.message);}}
+
 function showAddLeadInStage(stage){
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">➕ Add Lead to ${stage}</div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">➕ Add to ${stage}</div>
     <div class="form-row"><label>FULL NAME *</label><input id="ln" placeholder="Rajesh Kumar"/></div>
     <div class="form-row"><label>PHONE</label><input id="lp" type="tel" placeholder="+91 98765 43210"/></div>
     <div class="form-row"><label>ENQUIRY DATE</label><input id="ledate" type="date" value="${todayStr()}"/></div>
@@ -1188,89 +754,50 @@ function showAddLeadInStage(stage){
     <div class="form-row"><label>PLAN</label><select id="lplan"><option value="">Select Plan</option>${PLAN_NAMES.map(p=>`<option value="${p}">${PLANS[p].icon} ${p}</option>`).join("")}</select></div>
     ${selectedRole!=="agent"?`<div class="form-row"><label>ASSIGN TO</label><select id="lag"><option value="">Unassigned</option>${agents.map(a=>`<option>${a.name}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>DEAL VALUE (₹)</label><input id="lv" type="number" placeholder="25000"/></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" style="background:${STAGE_COLORS[stage]}" onclick="addLeadInStage('${stage}')">Add</button>
-    </div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:${STAGE_COLORS[stage]||rc()}" onclick="addLeadInStage('${stage}')">Add</button></div>
   </div>`);
 }
 async function addLeadInStage(stage){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
   const phone=($("lp").value||"").trim();
-
-  const dupes=leads.filter(l=>{
-    const nameMatch=l.name.toLowerCase()===name.toLowerCase();
-    const phoneMatch=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");
-    return nameMatch||phoneMatch;
-  });
-
+  const dupes=leads.filter(l=>{const nm=l.name.toLowerCase()===name.toLowerCase();const ph=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");return nm||ph;});
   if(dupes.length>0){
-    const d=dupes[0];
-    const matchReason=(d.name.toLowerCase()===name.toLowerCase()?"Name":"Phone");
-    showModal(`<div class="modal">
-      <div class="modal-handle"></div>
-      <div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>${matchReason}</b> already exists:</p>
-      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-        ${av(initials(d.name),38)}
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div>
-          <div style="font-size:11px;color:var(--text);margin-top:2px">${d.phone||""}${d.instagram?" · "+d.instagram:""}</div>
-          <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">
-            ${pill(d.status,STAGE_COLORS[d.status]||rc())}
-            ${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}
-            <span style="font-size:10px;color:var(--text)">${d.agentName||"Unassigned"}</span>
-          </div>
-        </div>
-      </div>
+    const d=dupes[0],why=d.name.toLowerCase()===name.toLowerCase()?"Name":"Phone";
+    showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">Same <b>${why}</b> already exists:</p>
+      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">${av(initials(d.name),38)}<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div><div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">${pill(d.status,STAGE_COLORS[d.status]||rc())}${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}</div></div></div>
       <div style="display:flex;flex-direction:column;gap:8px">
-        <button onclick="closeModal();openLead('${d.id}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">👁 View Existing Lead</button>
-        <button onclick="closeModal();_doAddLeadInStage('${stage}')" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--white);font-weight:700;font-size:13px;cursor:pointer">➕ Add as New Anyway</button>
-        <button onclick="closeModal();showAddLeadInStage('${stage}')" class="btn-cancel" style="width:100%">← Go Back & Edit</button>
+        <button onclick="closeModal();openLead('${d.id}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">👁 View Existing</button>
+        <button onclick="closeModal();_doAddLeadInStage('${stage}')" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--white);font-weight:700;font-size:13px;cursor:pointer">➕ Add Anyway</button>
+        <button onclick="closeModal();showAddLeadInStage('${stage}')" class="btn-cancel" style="width:100%">← Go Back</button>
       </div>
     </div>`);
     return;
   }
   await _doAddLeadInStage(stage);
 }
-
 async function _doAddLeadInStage(stage){
   const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
-  const data={
-    name,phone:($("lp")?.value||"").trim(),instagram:"",
-    enquiryDate:$("ledate")?.value||todayStr(),
-    source:$("ls")?.value||"",platform:$("lpl")?.value||"",
-    plan:$("lplan")?.value||"",
-    agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
-    value:Number($("lv")?.value)||0,status:stage,notes:"",createdAt:new Date().toISOString()
-  };
-  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}
-  catch(e){showToast("❌ "+e.message);}
+  const data={name,phone:($("lp")?.value||"").trim(),instagram:"",enquiryDate:$("ledate")?.value||todayStr(),source:$("ls")?.value||"",platform:$("lpl")?.value||"",plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv")?.value)||0,status:stage,notes:"",createdAt:new Date().toISOString()};
+  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}catch(e){showToast("❌ "+e.message);}
 }
 
-/* ══════════════════════════════
-   AGENTS
-══════════════════════════════ */
+/* ══ AGENTS ══ */
 function pgAgents(el){
   el.innerHTML=`<div class="agent-grid">
     ${selectedRole==="admin"?`<div class="agent-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;min-height:120px" onclick="showAddAgentModal()"><div style="font-size:28px;color:var(--text)">+</div><p style="color:var(--text);font-size:13px;margin-top:6px">Add Agent</p></div>`:""}
     ${agents.map(ag=>{
-      const myLeads=leads.filter(l=>l.agentName===ag.name);
-      const myClosed=myLeads.filter(l=>l.status==="Closed");
-      const convRate=myLeads.length?Math.round(myClosed.length/myLeads.length*100):0;
-      const rev=myClosed.reduce((s,l)=>s+Number(l.value||0),0);
+      const myL=leads.filter(l=>l.agentName===ag.name),myC=myL.filter(l=>l.status==="Closed");
+      const convRate=myL.length?Math.round(myC.length/myL.length*100):0;
+      const rev=myC.reduce((s,l)=>s+Number(l.value||0),0);
       return `<div class="agent-card">
-        <div class="agent-head">
-          ${av(initials(ag.name),40,ag.status==="online"?"#16a34a,#15803d":ag.status==="away"?"#f59e0b,#d97706":"#9ca3af,#6b7280")}
-          <div style="flex:1;min-width:0">
-            <div style="font-weight:800;font-size:13px;color:var(--white)">${ag.name}</div>
-            <div style="display:flex;align-items:center;gap:5px;margin-top:2px"><span style="width:7px;height:7px;border-radius:50%;background:${ag.status==="online"?"#16a34a":ag.status==="away"?"#f59e0b":"#9ca3af"};display:inline-block"></span><span style="color:var(--text);font-size:11px">${ag.status}</span></div>
-          </div>
+        <div class="agent-head">${av(initials(ag.name),40,ag.status==="online"?"#16a34a,#15803d":ag.status==="away"?"#f59e0b,#d97706":"#9ca3af,#6b7280")}
+          <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:13px;color:var(--white)">${ag.name}</div><div style="display:flex;align-items:center;gap:5px;margin-top:2px"><span style="width:7px;height:7px;border-radius:50%;background:${ag.status==="online"?"#16a34a":ag.status==="away"?"#f59e0b":"#9ca3af"};display:inline-block"></span><span style="color:var(--text);font-size:11px">${ag.status}</span></div></div>
           <div class="agent-conv"><div class="agent-conv-val">${convRate}%</div><div class="agent-conv-lbl">conv.</div></div>
         </div>
         <div class="agent-stats">
-          <div class="agent-stat"><div class="agent-stat-val">${myLeads.length}</div><div class="agent-stat-key">Leads</div></div>
+          <div class="agent-stat"><div class="agent-stat-val">${myL.length}</div><div class="agent-stat-key">Leads</div></div>
           <div class="agent-stat"><div class="agent-stat-val">${selectedRole==="admin"?fmtCur(rev):"🔒"}</div><div class="agent-stat-key">Revenue</div></div>
           <div class="agent-stat"><div class="agent-stat-val">${ag.resp||"—"}</div><div class="agent-stat-key">Resp</div></div>
         </div>
@@ -1285,96 +812,50 @@ function pgAgents(el){
   </div>`;
 }
 function showAgentClients(agentName){
-  const agLeads=leads.filter(l=>l.agentName===agentName);
-  const grouped={};
-  STAGES.forEach(s=>grouped[s]=[]);
-  agLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
-  const totalRev=agLeads.filter(l=>l.status==="Closed").reduce((s,l)=>s+Number(l.value||0),0);
-
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">👥 ${agentName}'s Clients</div>
+  const agL=leads.filter(l=>l.agentName===agentName);
+  const grouped={};STAGES.forEach(s=>{grouped[s]=[];});agL.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
+  const totalRev=agL.filter(l=>l.status==="Closed").reduce((s,l)=>s+Number(l.value||0),0);
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">👥 ${agentName}'s Clients</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)">
-        <div style="font-size:18px;font-weight:800;color:var(--white)">${agLeads.length}</div>
-        <div style="font-size:10px;color:var(--text)">Total</div>
-      </div>
-      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)">
-        <div style="font-size:18px;font-weight:800;color:#16a34a">${agLeads.filter(l=>l.status==="Closed").length}</div>
-        <div style="font-size:10px;color:var(--text)">Closed</div>
-      </div>
-      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)">
-        <div style="font-size:14px;font-weight:800;color:#f59e0b">${fmtCur(totalRev)}</div>
-        <div style="font-size:10px;color:var(--text)">Revenue</div>
-      </div>
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)"><div style="font-size:18px;font-weight:800;color:var(--white)">${agL.length}</div><div style="font-size:10px;color:var(--text)">Total</div></div>
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)"><div style="font-size:18px;font-weight:800;color:#16a34a">${agL.filter(l=>l.status==="Closed").length}</div><div style="font-size:10px;color:var(--text)">Closed</div></div>
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border)"><div style="font-size:14px;font-weight:800;color:#f59e0b">${fmtCur(totalRev)}</div><div style="font-size:10px;color:var(--text)">Revenue</div></div>
     </div>
-    ${agLeads.length===0
-      ?`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">📭</div><p>No clients assigned yet</p></div>`
-      :STAGES.filter(s=>grouped[s].length>0).map(s=>`
-        <div style="margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
-            <div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]}"></div>
-            <span style="font-weight:700;font-size:12px;color:var(--white)">${s}</span>
-            <span style="background:var(--input-bg);border-radius:99px;padding:1px 7px;font-size:10px;color:var(--text)">${grouped[s].length}</span>
-          </div>
-          ${grouped[s].map(l=>`
-            <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:9px;margin-bottom:5px;border:1px solid var(--border);cursor:pointer" onclick="closeModal();openLead('${l.id}')">
-              ${av(initials(l.name),30)}
-              <div style="flex:1;min-width:0">
-                <div style="font-size:12px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div>
-                <div style="font-size:10px;color:var(--text);display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
-                  <span>${l.phone||"No phone"}</span>
-                  ${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}" style="font-size:9px">${PLANS[l.plan]?.icon} ${l.plan}</span>`:""}
-                  ${l.enquiryDate?`<span>📅 ${new Date(l.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}</span>`:""}
-                </div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-size:12px;font-weight:700;color:#16a34a">${fmtCur(l.value)}</div>
-                <div style="font-size:9px;color:var(--text)">${l.source||""}</div>
-              </div>
-            </div>`).join("")}
+    ${agL.length===0?`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">📭</div><p>No clients yet</p></div>`:STAGES.filter(s=>grouped[s].length>0).map(s=>`
+      <div style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]}"></div><span style="font-weight:700;font-size:12px;color:var(--white)">${s}</span><span style="background:var(--input-bg);border-radius:99px;padding:1px 7px;font-size:10px;color:var(--text)">${grouped[s].length}</span></div>
+        ${grouped[s].map(l=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:9px;margin-bottom:5px;border:1px solid var(--border);cursor:pointer" onclick="closeModal();openLead('${l.id}')">
+          ${av(initials(l.name),30)}
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div>
+          <div style="font-size:10px;color:var(--text);display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><span>${l.phone||"No phone"}</span>${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}" style="font-size:9px">${PLANS[l.plan]?.icon} ${l.plan}</span>`:""}</div></div>
+          <div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:700;color:#16a34a">${fmtCur(l.value)}</div></div>
         </div>`).join("")}
+      </div>`).join("")}
     <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Close</button>
   </div>`);
 }
-
 function showAddAgentModal(){_agentModal(null);}
 function showEditAgentModal(id){_agentModal(agents.find(a=>a.id===id));}
 function _agentModal(ag){
   const isEdit=!!ag;
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isEdit?"✏️ Edit Agent":"➕ Add Agent"}</div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">${isEdit?"✏️ Edit Agent":"➕ Add Agent"}</div>
     <div class="form-row"><label>FULL NAME *</label><input id="an" value="${ag?ag.name:""}" placeholder="e.g. Priya Menon"/></div>
     <div class="form-row"><label>EMAIL</label><input id="ae" type="email" value="${ag?ag.email||"":""}" placeholder="priya@homegym.in"/></div>
     <div class="form-row"><label>STATUS</label><select id="as2"><option${!ag||ag.status==="online"?" selected":""}>online</option><option${ag&&ag.status==="away"?" selected":""}>away</option><option${ag&&ag.status==="offline"?" selected":""}>offline</option></select></div>
     <div class="form-row"><label>AVG RESPONSE TIME</label><input id="ar" value="${ag?ag.resp||"":""}" placeholder="e.g. 5m"/></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Remove agent <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\');closeModal()')">🗑 Remove</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateAgent('${ag.id}')`:"addAgent()"}">${isEdit?"Save":"Add Agent"}</button>
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Remove <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateAgent('${ag.id}')`:"addAgent()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addAgent(){
-  const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}
-  try{await COL.agents().add({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—",createdAt:new Date().toISOString()});closeModal();showToast(`✅ "${name}" added`);}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function updateAgent(id){
-  const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}
-  try{await COL.agents().doc(id).update({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—"});closeModal();showToast("Agent updated ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function deleteAgent(id){
-  try{await COL.agents().doc(id).delete();showToast("Agent removed");}catch(e){showToast("❌ "+e.message);}
-}
+async function addAgent(){const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.agents().add({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—",createdAt:new Date().toISOString()});closeModal();showToast(`✅ "${name}" added`);}catch(e){showToast("❌ "+e.message);}}
+async function updateAgent(id){const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.agents().doc(id).update({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—"});closeModal();showToast("Agent updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteAgent(id){try{await COL.agents().doc(id).delete();showToast("Agent removed");}catch(e){showToast("❌ "+e.message);}}
 
-/* ══════════════════════════════
-   FOLLOW-UPS / TASKS
-══════════════════════════════ */
+/* ══ FOLLOW-UPS ══ */
 function pgFollowups(el){
-  const ts=todayStr();
-  const pending=tasks.filter(t=>!t.done);
+  const ts=todayStr(),pending=tasks.filter(t=>!t.done);
   el.innerHTML=`<div class="page">
     <div class="fu-counters">
       <div class="fu-counter"><div class="fu-num" style="color:#f97316">${pending.length}</div><div class="fu-lbl">Pending</div></div>
@@ -1382,10 +863,9 @@ function pgFollowups(el){
       <div class="fu-counter"><div class="fu-num" style="color:#ef4444">${tasks.filter(t=>!t.done&&t.due&&t.due<ts).length}</div><div class="fu-lbl">Overdue</div></div>
     </div>
     <div class="card">
-      <div class="section-head">
-        <div class="section-title">📋 Tasks</div>
+      <div class="section-head"><div class="section-title">📋 Tasks</div>
         <div style="display:flex;gap:7px">
-          <button onclick="showAddReminderModal()" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:7px 12px;color:#f59e0b;font-size:12px;font-weight:700;cursor:pointer">⏰ Reminder</button>
+          <button onclick="showAddReminderModal()" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:7px 12px;color:#f59e0b;font-size:12px;font-weight:700;cursor:pointer">⏰</button>
           <button onclick="showAddTaskModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Task</button>
         </div>
       </div>
@@ -1395,114 +875,62 @@ function pgFollowups(el){
 }
 function renderTaskList(){
   if(!tasks.length)return`<div style="text-align:center;padding:24px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">✅</div><p>No tasks yet</p></div>`;
-  return tasks.map(t=>`
-    <div class="task-item" style="opacity:${t.done?.6:1}">
-      <div class="task-prio" style="background:${t.priority==="high"?"#ef4444":t.priority==="medium"?"#f59e0b":"#16a34a"}"></div>
-      <div style="flex:1;min-width:0">
-        <div class="task-lead" style="text-decoration:${t.done?"line-through":"none"}">${t.leadName} <span style="color:var(--text);font-weight:400">— ${t.task}</span></div>
-        <div class="task-info">Due ${t.due||"No date"} · ${t.priority}</div>
-      </div>
-      <div class="task-actions">
-        ${!t.done?`<button class="task-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="markTaskDone('${t.id}')">✓</button>`:`<span style="color:#16a34a;font-size:12px;padding:4px">✓</span>`}
-        <button class="task-btn" style="background:var(--input-bg);color:var(--text2);border:1px solid var(--border)" onclick="showEditTaskModal('${t.id}')">✏️</button>
-        <button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="confirmDelete('Delete this task?','deleteTask(\\'${t.id}\\')' )">🗑</button>
-      </div>
-    </div>`).join("");
+  return tasks.map(t=>`<div class="task-item" style="opacity:${t.done?.6:1}">
+    <div class="task-prio" style="background:${t.priority==="high"?"#ef4444":t.priority==="medium"?"#f59e0b":"#16a34a"}"></div>
+    <div style="flex:1;min-width:0"><div class="task-lead" style="text-decoration:${t.done?"line-through":"none"}">${t.leadName} <span style="color:var(--text);font-weight:400">— ${t.task}</span></div><div class="task-info">Due ${t.due||"No date"} · ${t.priority}</div></div>
+    <div class="task-actions">
+      ${!t.done?`<button class="task-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="markTaskDone('${t.id}')">✓</button>`:`<span style="color:#16a34a;font-size:12px;padding:4px">✓</span>`}
+      <button class="task-btn" style="background:var(--input-bg);color:var(--text2);border:1px solid var(--border)" onclick="showEditTaskModal('${t.id}')">✏️</button>
+      <button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="confirmDelete('Delete task?','deleteTask(\\'${t.id}\\')')">🗑</button>
+    </div>
+  </div>`).join("");
 }
 function showAddTaskModal(){_taskModal(null);}
 function showEditTaskModal(id){_taskModal(tasks.find(t=>t.id===id));}
 function _taskModal(t){
   const isEdit=!!t;
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isEdit?"✏️ Edit Task":"➕ Add Task"}</div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">${isEdit?"✏️ Edit Task":"➕ Add Task"}</div>
     <div class="form-row"><label>LEAD NAME *</label><input id="tln" list="leadNames" value="${t?t.leadName:""}" placeholder="Type lead name"/><datalist id="leadNames">${leads.map(l=>`<option value="${l.name}">`).join("")}</datalist></div>
     <div class="form-row"><label>TASK *</label><input id="tt" value="${t?t.task:""}" placeholder="e.g. Send product catalog"/></div>
     <div class="form-row"><label>DUE DATE</label><input id="td" type="date" value="${t?t.due||"":""}"/></div>
     <div class="form-row"><label>PRIORITY</label><select id="tp"><option value="high"${t&&t.priority==="high"?" selected":""}>High</option><option value="medium"${t&&t.priority==="medium"?" selected":""}>Medium</option><option value="low"${!t||t.priority==="low"?" selected":""}>Low</option></select></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete this task?','deleteTask(\\'${t.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete task?','deleteTask(\\'${t.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
       <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateTask('${t.id}')`:"addTask()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addTask(){
-  const leadName=($("tln").value||"").trim(),task=($("tt").value||"").trim();
-  if(!leadName||!task){showToast("Fill required fields");return;}
-  try{await COL.tasks().add({leadName,task,due:$("td").value||"",priority:$("tp").value,done:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});closeModal();showToast("Task added ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function updateTask(id){
-  const leadName=($("tln").value||"").trim(),task=($("tt").value||"").trim();
-  if(!leadName||!task){showToast("Fill required fields");return;}
-  try{await COL.tasks().doc(id).update({leadName,task,due:$("td").value||"",priority:$("tp").value});closeModal();showToast("Task updated ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function markTaskDone(id){
-  try{await COL.tasks().doc(id).update({done:true});showToast("Done ✅");}catch(e){showToast("❌ "+e.message);}
-}
-async function deleteTask(id){
-  try{await COL.tasks().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
-}
+async function addTask(){const ln=($("tln").value||"").trim(),tt=($("tt").value||"").trim();if(!ln||!tt){showToast("Fill required fields");return;}try{await COL.tasks().add({leadName:ln,task:tt,due:$("td").value||"",priority:$("tp").value,done:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});closeModal();showToast("Task added ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateTask(id){const ln=($("tln").value||"").trim(),tt=($("tt").value||"").trim();if(!ln||!tt){showToast("Fill required fields");return;}try{await COL.tasks().doc(id).update({leadName:ln,task:tt,due:$("td").value||"",priority:$("tp").value});closeModal();showToast("Task updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function markTaskDone(id){try{await COL.tasks().doc(id).update({done:true});showToast("Done ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteTask(id){try{await COL.tasks().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
 
-/* ══════════════════════════════
-   AUTOMATION
-══════════════════════════════ */
-const TRIGGERS=["New lead arrives","No reply in 24h","Call not answered","Stage → Interested","Stage → Demo","Stage → Closed","Stage → Payment Pending"];
-const ACTIONS=["Send welcome message","Send follow-up reminder","Schedule retry call","Assign to agent","Create task","Send notification"];
+/* ══ AUTOMATION ══ */
 function pgAutomation(el){
   if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("Automation")}</div>`;return;}
-  el.innerHTML=`<div class="page"><div class="card">
-    <div class="section-head">
-      <div class="section-title">⚡ Automation Rules</div>
-      <button onclick="showAddAutoModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button>
-    </div>
-    ${autos.length?autos.map(a=>`
-      <div class="auto-item">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px"><span class="tag" style="background:rgba(59,130,246,.12);color:#3b82f6">IF</span><span style="font-size:12px;font-weight:600;color:var(--white)">${a.trigger}</span></div>
-          <div style="display:flex;align-items:center;gap:7px"><span class="tag" style="background:${rc()}18;color:${rc()}">THEN</span><span style="color:var(--text2);font-size:12px">${a.action}</span></div>
-        </div>
-        <button onclick="showEditAutoModal('${a.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:6px">✏️</button>
-        <div class="toggle" style="background:${a.on?rc():"rgba(127,127,127,.2)"}" onclick="toggleAuto('${a.id}')"><div class="toggle-knob" style="left:${a.on?"22px":"3px"}"></div></div>
-        <button onclick="confirmDelete('Delete this rule?','deleteAuto(\\'${a.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:4px;margin-left:6px">🗑</button>
-      </div>`).join(""):`<div style="text-align:center;padding:24px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">🤖</div><p>No rules yet</p></div>`}
+  el.innerHTML=`<div class="page"><div class="card"><div class="section-head"><div class="section-title">⚡ Automation Rules</div><button onclick="showAddAutoModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button></div>
+    ${autos.length?autos.map(a=>`<div class="auto-item"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:7px;margin-bottom:4px"><span class="tag" style="background:rgba(59,130,246,.12);color:#3b82f6">IF</span><span style="font-size:12px;font-weight:600;color:var(--white)">${a.trigger}</span></div><div style="display:flex;align-items:center;gap:7px"><span class="tag" style="background:${rc()}18;color:${rc()}">THEN</span><span style="color:var(--text2);font-size:12px">${a.action}</span></div></div><button onclick="showEditAutoModal('${a.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:6px">✏️</button><div class="toggle" style="background:${a.on?rc():"rgba(127,127,127,.2)"}" onclick="toggleAuto('${a.id}')"><div class="toggle-knob" style="left:${a.on?"22px":"3px"}"></div></div><button onclick="confirmDelete('Delete rule?','deleteAuto(\\'${a.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:4px;margin-left:6px">🗑</button></div>`).join(""):`<div style="text-align:center;padding:24px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">🤖</div><p>No rules yet</p></div>`}
   </div></div>`;
 }
 function showAddAutoModal(){_autoModal(null);}
 function showEditAutoModal(id){_autoModal(autos.find(a=>a.id===id));}
 function _autoModal(a){
   const isEdit=!!a;
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isEdit?"✏️ Edit Rule":"➕ New Rule"}</div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">${isEdit?"✏️ Edit Rule":"➕ New Rule"}</div>
     <div class="form-row"><label>TRIGGER (IF)</label><select id="at2">${TRIGGERS.map(t=>`<option${a&&a.trigger===t?" selected":""}>${t}</option>`).join("")}</select></div>
     <div class="form-row"><label>ACTION (THEN)</label><select id="aa">${ACTIONS.map(t=>`<option${a&&a.action===t?" selected":""}>${t}</option>`).join("")}</select></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete this rule?','deleteAuto(\\'${a.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete rule?','deleteAuto(\\'${a.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
       <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateAuto('${a.id}')`:"addAuto()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addAuto(){
-  try{await COL.autos().add({trigger:$("at2").value,action:$("aa").value,on:true,createdAt:new Date().toISOString()});closeModal();showToast("Rule added ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function updateAuto(id){
-  try{await COL.autos().doc(id).update({trigger:$("at2").value,action:$("aa").value});closeModal();showToast("Rule updated ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function toggleAuto(id){
-  const a=autos.find(x=>x.id===id);if(!a)return;
-  try{await COL.autos().doc(id).update({on:!a.on});}catch(e){showToast("❌ "+e.message);}
-}
-async function deleteAuto(id){
-  try{await COL.autos().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
-}
+async function addAuto(){try{await COL.autos().add({trigger:$("at2").value,action:$("aa").value,on:true,createdAt:new Date().toISOString()});closeModal();showToast("Rule added ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateAuto(id){try{await COL.autos().doc(id).update({trigger:$("at2").value,action:$("aa").value});closeModal();showToast("Rule updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function toggleAuto(id){const a=autos.find(x=>x.id===id);if(!a)return;try{await COL.autos().doc(id).update({on:!a.on});}catch(e){showToast("❌ "+e.message);}}
+async function deleteAuto(id){try{await COL.autos().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
 
-/* ══════════════════════════════
-   CAMPAIGNS
-══════════════════════════════ */
+/* ══ CAMPAIGNS ══ */
 function pgCampaigns(el){
   if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("Campaigns")}</div>`;return;}
   const ts=campaigns.reduce((s,c)=>s+Number(c.spend||0),0),tr=campaigns.reduce((s,c)=>s+Number(c.revenue||0),0),tl=campaigns.reduce((s,c)=>s+Number(c.leads||0),0);
@@ -1513,19 +941,8 @@ function pgCampaigns(el){
       <div class="camp-stat"><div class="camp-stat-icon">💰</div><div class="camp-stat-val">₹${tr.toLocaleString("en-IN")}</div><div class="camp-stat-key">Revenue</div></div>
       <div class="camp-stat"><div class="camp-stat-icon">📈</div><div class="camp-stat-val">${ts?(tr/ts).toFixed(1)+"x":"—"}</div><div class="camp-stat-key">ROAS</div></div>
     </div>
-    <div class="card">
-      <div class="section-head">
-        <div class="section-title">📊 Campaigns</div>
-        <button onclick="showAddCampaignModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button>
-      </div>
-      ${campaigns.length?campaigns.map(c=>`
-        <div class="camp-row">
-          <div style="flex:1;min-width:0"><div class="camp-name">${c.name}</div><div class="camp-sub">${c.leads||0} leads · ${c.status}</div></div>
-          <div class="camp-metric"><div class="camp-metric-val">₹${Number(c.spend||0).toLocaleString("en-IN")}</div><div class="camp-metric-key">Spend</div></div>
-          <div class="camp-metric"><div class="camp-metric-val" style="color:#16a34a">${c.spend?(Number(c.revenue||0)/Number(c.spend)).toFixed(1)+"x":"—"}</div><div class="camp-metric-key">ROAS</div></div>
-          <button onclick="showEditCampaignModal('${c.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:4px">✏️</button>
-          <button onclick="confirmDelete('Delete campaign <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">🗑</button>
-        </div>`).join(""):`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">📊</div><p>No campaigns yet</p></div>`}
+    <div class="card"><div class="section-head"><div class="section-title">📊 Campaigns</div><button onclick="showAddCampaignModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button></div>
+      ${campaigns.length?campaigns.map(c=>`<div class="camp-row"><div style="flex:1;min-width:0"><div class="camp-name">${c.name}</div><div class="camp-sub">${c.leads||0} leads · ${c.status}</div></div><div class="camp-metric"><div class="camp-metric-val">₹${Number(c.spend||0).toLocaleString("en-IN")}</div><div class="camp-metric-key">Spend</div></div><div class="camp-metric"><div class="camp-metric-val" style="color:#16a34a">${c.spend?(Number(c.revenue||0)/Number(c.spend)).toFixed(1)+"x":"—"}</div><div class="camp-metric-key">ROAS</div></div><button onclick="showEditCampaignModal('${c.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:4px">✏️</button><button onclick="confirmDelete('Delete campaign <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">🗑</button></div>`).join(""):`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">📊</div><p>No campaigns yet</p></div>`}
     </div>
   </div>`;
 }
@@ -1533,140 +950,68 @@ function showAddCampaignModal(){_campaignModal(null);}
 function showEditCampaignModal(id){_campaignModal(campaigns.find(c=>c.id===id));}
 function _campaignModal(c){
   const isEdit=!!c;
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isEdit?"✏️ Edit Campaign":"➕ Add Campaign"}</div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">${isEdit?"✏️ Edit Campaign":"➕ Add Campaign"}</div>
     <div class="form-row"><label>NAME *</label><input id="cn" value="${c?c.name:""}" placeholder="e.g. Diwali Sale 2026"/></div>
     <div class="form-row"><label>AD SPEND (₹)</label><input id="cs" type="number" value="${c?c.spend||0:0}"/></div>
     <div class="form-row"><label>LEADS</label><input id="cl" type="number" value="${c?c.leads||0:0}"/></div>
     <div class="form-row"><label>REVENUE (₹)</label><input id="cr" type="number" value="${c?c.revenue||0:0}"/></div>
     <div class="form-row"><label>STATUS</label><select id="cst"><option${!c||c.status==="Active"?" selected":""}>Active</option><option${c&&c.status==="Paused"?" selected":""}>Paused</option><option${c&&c.status==="Ended"?" selected":""}>Ended</option></select></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete campaign <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete campaign <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
       <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateCampaign('${c.id}')`:"addCampaign()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addCampaign(){
-  const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}
-  try{await COL.campaigns().add({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value,createdAt:new Date().toISOString()});closeModal();showToast("Campaign added ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function updateCampaign(id){
-  const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}
-  try{await COL.campaigns().doc(id).update({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value});closeModal();showToast("Campaign updated ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function deleteCampaign(id){
-  try{await COL.campaigns().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
-}
+async function addCampaign(){const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.campaigns().add({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value,createdAt:new Date().toISOString()});closeModal();showToast("Campaign added ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateCampaign(id){const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.campaigns().doc(id).update({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value});closeModal();showToast("Campaign updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteCampaign(id){try{await COL.campaigns().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
 
-/* ══════════════════════════════
-   TEMPLATES
-══════════════════════════════ */
+/* ══ TEMPLATES ══ */
 function pgTemplates(el){
   el.innerHTML=`<div class="tpl-grid">
     <div class="tpl-add" onclick="showAddTemplateModal()"><div style="font-size:28px;color:var(--text)">+</div><div style="color:var(--text);font-size:12px;margin-top:7px">New Template</div></div>
-    ${templates.map(t=>`
-      <div class="tpl-card">
-        <div class="tpl-head"><span class="tpl-title">${t.title}</span>${pill(t.type||"Text",rc())}</div>
-        <div class="tpl-body">${t.content}</div>
-        <div class="tpl-foot">
-          <span class="tpl-uses">Used ${t.uses||0}×</span>
-          <div style="display:flex;gap:6px">
-            <button style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="showEditTemplateModal('${t.id}')">✏️ Edit</button>
-            <button style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="confirmDelete('Delete template <b>${t.title}</b>?','deleteTemplate(\\'${t.id}\\')')">🗑</button>
-          </div>
-        </div>
-      </div>`).join("")}
+    ${templates.map(t=>`<div class="tpl-card"><div class="tpl-head"><span class="tpl-title">${t.title}</span>${pill(t.type||"Text",rc())}</div><div class="tpl-body">${t.content}</div><div class="tpl-foot"><span class="tpl-uses">Used ${t.uses||0}×</span><div style="display:flex;gap:6px"><button style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="showEditTemplateModal('${t.id}')">✏️ Edit</button><button style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="confirmDelete('Delete template <b>${t.title}</b>?','deleteTemplate(\\'${t.id}\\')')">🗑</button></div></div></div>`).join("")}
   </div>`;
 }
 function showAddTemplateModal(){_templateModal(null);}
 function showEditTemplateModal(id){_templateModal(templates.find(t=>t.id===id));}
 function _templateModal(t){
   const isEdit=!!t;
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">${isEdit?"✏️ Edit Template":"➕ New Template"}</div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">${isEdit?"✏️ Edit Template":"➕ New Template"}</div>
     <div class="form-row"><label>TITLE *</label><input id="ttl" value="${t?t.title:""}" placeholder="e.g. Welcome Message"/></div>
     <div class="form-row"><label>TYPE</label><select id="tty"><option${!t||t.type==="Text"?" selected":""}>Text</option><option${t&&t.type==="Audio"?" selected":""}>Audio</option><option${t&&t.type==="Image"?" selected":""}>Image</option></select></div>
     <div class="form-row"><label>CONTENT (use {{name}})</label><textarea id="tcn">${t?t.content:""}</textarea></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete template <b>${t.title}</b>?','deleteTemplate(\\'${t.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete template <b>${t.title}</b>?','deleteTemplate(\\'${t.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
       <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateTemplate('${t.id}')`:"addTemplate()"}">${isEdit?"Save":"Create"}</button>
     </div>
   </div>`);
 }
-async function addTemplate(){
-  const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}
-  try{await COL.templates().add({title,type:$("tty").value,content,uses:0,createdAt:new Date().toISOString()});closeModal();showToast("Template saved ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function updateTemplate(id){
-  const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}
-  try{await COL.templates().doc(id).update({title,type:$("tty").value,content});closeModal();showToast("Template updated ✅");}
-  catch(e){showToast("❌ "+e.message);}
-}
-async function deleteTemplate(id){
-  try{await COL.templates().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
-}
+async function addTemplate(){const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}try{await COL.templates().add({title,type:$("tty").value,content,uses:0,createdAt:new Date().toISOString()});closeModal();showToast("Template saved ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateTemplate(id){const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}try{await COL.templates().doc(id).update({title,type:$("tty").value,content});closeModal();showToast("Template updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteTemplate(id){try{await COL.templates().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
 
-/* ══════════════════════════════
-   USER MANAGEMENT
-══════════════════════════════ */
+/* ══ USER MANAGEMENT ══ */
 async function pgSettings(el){
   if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("User Management")}</div>`;return;}
   el.innerHTML=`<div class="page"><div style="text-align:center;padding:40px;color:var(--text)"><div class="spinner" style="border-top-color:${rc()};width:24px;height:24px"></div></div></div>`;
-  try{
-    const snap=await COL.users().get();
-    managedUsers=snap.docs.map(d=>({uid:d.id,...d.data()}));
-    _renderSettings(el);
-  } catch(e){el.innerHTML=`<div class="page"><p style="color:#ef4444;padding:20px">Error: ${e.message}</p></div>`;}
+  try{const snap=await COL.users().get();managedUsers=snap.docs.map(d=>({uid:d.id,...d.data()}));_renderSettings(el);}
+  catch(e){el.innerHTML=`<div class="page"><p style="color:#ef4444;padding:20px">Error: ${e.message}</p></div>`;}
 }
 function _renderSettings(el){
   const rC={admin:"#7c3aed",manager:"#0ea5e9",agent:"#16a34a"};
   el.innerHTML=`<div class="page">
     <div class="card" style="margin-bottom:12px">
-      <div class="section-head">
-        <div class="section-title">👥 Platform Users</div>
-        <button onclick="showCreateUserModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Create</button>
-      </div>
-      ${managedUsers.map(u=>`
-        <div class="user-row">
-          ${av(initials(u.name||u.email||"?"),34,`${rC[u.role]||"#666"},${rC[u.role]||"#666"}88`)}
-          <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.name||"—"}</div><div style="color:var(--text);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email||u.uid}</div></div>
-          <span style="padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;background:${rC[u.role]||"#666"}18;color:${rC[u.role]||"#666"};border:1px solid ${rC[u.role]||"#666"}33;flex-shrink:0;margin-right:6px">${ROLES[u.role]?.label||u.role}</span>
-          ${u.uid!==currentUser.uid?`<button onclick="showEditUserModal('${u.uid}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:7px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer">✏️</button>`:"<span style='width:28px'></span>"}
-        </div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px">No users found.</p>`}
+      <div class="section-head"><div class="section-title">👥 Platform Users</div><button onclick="showCreateUserModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Create</button></div>
+      ${managedUsers.map(u=>`<div class="user-row">${av(initials(u.name||u.email||"?"),34,`${rC[u.role]||"#666"},${rC[u.role]||"#666"}88`)}<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.name||"—"}</div><div style="color:var(--text);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email||u.uid}</div></div><span style="padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;background:${rC[u.role]||"#666"}18;color:${rC[u.role]||"#666"};border:1px solid ${rC[u.role]||"#666"}33;flex-shrink:0;margin-right:6px">${ROLES[u.role]?.label||u.role}</span>${u.uid!==currentUser.uid?`<button onclick="showEditUserModal('${u.uid}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:7px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer">✏️</button>`:"<span style='width:28px'></span>"}</div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px">No users found.</p>`}
     </div>
-    <div class="card">
-      <div class="section-title" style="margin-bottom:12px">⚙️ App Settings</div>
-      <div class="settings-row">
-        <div><div class="settings-row-label">${darkMode?"☀️ Light Mode":"🌙 Dark Mode"}</div><div class="settings-row-sub">Toggle appearance</div></div>
-        <button onclick="toggleTheme();pgSettings($('mainContent'))" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">${darkMode?"Switch Light":"Switch Dark"}</button>
-      </div>
-      <div class="settings-row">
-        <div><div class="settings-row-label">🔑 Your Role</div><div class="settings-row-sub">${currentUser.email}</div></div>
-        ${pill(ROLES[selectedRole].label,rc())}
-      </div>
+    <div class="card"><div class="section-title" style="margin-bottom:12px">⚙️ App Settings</div>
+      <div class="settings-row"><div><div class="settings-row-label">${darkMode?"☀️ Light Mode":"🌙 Dark Mode"}</div><div class="settings-row-sub">Toggle appearance</div></div><button onclick="toggleTheme();pgSettings($('mainContent'))" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">${darkMode?"Switch Light":"Switch Dark"}</button></div>
+      <div class="settings-row"><div><div class="settings-row-label">🔑 Your Role</div><div class="settings-row-sub">${currentUser.email}</div></div>${pill(ROLES[selectedRole].label,rc())}</div>
     </div>
   </div>`;
 }
-function showCreateUserModal(){
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">➕ Create User</div>
-    <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#3b82f6">ℹ️ Creates a Firebase Auth account. Share credentials with the user.</div>
-    <div class="form-row"><label>FULL NAME *</label><input id="un" placeholder="e.g. Arjun Nair"/></div>
-    <div class="form-row"><label>EMAIL *</label><input id="ue" type="email" placeholder="arjun@homegym.in"/></div>
-    <div class="form-row"><label>PASSWORD *</label><input id="upw" type="text" placeholder="Min 6 characters" autocomplete="new-password"/></div>
-    <div class="form-row"><label>ROLE</label><select id="ur"><option value="manager">Manager</option><option value="agent">Sales Agent</option></select></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" style="background:${rc()}" id="createUserBtn" onclick="createUser()">Create Account</button>
-    </div>
-  </div>`);
-}
+function showCreateUserModal(){showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">➕ Create User</div><div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#3b82f6">ℹ️ Creates a Firebase Auth account.</div><div class="form-row"><label>FULL NAME *</label><input id="un" placeholder="e.g. Arjun Nair"/></div><div class="form-row"><label>EMAIL *</label><input id="ue" type="email" placeholder="arjun@homegym.in"/></div><div class="form-row"><label>PASSWORD *</label><input id="upw" type="text" placeholder="Min 6 characters" autocomplete="new-password"/></div><div class="form-row"><label>ROLE</label><select id="ur"><option value="manager">Manager</option><option value="agent">Sales Agent</option></select></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:${rc()}" id="createUserBtn" onclick="createUser()">Create Account</button></div></div>`);}
 async function createUser(){
   const name=($("un").value||"").trim(),email=($("ue").value||"").trim(),pw=$("upw").value,role=$("ur").value;
   if(!name||!email||!pw){showToast("Fill all required fields");return;}
@@ -1678,65 +1023,25 @@ async function createUser(){
     await COL.users().doc(cred.user.uid).set({name,email,role,createdBy:currentUser.uid,createdAt:new Date().toISOString()});
     await secApp.auth().signOut();
     closeModal();showToast(`✅ Account created for ${name}`,4000);pgSettings($("mainContent"));
-  } catch(e){
-    const msgs={"auth/email-already-in-use":"Email already exists.","auth/invalid-email":"Invalid email.","auth/weak-password":"Password too weak."};
-    showToast("❌ "+(msgs[e.code]||e.message));btn.textContent="Create Account";btn.disabled=false;
-  }
+  }catch(e){const msgs={"auth/email-already-in-use":"Email already exists.","auth/invalid-email":"Invalid email.","auth/weak-password":"Password too weak."};showToast("❌ "+(msgs[e.code]||e.message));btn.textContent="Create Account";btn.disabled=false;}
 }
 function showEditUserModal(uid2){
   const u=managedUsers.find(x=>x.uid===uid2);if(!u)return;
   const isSelf=uid2===currentUser.uid;
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">✏️ Edit User</div>
-    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--input-bg);border-radius:10px;margin-bottom:16px">
-      ${av(initials(u.name||u.email||"?"),40)}
-      <div><div style="font-weight:700;font-size:14px;color:var(--white)">${u.name||"—"}</div><div style="color:var(--text);font-size:12px">${u.email||u.uid}</div></div>
-    </div>
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">✏️ Edit User</div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--input-bg);border-radius:10px;margin-bottom:16px">${av(initials(u.name||u.email||"?"),40)}<div><div style="font-weight:700;font-size:14px;color:var(--white)">${u.name||"—"}</div><div style="color:var(--text);font-size:12px">${u.email||u.uid}</div></div></div>
     <div class="form-row"><label>FULL NAME</label><input id="eun" value="${u.name||""}"/></div>
-    <div class="form-row"><label>ROLE</label><select id="eur">
-      <option value="admin"${u.role==="admin"?" selected":""}>Admin / CSO</option>
-      <option value="manager"${u.role==="manager"?" selected":""}>Manager</option>
-      <option value="agent"${u.role==="agent"?" selected":""}>Sales Agent</option>
-    </select></div>
+    <div class="form-row"><label>ROLE</label><select id="eur"><option value="admin"${u.role==="admin"?" selected":""}>Admin / CSO</option><option value="manager"${u.role==="manager"?" selected":""}>Manager</option><option value="agent"${u.role==="agent"?" selected":""}>Sales Agent</option></select></div>
     ${isSelf?`<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:9px;padding:9px 12px;font-size:12px;color:#f59e0b;margin-bottom:8px">⚠️ This is your own account.</div>`:""}
     <div class="modal-footer" style="flex-direction:column;gap:8px">
-      <div style="display:flex;gap:8px;width:100%">
-        <button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button>
-        <button class="btn-save" style="background:${rc()};flex:2" id="editUserBtn" onclick="editUser('${uid2}')">Save Changes</button>
-      </div>
+      <div style="display:flex;gap:8px;width:100%"><button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button><button class="btn-save" style="background:${rc()};flex:2" id="editUserBtn" onclick="editUser('${uid2}')">Save</button></div>
       ${!isSelf?`<button onclick="confirmRemoveUser('${uid2}')" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer">🗑 Remove User</button>`:""}
     </div>
   </div>`);
 }
-async function editUser(uid2){
-  const btn=$("editUserBtn");btn.innerHTML=`<span class="spinner"></span>Saving…`;btn.disabled=true;
-  try{
-    await COL.users().doc(uid2).update({name:$("eun").value,role:$("eur").value});
-    closeModal();showToast("✅ User updated");pgSettings($("mainContent"));
-  } catch(e){showToast("❌ "+e.message);btn.textContent="Save Changes";btn.disabled=false;}
-}
-function confirmRemoveUser(uid2){
-  const u=managedUsers.find(x=>x.uid===uid2);if(!u)return;
-  closeModal();
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" style="color:#ef4444">🗑 Remove User</div>
-    <p style="color:var(--text2);font-size:14px;margin-bottom:14px">Remove <b>${u.name||u.email}</b>? They will lose access.</p>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button>
-      <button class="btn-save" style="background:#ef4444;flex:2" id="removeUserBtn" onclick="removeUser('${uid2}')">Yes, Remove</button>
-    </div>
-  </div>`);
-}
-async function removeUser(uid2){
-  const btn=$("removeUserBtn");btn.innerHTML=`<span class="spinner"></span>Removing…`;btn.disabled=true;
-  try{
-    await COL.users().doc(uid2).delete();
-    managedUsers=managedUsers.filter(u=>u.uid!==uid2);
-    closeModal();showToast("✅ User removed",4000);pgSettings($("mainContent"));
-  } catch(e){showToast("❌ Failed: "+e.message);btn.textContent="Yes, Remove";btn.disabled=false;}
-}
+async function editUser(uid2){const btn=$("editUserBtn");btn.innerHTML=`<span class="spinner"></span>Saving…`;btn.disabled=true;try{await COL.users().doc(uid2).update({name:$("eun").value,role:$("eur").value});closeModal();showToast("✅ User updated");pgSettings($("mainContent"));}catch(e){showToast("❌ "+e.message);btn.textContent="Save";btn.disabled=false;}}
+function confirmRemoveUser(uid2){const u=managedUsers.find(x=>x.uid===uid2);if(!u)return;closeModal();showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#ef4444">🗑 Remove User</div><p style="color:var(--text2);font-size:14px;margin-bottom:14px">Remove <b>${u.name||u.email}</b>? They will lose access.</p><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button><button class="btn-save" style="background:#ef4444;flex:2" id="removeUserBtn" onclick="removeUser('${uid2}')">Yes, Remove</button></div></div>`);}
+async function removeUser(uid2){const btn=$("removeUserBtn");btn.innerHTML=`<span class="spinner"></span>Removing…`;btn.disabled=true;try{await COL.users().doc(uid2).delete();managedUsers=managedUsers.filter(u=>u.uid!==uid2);closeModal();showToast("✅ User removed",4000);pgSettings($("mainContent"));}catch(e){showToast("❌ "+e.message);btn.textContent="Yes, Remove";btn.disabled=false;}}
 </script>
 </body>
 </html>
