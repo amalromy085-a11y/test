@@ -9,62 +9,59 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#0f1117;--surface:#1a1d27;--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.4);--text2:rgba(255,255,255,.7);--white:#f0f2f5;--input-bg:rgba(255,255,255,.06);--input-border:rgba(255,255,255,.1);--card-hover:rgba(255,255,255,.04);--rc:#7c3aed;--shadow:0 2px 16px rgba(0,0,0,.4);--modal-bg:rgba(0,0,0,.75)}
-[data-theme="light"]{--bg:#f0f2f5;--surface:#fff;--border:rgba(0,0,0,.09);--text:rgba(0,0,0,.45);--text2:rgba(0,0,0,.7);--white:#111;--input-bg:rgba(0,0,0,.04);--input-border:rgba(0,0,0,.12);--card-hover:rgba(0,0,0,.03);--shadow:0 2px 16px rgba(0,0,0,.08);--modal-bg:rgba(0,0,0,.5)}
+:root{--bg:#f0f2f5;--surface:#fff;--border:rgba(0,0,0,.09);--text:rgba(0,0,0,.45);--text2:rgba(0,0,0,.7);--white:#111;--input-bg:rgba(0,0,0,.04);--input-border:rgba(0,0,0,.12);--card-hover:rgba(0,0,0,.03);--rc:#7c3aed;--shadow:0 2px 16px rgba(0,0,0,.08);--modal-bg:rgba(0,0,0,.5)}
+[data-theme="dark"]{--bg:#0f1117;--surface:#1a1d27;--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.4);--text2:rgba(255,255,255,.7);--white:#f0f2f5;--input-bg:rgba(255,255,255,.06);--input-border:rgba(255,255,255,.1);--card-hover:rgba(255,255,255,.04);--shadow:0 2px 16px rgba(0,0,0,.4);--modal-bg:rgba(0,0,0,.75)}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);height:100dvh;overflow:hidden;display:flex;flex-direction:column;transition:background .3s,color .3s}
 input,select,button,textarea{font-family:inherit;color:var(--white)}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:rgba(127,127,127,.3);border-radius:99px}
 select option{background:var(--surface);color:var(--white)}
 
-/* ─── 3D GYM BACKGROUND ─── */
-#gymBg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.gym-canvas{width:100%;height:100%;position:absolute;inset:0}
-#appShell{position:relative;z-index:1;display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+/* GYM BG */
+.gym-bg{position:fixed;inset:0;z-index:0;background:
+  linear-gradient(135deg,rgba(15,17,23,.92) 0%,rgba(26,29,39,.88) 100%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23111'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Ccircle cx='100' cy='20' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Crect x='28' y='16' width='64' height='8' rx='4' fill='%23222'/%3E%3Ccircle cx='20' cy='100' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='8' fill='none' stroke='%23222' stroke-width='2'/%3E%3Crect x='28' y='96' width='64' height='8' rx='4' fill='%23222'/%3E%3Crect x='55' y='24' width='10' height='72' rx='3' fill='%231a1a2e'/%3E%3C/svg%3E");
+  background-size:cover,120px 120px;
+  pointer-events:none}
+[data-theme="light"] .gym-bg{background:
+  linear-gradient(135deg,rgba(240,242,245,.95) 0%,rgba(255,255,255,.92) 100%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' fill='%23f0f2f5'/%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Ccircle cx='100' cy='20' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Crect x='28' y='16' width='64' height='8' rx='4' fill='%23ddd'/%3E%3Ccircle cx='20' cy='100' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='8' fill='none' stroke='%23ddd' stroke-width='2'/%3E%3Crect x='28' y='96' width='64' height='8' rx='4' fill='%23ddd'/%3E%3Crect x='55' y='24' width='10' height='72' rx='3' fill='%23e8e8e8'/%3E%3C/svg%3E");
+  background-size:cover,120px 120px;pointer-events:none}
 
-/* ─── LOGIN ─── */
-#loginWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:100;transition:opacity .5s;overflow-y:auto;background:transparent}
+/* LOGIN */
+#loginWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:100;transition:opacity .4s;overflow-y:auto}
 #loginWrap.hide{opacity:0;pointer-events:none}
-.login-card{width:100%;max-width:400px;perspective:1000px}
-.login-inner{animation:loginFloat 6s ease-in-out infinite}
-@keyframes loginFloat{0%,100%{transform:translateY(0) rotateX(0deg)}50%{transform:translateY(-8px) rotateX(1deg)}}
+.login-card{width:100%;max-width:400px;position:relative;z-index:1}
 .login-header{text-align:center;margin-bottom:24px}
-.logo-circle{display:inline-flex;align-items:center;justify-content:center;width:90px;height:90px;border-radius:22px;background:linear-gradient(135deg,#7c3aed,#4f46e5);margin-bottom:14px;box-shadow:0 8px 32px rgba(124,58,237,.5);animation:logoPulse 3s ease-in-out infinite}
-@keyframes logoPulse{0%,100%{box-shadow:0 8px 32px rgba(124,58,237,.5)}50%{box-shadow:0 8px 48px rgba(124,58,237,.9)}}
-.login-header h1{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#fff;text-shadow:0 2px 20px rgba(124,58,237,.5)}
-.login-header p{color:rgba(255,255,255,.5);font-size:12px;margin-top:4px}
-.glass{background:rgba(26,29,39,.85);border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1);backdrop-filter:blur(20px)}
-[data-theme="light"] .glass{background:rgba(255,255,255,.9);border:1px solid rgba(124,58,237,.2)}
+.logo-circle{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:20px;background:#111;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.login-header h1{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--white)}
+.login-header p{color:var(--text);font-size:12px;margin-top:4px}
+.glass{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
 .field-wrap{margin-bottom:12px}
-.field-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 13px;color:#fff;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
-.field-input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.2)}
-[data-theme="light"] .field-input{background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.12);color:#111}
-.btn-main{width:100%;padding:13px;border-radius:11px;border:none;font-weight:700;font-size:14px;cursor:pointer;margin-top:12px;color:#fff;background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 4px 20px rgba(124,58,237,.4);transition:all .2s}
-.btn-main:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(124,58,237,.6)}
-.btn-main:disabled{background:rgba(255,255,255,.1)!important;box-shadow:none!important;cursor:not-allowed;transform:none!important}
+.field-input{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:11px 13px;color:var(--white);font-size:14px;outline:none;transition:border-color .2s}
+.field-input:focus{border-color:var(--rc)}
+.btn-main{width:100%;padding:13px;border-radius:11px;border:none;font-weight:700;font-size:14px;cursor:pointer;margin-top:12px;color:#fff;touch-action:manipulation}
+.btn-main:disabled{background:var(--input-bg)!important;color:var(--text)!important;cursor:not-allowed}
 .err-msg{color:#ef4444;font-size:11px;margin-bottom:8px;display:none;padding:8px;background:rgba(239,68,68,.08);border-radius:7px;border:1px solid rgba(239,68,68,.2)}
-.login-footer{color:rgba(255,255,255,.3);font-size:11px;text-align:center;margin-top:16px}
-.theme-toggle-login{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;backdrop-filter:blur(10px)}
+.login-footer{color:var(--text);font-size:11px;text-align:center;margin-top:16px;opacity:.5}
+.theme-toggle-login{position:absolute;top:16px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--white);box-shadow:var(--shadow);z-index:101}
 
-/* ─── APP ─── */
-#app{display:flex;height:100dvh;overflow:hidden;opacity:0;transition:opacity .4s;flex-direction:column}
+/* APP */
+#app{display:flex;height:100dvh;overflow:hidden;opacity:0;transition:opacity .4s;flex-direction:column;position:relative;z-index:1}
 #app.show{opacity:1}
-header{background:rgba(26,29,39,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 14px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:50;box-shadow:0 2px 20px rgba(0,0,0,.3)}
-[data-theme="light"] header{background:rgba(255,255,255,.85)}
-.logo-sm{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 10px rgba(124,58,237,.4)}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 14px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:var(--shadow);z-index:50;backdrop-filter:blur(10px)}
+.logo-sm{width:34px;height:34px;border-radius:9px;background:#111;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .topbar-title{flex:1;min-width:0}
 .topbar-title p{font-weight:800;font-size:14px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topbar-title small{color:var(--text);font-size:10px}
-.icon-btn{background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--white);transition:all .2s}
-.icon-btn:hover{background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4)}
+.icon-btn{background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--white)}
 .av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0}
 .hamburger{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:6px}
-.ham-line{width:20px;height:2px;background:var(--white);border-radius:99px;transition:all .3s}
+.ham-line{width:20px;height:2px;background:var(--white);border-radius:99px}
 
-/* ─── DRAWER ─── */
+/* DRAWER */
 #drawer{position:fixed;inset:0;z-index:200;pointer-events:none}
 #drawerBg{position:absolute;inset:0;background:var(--modal-bg);opacity:0;transition:opacity .3s}
-#drawerPanel{position:absolute;left:0;top:0;bottom:0;width:270px;background:rgba(15,17,23,.95);backdrop-filter:blur(30px);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:4px 0 40px rgba(0,0,0,.5);border-right:1px solid var(--border)}
-[data-theme="light"] #drawerPanel{background:rgba(255,255,255,.95)}
+#drawerPanel{position:absolute;left:0;top:0;bottom:0;width:260px;background:var(--surface);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.2);backdrop-filter:blur(10px)}
 #drawer.open{pointer-events:all}
 #drawer.open #drawerBg{opacity:1}
 #drawer.open #drawerPanel{transform:translateX(0)}
@@ -73,51 +70,42 @@ header{background:rgba(26,29,39,.8);backdrop-filter:blur(20px);border-bottom:1px
 .drawer-brand small{color:var(--text);font-size:10px}
 .drawer-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
 .nav-btn{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;border:none;background:transparent;color:var(--text);font-weight:500;font-size:13px;cursor:pointer;transition:all .18s;text-align:left;width:100%;position:relative}
-.nav-btn.active{background:rgba(124,58,237,.15);color:var(--white);font-weight:700;border:1px solid rgba(124,58,237,.25)}
+.nav-btn.active{background:var(--input-bg);color:var(--white);font-weight:700}
 .nav-dot{position:absolute;left:0;top:18%;bottom:18%;width:3px;border-radius:99px;background:var(--rc);display:none}
 .nav-btn.active .nav-dot{display:block}
 .nav-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
 .drawer-foot{padding:12px 10px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px}
 .logout-btn{margin-left:auto;background:none;border:none;color:var(--text);font-size:13px;cursor:pointer}
 
-/* ─── MAIN ─── */
+/* MAIN */
 main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-.page{padding:14px;animation:fadeUp .3s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.page{padding:14px;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-/* ─── CARDS ─── */
-.card{background:rgba(26,29,39,.8);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;padding:15px;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
-[data-theme="light"] .card{background:rgba(255,255,255,.85)}
-.card:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
 .card-title{font-weight:700;font-size:13px;margin-bottom:12px;color:var(--white)}
 .card+.card{margin-top:12px}
 .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .section-title{font-weight:700;font-size:13px;color:var(--white)}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:-16px;right:-16px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.1)}
+.stat-icon{font-size:20px;margin-bottom:5px}
+.stat-val{font-size:20px;font-weight:800;color:#fff}
+.stat-label{color:rgba(255,255,255,.75);font-size:11px}
+.stat-delta{display:inline-block;margin-top:5px;background:rgba(255,255,255,.2);border-radius:99px;padding:1px 7px;font-size:10px;color:#fff}
+
+/* MISC */
+.pill{border-radius:99px;padding:2px 9px;font-size:10px;font-weight:600;white-space:nowrap}
+.bar-track{background:var(--border);border-radius:99px;height:3px;margin-top:4px}
+.bar-fill{height:3px;border-radius:99px;transition:width .9s ease}
 .two-col{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
 @media(min-width:600px){.two-col{grid-template-columns:1fr 1fr}}
 
-/* ─── STATS ─── */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.stat-card{border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:default;transition:transform .3s,box-shadow .3s;animation:statPop .4s ease backwards}
-.stat-card:nth-child(1){animation-delay:.0s}
-.stat-card:nth-child(2){animation-delay:.08s}
-.stat-card:nth-child(3){animation-delay:.16s}
-.stat-card:nth-child(4){animation-delay:.24s}
-@keyframes statPop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.stat-card:hover{transform:translateY(-3px) scale(1.02)}
-.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.12)}
-.stat-card::after{content:'';position:absolute;bottom:-15px;left:-15px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.06)}
-.stat-icon{font-size:22px;margin-bottom:6px;position:relative;z-index:1}
-.stat-val{font-size:22px;font-weight:800;color:#fff;position:relative;z-index:1}
-.stat-label{color:rgba(255,255,255,.75);font-size:11px;position:relative;z-index:1}
-.stat-delta{display:inline-block;margin-top:5px;background:rgba(255,255,255,.2);border-radius:99px;padding:1px 8px;font-size:10px;color:#fff;position:relative;z-index:1}
-
-/* ─── PILL ─── */
-.pill{border-radius:99px;padding:2px 9px;font-size:10px;font-weight:600;white-space:nowrap}
-.bar-track{background:var(--border);border-radius:99px;height:4px;margin-top:5px}
-.bar-fill{height:4px;border-radius:99px;transition:width 1s ease}
-
-/* ─── LEAD LIST ─── */
+/* LEADS */
 .lead-row{display:flex;align-items:center;gap:10px;padding:8px 9px;border-radius:9px;cursor:pointer;transition:background .15s;margin-bottom:2px}
 .lead-row:hover{background:var(--card-hover)}
 .list-search{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:8px 12px;color:var(--white);font-size:14px;outline:none}
@@ -128,10 +116,15 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .lead-item:active{background:var(--card-hover)}
 .plat-dot{position:absolute;bottom:0;right:0;font-size:8px}
 
-/* ─── CHAT ─── */
+/* PLAN BADGES */
+.plan-silver{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff}
+.plan-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.plan-platinum{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff}
+.plan-couple{background:linear-gradient(135deg,#ec4899,#be185d);color:#fff}
+
+/* CHAT */
 .chat-view{display:flex;flex-direction:column;height:100%;overflow:hidden}
-.chat-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:rgba(26,29,39,.9);backdrop-filter:blur(20px);flex-shrink:0}
-[data-theme="light"] .chat-head{background:rgba(255,255,255,.9)}
+.chat-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface);flex-shrink:0}
 .chat-back{background:none;border:none;color:var(--white);font-size:20px;cursor:pointer;padding:4px}
 .chat-name{font-weight:700;font-size:13px;color:var(--white)}
 .chat-sub{color:var(--text);font-size:10px}
@@ -142,16 +135,15 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .msg-time{font-size:9px;color:rgba(127,127,127,.5);text-align:right;margin-top:3px}
 .msg-out{border-radius:16px 16px 4px 16px;margin-left:auto;color:#fff}
 .msg-in{border-radius:16px 16px 16px 4px;background:var(--input-bg);color:var(--white)}
-.chat-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:7px;flex-shrink:0;background:rgba(26,29,39,.9);backdrop-filter:blur(20px)}
-[data-theme="light"] .chat-input-row{background:rgba(255,255,255,.9)}
+.chat-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:7px;flex-shrink:0;background:var(--surface)}
+.emoji-btn{background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:14px;flex-shrink:0}
 .msg-input{flex:1;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:9px 12px;color:var(--white);font-size:14px;outline:none}
 .send-btn{border:none;border-radius:9px;padding:9px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0}
 
-/* ─── DETAIL SHEET ─── */
+/* DETAIL SHEET */
 .detail-sheet{position:fixed;inset:0;z-index:150;pointer-events:none}
 .detail-bg{position:absolute;inset:0;background:var(--modal-bg);opacity:0;transition:opacity .3s}
-.detail-panel{position:absolute;left:0;right:0;bottom:0;background:rgba(15,17,23,.97);backdrop-filter:blur(30px);border-radius:20px 20px 0 0;max-height:85dvh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);padding:20px 16px;padding-bottom:max(20px,env(safe-area-inset-bottom));border-top:1px solid var(--border)}
-[data-theme="light"] .detail-panel{background:rgba(255,255,255,.97)}
+.detail-panel{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:20px 20px 0 0;max-height:85dvh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding:20px 16px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
 .detail-sheet.open{pointer-events:all}
 .detail-sheet.open .detail-bg{opacity:1}
 .detail-sheet.open .detail-panel{transform:translateY(0)}
@@ -161,216 +153,189 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .detail-val{font-size:12px;font-weight:600;color:var(--white)}
 .ghost-btn{width:100%;padding:10px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:7px;background:transparent;border:none}
 
-/* ─── PIPELINE ─── */
-.pipeline-wrap{padding:14px;overflow-x:auto;animation:fadeUp .3s ease;user-select:none}
-.kanban{display:flex;gap:12px;min-width:max-content;align-items:flex-start;padding-bottom:8px}
-.col-wrap{width:210px;flex-shrink:0}
-.col-inner{border-radius:14px;border:1.5px solid var(--border);background:rgba(26,29,39,.7);backdrop-filter:blur(10px);overflow:hidden;transition:border-color .2s,box-shadow .2s}
-[data-theme="light"] .col-inner{background:rgba(255,255,255,.8)}
-.col-inner.drag-over{border-color:var(--rc);box-shadow:0 0 20px rgba(124,58,237,.3)}
+/* PIPELINE / KANBAN */
+.pipeline-wrap{padding:14px;overflow-x:auto;animation:fadeUp .25s ease;user-select:none}
+.kanban{display:flex;gap:10px;min-width:max-content;align-items:flex-start}
+.col-wrap{width:200px;flex-shrink:0}
+.col-inner{border-radius:12px;border:1.5px solid var(--border);background:var(--surface);overflow:hidden;transition:border-color .2s}
+.col-inner.drag-over{border-color:var(--rc);background:var(--card-hover)}
 .col-head{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .col-dot{width:7px;height:7px;border-radius:50%;margin-right:6px;flex-shrink:0}
 .col-title{font-weight:700;font-size:11px;display:flex;align-items:center;color:var(--white)}
 .col-count{background:var(--input-bg);border-radius:99px;padding:1px 7px;font-size:10px;color:var(--text)}
-.col-body{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:6px}
-.k-card{background:rgba(30,33,48,.9);border:1.5px solid var(--border);border-radius:12px;padding:11px;cursor:grab;transition:box-shadow .2s,transform .2s,opacity .2s;position:relative}
-[data-theme="light"] .k-card{background:rgba(255,255,255,.95)}
-.k-card:hover{border-color:rgba(124,58,237,.4);box-shadow:0 4px 16px rgba(0,0,0,.3)}
-.k-card.dragging{opacity:.35;transform:scale(.96)}
+.col-body{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:6px;position:relative}
+.k-card{background:var(--input-bg);border:1.5px solid var(--border);border-radius:10px;padding:10px;cursor:grab;transition:box-shadow .15s,transform .15s,opacity .15s;position:relative}
+.k-card:active{cursor:grabbing}
+.k-card.dragging{opacity:.4;transform:scale(.97)}
+.k-card.drag-ghost{box-shadow:0 8px 32px rgba(0,0,0,.25);transform:rotate(1.5deg) scale(1.03);z-index:999;opacity:1}
 .k-card-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
-.k-name{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--white);flex:1}
+.k-name{font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--white);flex:1}
 .k-val{color:#16a34a;font-size:13px;font-weight:800;margin:3px 0}
 .k-src{color:var(--text);font-size:10px}
-.k-reminder{font-size:10px;margin-top:5px;padding:3px 7px;border-radius:6px;display:inline-flex;align-items:center;gap:4px}
-.k-actions{display:flex;gap:4px;margin-top:8px}
-.k-act-btn{flex:1;border:none;border-radius:7px;padding:5px 0;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s}
-.drop-zone{border:1.5px dashed var(--border);border-radius:10px;min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--text);font-size:11px;opacity:.5;transition:all .2s}
-.drop-zone.active{border-color:var(--rc);opacity:1;background:rgba(124,58,237,.05);color:var(--rc)}
+.k-actions{display:flex;gap:4px;margin-top:7px}
+.k-act-btn{flex:1;border:none;border-radius:6px;padding:4px 0;font-size:10px;font-weight:600;cursor:pointer}
+.drop-zone{border:1.5px dashed var(--border);border-radius:8px;min-height:50px;display:flex;align-items:center;justify-content:center;color:var(--text);font-size:11px;opacity:.5;transition:all .2s}
+.drop-zone.active{border-color:var(--rc);opacity:1;background:rgba(124,58,237,.05)}
+/* Demo column special style */
+.demo-col .col-inner{border-color:#f59e0b44;background:rgba(245,158,11,.03)}
+.demo-col .col-head{background:rgba(245,158,11,.06)}
 
-/* ─── REMINDER POPUP ─── */
-.reminder-popup{position:fixed;top:20px;right:20px;z-index:500;background:rgba(15,17,23,.97);backdrop-filter:blur(20px);border:1px solid rgba(124,58,237,.4);border-radius:16px;padding:16px 20px;max-width:320px;box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 0 1px rgba(124,58,237,.2);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
-[data-theme="light"] .reminder-popup{background:rgba(255,255,255,.97)}
-@keyframes popIn{from{opacity:0;transform:translateX(40px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
-.reminder-popup-title{font-weight:700;font-size:14px;color:var(--white);margin-bottom:4px}
-.reminder-popup-sub{color:var(--text);font-size:12px;margin-bottom:10px}
-.reminder-popup-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text);font-size:16px;cursor:pointer}
-
-/* ─── AGENTS ─── */
-.agent-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px;animation:fadeUp .3s ease}
+/* AGENTS */
+.agent-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px;animation:fadeUp .25s ease}
 @media(min-width:500px){.agent-grid{grid-template-columns:1fr 1fr}}
-.agent-card{background:rgba(26,29,39,.8);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);transition:transform .2s}
-[data-theme="light"] .agent-card{background:rgba(255,255,255,.85)}
-.agent-card:hover{transform:translateY(-2px)}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .agent-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .agent-conv{margin-left:auto;text-align:right}
-.agent-conv-val{font-size:22px;font-weight:800;color:#16a34a}
+.agent-conv-val{font-size:20px;font-weight:800;color:#16a34a}
 .agent-conv-lbl{font-size:10px;color:var(--text)}
-.agent-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:8px}
+.agent-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
 .agent-stat{background:var(--input-bg);border-radius:8px;padding:8px 0;text-align:center}
 .agent-stat-val{font-weight:700;font-size:12px;color:var(--white)}
 .agent-stat-key{color:var(--text);font-size:10px}
 
-/* ─── LEADERBOARD PODIUM ─── */
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-bottom:16px;padding:16px 0 0}
-.podium-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:100px}
-.podium-av{position:relative}
-.podium-crown{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:18px;animation:crownBounce 2s ease-in-out infinite}
-@keyframes crownBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
-.podium-name{font-size:11px;font-weight:700;color:var(--white);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px}
-.podium-conv{font-size:12px;font-weight:800}
-.podium-bar{width:100%;border-radius:8px 8px 0 0;transition:height 1s cubic-bezier(.34,1.56,.64,1)}
-.lb-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:7px 10px;border-radius:9px;background:var(--input-bg)}
-
-/* ─── FOLLOWUPS ─── */
+/* FOLLOWUPS */
 .fu-counters{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}
-.fu-counter{background:rgba(26,29,39,.8);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow);transition:transform .2s}
-[data-theme="light"] .fu-counter{background:rgba(255,255,255,.85)}
-.fu-counter:hover{transform:scale(1.03)}
+.fu-counter{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
 .fu-num{font-size:28px;font-weight:800}
 .fu-lbl{color:var(--text);font-size:10px;margin-top:2px}
-.task-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;margin-bottom:5px;background:var(--input-bg);transition:all .2s}
-.task-item:hover{background:var(--card-hover)}
+.task-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;margin-bottom:5px;background:var(--input-bg)}
 .task-prio{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .task-lead{font-size:12px;font-weight:600;color:var(--white)}
 .task-info{color:var(--text);font-size:10px;margin-top:1px}
 .task-actions{display:flex;gap:4px;margin-left:auto;flex-shrink:0}
 .task-btn{border:none;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer}
 
-/* ─── AUTOMATION ─── */
-.auto-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;border:1px solid var(--border);transition:all .2s}
-.auto-item:hover{border-color:rgba(124,58,237,.3)}
+/* AUTOMATION */
+.auto-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;border:1px solid var(--border)}
 .tag{padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700}
-.toggle{width:42px;height:23px;border-radius:99px;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
-.toggle-knob{position:absolute;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle{width:40px;height:21px;border-radius:99px;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
+.toggle-knob{position:absolute;top:2.5px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 
-/* ─── CAMPAIGNS ─── */
+/* CAMPAIGNS */
 .campaign-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.camp-stat{background:rgba(26,29,39,.8);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:14px;padding:13px;text-align:center;box-shadow:var(--shadow)}
-[data-theme="light"] .camp-stat{background:rgba(255,255,255,.85)}
+.camp-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--shadow)}
 .camp-stat-icon{font-size:20px}
 .camp-stat-val{font-size:18px;font-weight:800;margin:4px 0 2px;color:var(--white)}
 .camp-stat-key{color:var(--text);font-size:10px}
-.camp-row{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;flex-wrap:wrap;transition:all .2s}
-.camp-row:hover{background:var(--card-hover)}
+.camp-row{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;flex-wrap:wrap}
 .camp-name{font-weight:600;font-size:13px;color:var(--white)}
 .camp-sub{color:var(--text);font-size:10px;margin-top:2px}
 .camp-metric{text-align:center;min-width:50px}
 .camp-metric-val{font-weight:700;font-size:12px;color:var(--white)}
 .camp-metric-key{color:var(--text);font-size:10px}
 
-/* ─── TEMPLATES ─── */
-.tpl-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px;animation:fadeUp .3s ease}
+/* TEMPLATES */
+.tpl-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px;animation:fadeUp .25s ease}
 @media(min-width:500px){.tpl-grid{grid-template-columns:1fr 1fr}}
-.tpl-card{background:rgba(26,29,39,.8);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);transition:all .2s}
-[data-theme="light"] .tpl-card{background:rgba(255,255,255,.85)}
-.tpl-card:hover{transform:translateY(-2px);border-color:rgba(124,58,237,.3)}
+.tpl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .tpl-head{display:flex;justify-content:space-between;margin-bottom:8px;align-items:center}
 .tpl-title{font-weight:700;font-size:13px;color:var(--white)}
 .tpl-body{color:var(--text2);font-size:12px;line-height:1.6;white-space:pre-line}
 .tpl-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 .tpl-uses{color:var(--text);font-size:11px}
-.tpl-add{border:1.5px dashed var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:120px;transition:all .2s;background:transparent}
-.tpl-add:hover{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.05)}
+.tpl-add{border:1.5px dashed var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:120px;transition:border-color .2s}
 
-/* ─── UPGRADES ─── */
-.upgrade-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}
-@media(min-width:500px){.upgrade-grid{grid-template-columns:1fr 1fr}}
-.upgrade-card{background:rgba(26,29,39,.8);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:all .3s}
-[data-theme="light"] .upgrade-card{background:rgba(255,255,255,.85)}
-.upgrade-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
-.upgrade-card.active-plan{border-color:rgba(124,58,237,.5);box-shadow:0 0 30px rgba(124,58,237,.2)}
-.upgrade-badge{position:absolute;top:12px;right:12px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700}
-.upgrade-icon{font-size:32px;margin-bottom:10px}
-.upgrade-name{font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px}
-.upgrade-price{font-size:24px;font-weight:800;margin-bottom:12px}
-.upgrade-feature{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);margin-bottom:6px}
-.upgrade-btn{width:100%;padding:11px;border-radius:10px;border:none;font-weight:700;font-size:13px;cursor:pointer;margin-top:14px;transition:all .2s}
-
-/* ─── MODAL ─── */
+/* MODAL */
 .modal-overlay{position:fixed;inset:0;background:var(--modal-bg);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:rgba(15,17,23,.97);backdrop-filter:blur(30px);border-radius:20px 20px 0 0;padding:22px 20px;width:100%;max-width:100%;box-shadow:0 -8px 60px rgba(0,0,0,.5);max-height:90dvh;overflow-y:auto;padding-bottom:max(22px,env(safe-area-inset-bottom));border-top:1px solid var(--border)}
-[data-theme="light"] .modal{background:rgba(255,255,255,.97)}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:22px 20px;width:100%;max-width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.3);max-height:90dvh;overflow-y:auto;padding-bottom:max(22px,env(safe-area-inset-bottom))}
 .modal-handle{width:36px;height:4px;border-radius:99px;background:var(--border);margin:0 auto 16px}
 .modal-title{font-weight:800;font-size:16px;margin-bottom:16px;color:var(--white)}
 .modal-footer{display:flex;gap:9px;margin-top:18px}
 .btn-cancel{flex:1;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text2);font-size:13px;cursor:pointer}
-.btn-save{flex:2;border:none;border-radius:10px;padding:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;background:linear-gradient(135deg,var(--rc),#6d28d9);box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.btn-save{flex:2;border:none;border-radius:10px;padding:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
 .form-row{margin-bottom:12px}
 .form-row label{display:block;font-size:11px;color:var(--text);font-weight:600;letter-spacing:.4px;margin-bottom:5px}
-.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:11px 12px;color:var(--white);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
-.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--rc);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;padding:11px 12px;color:var(--white);font-size:14px;outline:none;transition:border-color .2s}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--rc)}
 .form-row textarea{resize:vertical;min-height:80px}
 
-/* ─── USER MGMT ─── */
-.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;border:1px solid var(--border);transition:all .2s}
-.user-row:hover{border-color:rgba(124,58,237,.3)}
+/* USER MGMT */
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--input-bg);border-radius:10px;margin-bottom:7px;border:1px solid var(--border)}
 
-/* ─── TOAST / MISC ─── */
-.toast{position:fixed;bottom:max(80px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(15,17,23,.97);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:11px 18px;font-size:13px;color:#fff;z-index:999;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:slideUp .3s ease;display:flex;align-items:center;gap:9px;white-space:nowrap;max-width:90vw}
-[data-theme="light"] .toast{color:var(--white)}
+/* ACCESS */
+.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;color:var(--text)}
+.access-denied .ad-icon{font-size:48px;opacity:.4}
+
+/* TOAST */
+.toast{position:fixed;bottom:max(80px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#111;border-radius:12px;padding:11px 18px;font-size:13px;color:#fff;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.3);animation:slideUp .3s ease;display:flex;align-items:center;gap:9px;white-space:nowrap;max-width:90vw}
+[data-theme="dark"] .toast{background:#2a2d3a;border:1px solid var(--border)}
 @keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* REMINDER POPUP */
+.reminder-popup{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9998;background:var(--surface);border:2px solid #f59e0b;border-radius:16px;padding:16px 20px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(245,158,11,.3);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.reminder-popup-title{font-weight:800;font-size:14px;color:#f59e0b;margin-bottom:6px}
+.reminder-popup-body{font-size:13px;color:var(--white);margin-bottom:12px}
+.reminder-finish-btn{width:100%;padding:10px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:9px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+
+/* STATUS */
+.status-dot-inline{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .stage-btn{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:var(--input-bg);color:var(--white);font-size:13px;text-align:left;cursor:pointer;margin-bottom:6px;transition:all .15s;display:flex;align-items:center;gap:9px}
-.stage-btn.current{border-color:var(--rc);background:rgba(124,58,237,.1)}
-#bottomNav{display:flex;background:rgba(15,17,23,.9);backdrop-filter:blur(20px);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:max(6px,env(safe-area-inset-bottom))}
-[data-theme="light"] #bottomNav{background:rgba(255,255,255,.9)}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border:none;background:transparent;cursor:pointer;gap:3px;touch-action:manipulation;transition:all .2s;color:var(--text)}
+.stage-btn.current{border-color:var(--rc);background:var(--card-hover)}
+
+/* BOTTOM NAV */
+#bottomNav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:max(6px,env(safe-area-inset-bottom));box-shadow:0 -2px 12px rgba(0,0,0,.1)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border:none;background:transparent;cursor:pointer;gap:3px;touch-action:manipulation;transition:all .15s;color:var(--text)}
 .bnav-btn.active{color:var(--rc)}
 .bnav-icon{font-size:18px}
 .bnav-label{font-size:9px;font-weight:600}
+
+/* SPINNER */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;color:var(--text)}
+
+/* SETTINGS */
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--input-bg);border-radius:10px;border:1px solid var(--border);margin-bottom:6px}
 .settings-row-label{font-size:13px;font-weight:600;color:var(--white)}
 .settings-row-sub{font-size:11px;color:var(--text);margin-top:2px}
+
+/* PLAN REVENUE TABLE */
+.plan-rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.plan-rev-card{border-radius:12px;padding:14px;text-align:center;position:relative;overflow:hidden}
+.plan-rev-val{font-size:18px;font-weight:800;color:#fff;margin:4px 0 2px}
+.plan-rev-key{color:rgba(255,255,255,.75);font-size:11px}
+.plan-rev-count{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
 </style>
 </head>
 <body>
-
-<!-- 3D GYM BACKGROUND -->
-<div id="gymBg">
-  <canvas id="gymCanvas" class="gym-canvas"></canvas>
-</div>
+<div class="gym-bg"></div>
 
 <div id="loginWrap">
-  <button class="theme-toggle-login" onclick="toggleTheme()" id="themeToggleLogin">☀️</button>
+  <button class="theme-toggle-login" onclick="toggleTheme()" id="themeToggleLogin">🌙</button>
   <div class="login-card">
-    <div class="login-inner">
-      <div class="login-header">
-        <div class="logo-circle">
-          <svg width="52" height="48" viewBox="0 0 220 200" fill="none">
-            <path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="22" y="112" width="26" height="65" rx="9" fill="white"/>
-            <rect x="48" y="125" width="20" height="42" rx="8" fill="white"/>
-            <rect x="68" y="142" width="84" height="14" rx="7" fill="white"/>
-            <rect x="152" y="125" width="20" height="42" rx="8" fill="white"/>
-            <rect x="172" y="112" width="26" height="65" rx="9" fill="white"/>
-          </svg>
-        </div>
-        <h1>Sales Command Center</h1>
-        <p>HomeGym™ — Powered by SalesCMD</p>
+    <div class="login-header">
+      <div class="logo-circle">
+        <svg width="52" height="48" viewBox="0 0 220 200" fill="none">
+          <path d="M20 95 L110 18 L200 95" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="22" y="112" width="26" height="65" rx="9" fill="white"/>
+          <rect x="48" y="125" width="20" height="42" rx="8" fill="white"/>
+          <rect x="68" y="142" width="84" height="14" rx="7" fill="white"/>
+          <rect x="152" y="125" width="20" height="42" rx="8" fill="white"/>
+          <rect x="172" y="112" width="26" height="65" rx="9" fill="white"/>
+        </svg>
       </div>
-      <div class="glass">
-        <p style="color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Sign in to your account</p>
-        <div class="field-wrap">
-          <label style="font-size:11px;color:var(--text);font-weight:600;display:block;margin-bottom:5px;letter-spacing:.4px">EMAIL</label>
-          <input id="emailInput" class="field-input" type="email" placeholder="you@homegym.in" autocomplete="email"/>
-        </div>
-        <div class="field-wrap">
-          <label style="font-size:11px;color:var(--text);font-weight:600;display:block;margin-bottom:5px;letter-spacing:.4px">PASSWORD</label>
-          <input id="passInput" class="field-input" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
-        </div>
-        <p class="err-msg" id="errMsg">Invalid credentials.</p>
-        <button class="btn-main" id="signInBtn" onclick="doLogin()">Sign In →</button>
-        <p style="color:rgba(255,255,255,.3);font-size:11px;text-align:center;margin-top:10px">New user? Contact your admin for access.</p>
-      </div>
-      <p class="login-footer">© 2026 HomeGym™ · Sales Command Center v4.0</p>
+      <h1>Sales Command Center</h1>
+      <p>HomeGym™ — Powered by SalesCMD</p>
     </div>
+    <div class="glass">
+      <p style="color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Sign in to your account</p>
+      <div class="field-wrap">
+        <label style="font-size:11px;color:var(--text);font-weight:600;display:block;margin-bottom:5px;letter-spacing:.4px">EMAIL</label>
+        <input id="emailInput" class="field-input" type="email" placeholder="you@homegym.in" autocomplete="email"/>
+      </div>
+      <div class="field-wrap">
+        <label style="font-size:11px;color:var(--text);font-weight:600;display:block;margin-bottom:5px;letter-spacing:.4px">PASSWORD</label>
+        <input id="passInput" class="field-input" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <p class="err-msg" id="errMsg">Invalid credentials.</p>
+      <button class="btn-main" id="signInBtn" onclick="doLogin()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">Sign In →</button>
+      <p style="color:var(--text);font-size:11px;text-align:center;margin-top:10px">New user? Contact your admin for access.</p>
+    </div>
+    <p class="login-footer">© 2026 HomeGym™ · Sales Command Center v4.0</p>
   </div>
 </div>
 
-<div id="appShell" style="display:none">
 <div id="app">
   <header>
     <button class="hamburger" onclick="toggleDrawer()">
@@ -390,8 +355,8 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
       <p id="pageTitle">Dashboard</p>
       <small id="pageDate"></small>
     </div>
-    <button class="icon-btn" onclick="toggleTheme()" id="themeToggleApp">☀️</button>
-    <button class="icon-btn" onclick="showToast('🔔 No new notifications')" style="margin-left:2px">🔔</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeToggleApp">🌙</button>
+    <button class="icon-btn" id="bellBtn" onclick="showReminderModal()" style="position:relative;margin-left:2px">🔔<span id="bellBadge" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:#ef4444;border-radius:50%"></span></button>
     <div class="av" id="topAv" style="width:32px;height:32px;font-size:13px"></div>
   </header>
 
@@ -426,7 +391,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
   <main id="mainContent"></main>
   <div id="bottomNav"></div>
 </div>
-</div>
 
 <div id="detailSheet" class="detail-sheet">
   <div class="detail-bg" onclick="closeDetailSheet()"></div>
@@ -437,12 +401,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 
 <script>
 /* ══ FIREBASE ══ */
-const firebaseConfig={apiKey:"AIzaSyAaryFhV7yH9NAUO9TlmINcTn9UxuIIebg",authDomain:"gym-sales.firebaseapp.com",projectId:"gym-sales",storageBucket:"gym-sales.firebasestorage.app",messagingSenderId:"253046066659",appId:"1:253046066659:web:60c96dde428eed01bd64d6"};
+const firebaseConfig={apiKey:"AIzaSyAaryFhV7yH9NAUO9TlmINcTn9UxuIIebg",authDomain:"gym-sales.firebaseapp.com",projectId:"gym-sales",storageBucket:"gym-sales.firebasestorage.app",messagingSenderId:"253046066659",appId:"1:253046066699:web:60c96dde428eed01bd64d6"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.firestore();
 
-/* ══ HELPERS ══ */
+/* ══ CORE HELPERS ══ */
 function $(id){return document.getElementById(id);}
 function rc(){return (ROLES[selectedRole]||ROLES.agent).color;}
 function initials(n){return (n||"?").split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);}
@@ -458,14 +422,14 @@ function showToast(msg,dur){
 }
 function closeModal(){$("modalContainer").innerHTML="";}
 function showModal(html){$("modalContainer").innerHTML=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()">${html}</div>`;}
-function accessDenied(l){return `<div class="access-denied"><div style="font-size:48px;opacity:.4">🔒</div><p style="font-weight:700;font-size:15px;color:var(--white)">Access Restricted</p><p>Your role doesn't include ${l||"this feature"}.</p></div>`;}
+function accessDenied(l){return `<div class="access-denied"><div class="ad-icon">🔒</div><p style="font-weight:700;font-size:15px;color:var(--white)">Access Restricted</p><p>Your role doesn't include ${l||"this feature"}.</p></div>`;}
 function fmtCur(v){return v?("₹"+Number(v).toLocaleString("en-IN")):"—";}
 function confirmDelete(msg,fn){
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" style="color:#ef4444">🗑 Confirm Delete</div>
-    <p style="color:var(--text2);font-size:14px;margin-bottom:6px">${msg}</p>
-    <p style="color:var(--text);font-size:12px">This cannot be undone.</p>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:4px">${msg}</p>
+    <p style="color:var(--text);font-size:12px">This action cannot be undone.</p>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" style="background:#ef4444" onclick="closeModal();${fn}">Delete</button>
@@ -473,8 +437,17 @@ function confirmDelete(msg,fn){
   </div>`);
 }
 
+/* ══ PLAN CONFIG ══ */
+const PLANS={
+  Silver:{color:"#64748b",gradient:"#94a3b8,#64748b",icon:"🥈"},
+  Gold:{color:"#d97706",gradient:"#f59e0b,#d97706",icon:"🥇"},
+  Platinum:{color:"#7c3aed",gradient:"#8b5cf6,#6d28d9",icon:"💎"},
+  Couple:{color:"#be185d",gradient:"#ec4899,#be185d",icon:"💑"}
+};
+const PLAN_NAMES=Object.keys(PLANS);
+
 /* ══ THEME ══ */
-let darkMode=localStorage.getItem("theme")!=="light";
+let darkMode=localStorage.getItem("theme")==="dark";
 function applyTheme(){
   document.documentElement.setAttribute("data-theme",darkMode?"dark":"light");
   const icon=darkMode?"☀️":"🌙";
@@ -486,25 +459,22 @@ function toggleTheme(){darkMode=!darkMode;applyTheme();}
 applyTheme();
 
 /* ══ CONSTANTS ══ */
-const DEFAULT_STAGES=["New Lead","Contacted","Interested","Payment Pending","Closed","Not Interested"];
-const DEFAULT_STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Interested":"#8b5cf6","Payment Pending":"#f97316","Closed":"#16a34a","Not Interested":"#ef4444"};
-const STAGE_COLOR_OPTIONS=["#3b82f6","#f59e0b","#8b5cf6","#f97316","#16a34a","#ef4444","#06b6d4","#ec4899","#84cc16","#f43f5e"];
+const STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Interested":"#8b5cf6","Payment Pending":"#f97316","Closed":"#16a34a","Not Interested":"#ef4444","Demo":"#06b6d4"};
+const STAGES=["New Lead","Contacted","Demo","Interested","Payment Pending","Closed","Not Interested"];
 const PLATFORMS=["WhatsApp","Instagram"];
 const SOURCES=["Meta Ad","Organic","Referral","WhatsApp","Instagram","Google Ad"];
 const ROLES={admin:{label:"Admin / CSO",icon:"👑",color:"#7c3aed"},manager:{label:"Manager",icon:"🧑‍💼",color:"#0ea5e9"},agent:{label:"Sales Agent",icon:"💬",color:"#16a34a"}};
-const ROLE_NAV={admin:["dashboard","inbox","pipeline","agents","followups","automation","campaigns","templates","upgrades","settings"],manager:["dashboard","inbox","pipeline","agents","followups","templates","reminders"],agent:["inbox","followups","templates"]};
-const BOTTOM_NAV={admin:["dashboard","inbox","pipeline","followups"],manager:["dashboard","inbox","pipeline","reminders"],agent:["inbox","followups","templates"]};
-const TITLES={dashboard:"Dashboard",inbox:"Inbox",pipeline:"Pipeline",agents:"Agents",followups:"Follow-ups",automation:"Automation",campaigns:"Campaigns",templates:"Templates",settings:"User Management",upgrades:"Upgrade Plan",reminders:"Reminders"};
-const TRIGGERS=["New lead arrives","No reply in 24h","Call not answered","Stage → Interested","Stage → Closed","Stage → Payment Pending"];
-const ACTIONS=["Send welcome message","Send follow-up reminder","Schedule retry call","Assign to agent","Create task","Send notification"];
+const ROLE_NAV={admin:["dashboard","inbox","pipeline","agents","followups","automation","campaigns","templates","settings"],manager:["dashboard","inbox","pipeline","agents","followups","templates"],agent:["inbox","pipeline","followups","templates"]};
+const BOTTOM_NAV={admin:["dashboard","inbox","pipeline","followups"],manager:["dashboard","inbox","pipeline","followups"],agent:["inbox","pipeline","followups","templates"]};
+const TITLES={dashboard:"Dashboard",inbox:"Inbox",pipeline:"Pipeline",agents:"Agents",followups:"Follow-ups",automation:"Automation",campaigns:"Campaigns",templates:"Templates",settings:"User Management"};
 
 /* ══ STATE ══ */
-let currentUser=null,selectedRole=null,curPage="dashboard",selectedLead=null,chatView=false,dragLead=null;
-let leads=[],agents=[],tasks=[],templates=[],autos=[],campaigns=[],managedUsers=[],reminders=[],customStages=[];
-let stageColors={...DEFAULT_STAGE_COLORS};
-let stages=[...DEFAULT_STAGES];
-let unsubLeads=null,unsubAgents=null,unsubTasks=null,unsubTemplates=null,unsubAutos=null,unsubCampaigns=null,unsubMessages=null,unsubReminders=null,unsubStages=null;
+let currentUser=null,selectedRole=null,curPage="dashboard",selectedLead=null,chatView=false;
+let leads=[],agents=[],tasks=[],templates=[],autos=[],campaigns=[],managedUsers=[],reminders=[];
+let unsubLeads=null,unsubAgents=null,unsubTasks=null,unsubTemplates=null,unsubAutos=null,unsubCampaigns=null,unsubMessages=null,unsubReminders=null;
+let reminderCheckInterval=null;
 
+/* ══ FIRESTORE REFS ══ */
 const COL={
   leads:()=>db.collection("leads"),
   agents:()=>db.collection("agents"),
@@ -514,183 +484,137 @@ const COL={
   campaigns:()=>db.collection("campaigns"),
   messages:(lid)=>db.collection("leads").doc(lid).collection("messages"),
   users:()=>db.collection("users"),
-  reminders:()=>db.collection("reminders"),
-  stages:()=>db.collection("pipelineStages")
+  reminders:()=>db.collection("reminders")
 };
-
-/* ══ 3D GYM BACKGROUND ══ */
-(function initGym(){
-  const canvas=$("gymCanvas");
-  const ctx=canvas.getContext("2d");
-  let W,H,raf;
-  const bars=[];const weights=[];const particles=[];
-  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
-  resize();window.addEventListener("resize",resize);
-  // Generate gym equipment shapes
-  for(let i=0;i<8;i++){
-    bars.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*500+100,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.15,vz:(Math.random()-.5)*.5,w:80+Math.random()*120,h:8+Math.random()*6,alpha:Math.random()*.15+.04});
-  }
-  for(let i=0;i<12;i++){
-    weights.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*400+100,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.1,vz:(Math.random()-.5)*.4,r:12+Math.random()*20,alpha:Math.random()*.12+.03});
-  }
-  for(let i=0;i<40;i++){
-    particles.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*600,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.2,vz:(Math.random()-.5)*.8,r:1+Math.random()*2,alpha:Math.random()*.3+.05});
-  }
-  function project(x,y,z){
-    const fov=500;const cx=W/2,cy=H/2;
-    const scale=fov/(fov+z);
-    return{px:cx+(x-cx)*scale,py:cy+(y-cy)*scale,scale};
-  }
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    // Deep space gradient
-    const isDark=darkMode;
-    if(isDark){
-      const grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)/1.4);
-      grad.addColorStop(0,"rgba(20,10,40,.85)");grad.addColorStop(.5,"rgba(10,5,25,.9)");grad.addColorStop(1,"rgba(5,0,15,.95)");
-      ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-    } else {
-      const grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)/1.4);
-      grad.addColorStop(0,"rgba(240,240,255,.7)");grad.addColorStop(1,"rgba(200,200,230,.8)");
-      ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-    }
-    // Grid floor
-    ctx.save();ctx.globalAlpha=isDark?.06:.04;ctx.strokeStyle=isDark?"#7c3aed":"#4f46e5";ctx.lineWidth=1;
-    const gSize=60;const vanY=H*.45;
-    for(let gx=-20;gx<=20;gx++){
-      const x=W/2+gx*gSize;ctx.beginPath();ctx.moveTo(x,vanY);ctx.lineTo(x<W/2?-200:W+200,H+100);ctx.stroke();
-    }
-    for(let gy=0;gy<12;gy++){
-      const t=gy/12;const y=vanY+(H+100-vanY)*t;
-      const xSpread=200+gy*100;
-      ctx.beginPath();ctx.moveTo(W/2-xSpread,y);ctx.lineTo(W/2+xSpread,y);ctx.stroke();
-    }
-    ctx.restore();
-    // Barbell bars (3D)
-    bars.forEach(b=>{
-      b.x+=b.vx;b.y+=b.vy;b.z+=b.vz;
-      if(b.x<-200||b.x>W+200)b.vx*=-1;
-      if(b.y<-100||b.y>H+100)b.vy*=-1;
-      if(b.z<50||b.z>700)b.vz*=-1;
-      const{px,py,scale}=project(b.x,b.y,b.z);
-      const w=b.w*scale,h=b.h*scale;
-      ctx.save();ctx.globalAlpha=b.alpha;
-      // Bar body
-      const barGrad=ctx.createLinearGradient(px-w/2,py-h/2,px-w/2,py+h/2);
-      barGrad.addColorStop(0,"rgba(180,180,200,.9)");barGrad.addColorStop(.5,"rgba(220,220,240,1)");barGrad.addColorStop(1,"rgba(140,140,160,.7)");
-      ctx.fillStyle=barGrad;ctx.fillRect(px-w/2,py-h/2,w,h);
-      // Weight plates
-      [-w*.42,w*.42].forEach(ox=>{
-        const pw=h*1.4,pd=h*3;
-        const plateGrad=ctx.createLinearGradient(px+ox-pw/2,py-pd/2,px+ox+pw/2,py+pd/2);
-        plateGrad.addColorStop(0,"rgba(80,80,100,.9)");plateGrad.addColorStop(.5,"rgba(100,100,120,1)");plateGrad.addColorStop(1,"rgba(60,60,80,.8)");
-        ctx.fillStyle=plateGrad;ctx.fillRect(px+ox-pw/2,py-pd/2,pw,pd);
-        // Inner circle
-        ctx.beginPath();ctx.arc(px+ox,py,pd*.2,0,Math.PI*2);ctx.fillStyle="rgba(50,50,70,.8)";ctx.fill();
-      });
-      ctx.restore();
-    });
-    // Weight plates floating
-    weights.forEach(w=>{
-      w.x+=w.vx;w.y+=w.vy;w.z+=w.vz;
-      if(w.x<-100||w.x>W+100)w.vx*=-1;
-      if(w.y<-100||w.y>H+100)w.vy*=-1;
-      if(w.z<50||w.z>600)w.vz*=-1;
-      const{px,py,scale}=project(w.x,w.y,w.z);
-      const r=w.r*scale;
-      ctx.save();ctx.globalAlpha=w.alpha;
-      ctx.beginPath();ctx.ellipse(px,py,r,r*.3,0,0,Math.PI*2);
-      const wGrad=ctx.createRadialGradient(px,py,0,px,py,r);
-      wGrad.addColorStop(0,"rgba(180,160,220,.9)");wGrad.addColorStop(.6,"rgba(100,80,160,.7)");wGrad.addColorStop(1,"rgba(60,40,100,.4)");
-      ctx.fillStyle=wGrad;ctx.fill();
-      ctx.strokeStyle="rgba(200,180,255,.3)";ctx.lineWidth=1;ctx.stroke();
-      // Center hole
-      ctx.beginPath();ctx.ellipse(px,py,r*.25,r*.08,0,0,Math.PI*2);ctx.fillStyle="rgba(10,5,20,.8)";ctx.fill();
-      ctx.restore();
-    });
-    // Glowing particles
-    particles.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;p.z+=p.vz;
-      if(p.x<0||p.x>W)p.vx*=-1;
-      if(p.y<0||p.y>H)p.vy*=-1;
-      if(p.z<0||p.z>600)p.vz*=-1;
-      const{px,py,scale}=project(p.x,p.y,p.z);
-      ctx.save();ctx.globalAlpha=p.alpha;
-      ctx.beginPath();ctx.arc(px,py,p.r*scale,0,Math.PI*2);
-      ctx.fillStyle=isDark?"rgba(160,120,255,1)":"rgba(100,80,200,1)";
-      ctx.shadowBlur=8;ctx.shadowColor=isDark?"rgba(120,80,255,1)":"rgba(100,80,200,.8)";
-      ctx.fill();ctx.restore();
-    });
-    raf=requestAnimationFrame(draw);
-  }
-  draw();
-})();
 
 /* ══ LISTENERS ══ */
 function startListeners(){
-  unsubLeads=COL.leads().orderBy("createdAt","desc").onSnapshot(snap=>{leads=snap.docs.map(d=>({id:d.id,...d.data()}));if(!chatView)safeRender(["dashboard","inbox","pipeline"]);});
-  unsubAgents=COL.agents().orderBy("createdAt").onSnapshot(snap=>{agents=snap.docs.map(d=>({id:d.id,...d.data()}));safeRender(["agents","dashboard"]);});
-  unsubTasks=COL.tasks().orderBy("createdAt","desc").onSnapshot(snap=>{tasks=snap.docs.map(d=>({id:d.id,...d.data()}));safeRender(["followups"]);});
-  unsubTemplates=COL.templates().orderBy("createdAt").onSnapshot(snap=>{templates=snap.docs.map(d=>({id:d.id,...d.data()}));safeRender(["templates"]);});
-  unsubAutos=COL.autos().orderBy("createdAt").onSnapshot(snap=>{autos=snap.docs.map(d=>({id:d.id,...d.data()}));safeRender(["automation"]);});
-  unsubCampaigns=COL.campaigns().orderBy("createdAt","desc").onSnapshot(snap=>{campaigns=snap.docs.map(d=>({id:d.id,...d.data()}));safeRender(["campaigns"]);});
-  unsubReminders=COL.reminders().orderBy("createdAt","desc").onSnapshot(snap=>{reminders=snap.docs.map(d=>({id:d.id,...d.data()}));safeRender(["reminders"]);checkTodayReminders();});
-  unsubStages=COL.stages().orderBy("order").onSnapshot(snap=>{
-    if(!snap.empty){
-      stages=snap.docs.map(d=>d.data().name);
-      stageColors={};snap.docs.forEach(d=>{stageColors[d.data().name]=d.data().color;});
-    }
-    safeRender(["pipeline","dashboard"]);
+  unsubLeads=COL.leads().orderBy("createdAt","desc").onSnapshot(snap=>{
+    leads=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!chatView)safeRender(["dashboard","inbox","pipeline"]);
   });
+  unsubAgents=COL.agents().orderBy("createdAt").onSnapshot(snap=>{
+    agents=snap.docs.map(d=>({id:d.id,...d.data()}));
+    safeRender(["agents","dashboard"]);
+  });
+  unsubTasks=COL.tasks().orderBy("createdAt","desc").onSnapshot(snap=>{
+    tasks=snap.docs.map(d=>({id:d.id,...d.data()}));
+    safeRender(["followups"]);
+  });
+  unsubTemplates=COL.templates().orderBy("createdAt").onSnapshot(snap=>{
+    templates=snap.docs.map(d=>({id:d.id,...d.data()}));
+    safeRender(["templates"]);
+  });
+  unsubAutos=COL.autos().orderBy("createdAt").onSnapshot(snap=>{
+    autos=snap.docs.map(d=>({id:d.id,...d.data()}));
+    safeRender(["automation"]);
+  });
+  unsubCampaigns=COL.campaigns().orderBy("createdAt","desc").onSnapshot(snap=>{
+    campaigns=snap.docs.map(d=>({id:d.id,...d.data()}));
+    safeRender(["campaigns"]);
+  });
+  unsubReminders=COL.reminders().where("userId","==",currentUser.uid).where("done","==",false).onSnapshot(snap=>{
+    reminders=snap.docs.map(d=>({id:d.id,...d.data()}));
+    checkReminders();
+    updateBellBadge();
+  });
+  reminderCheckInterval=setInterval(checkReminders,60000);
 }
-function stopListeners(){[unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders,unsubStages].forEach(u=>u&&u());}
+function stopListeners(){
+  [unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders].forEach(u=>u&&u());
+  if(reminderCheckInterval)clearInterval(reminderCheckInterval);
+}
 function safeRender(pages){if(pages.includes(curPage))renderPage(curPage);}
 
-/* ══ REMINDER POPUPS ══ */
-function checkTodayReminders(){
-  const ts=todayStr();
-  const due=reminders.filter(r=>!r.dismissed&&r.date===ts);
+/* ══ REMINDERS ENGINE ══ */
+function checkReminders(){
+  const now=new Date();
+  const nowStr=now.toISOString().slice(0,16); // YYYY-MM-DDTHH:MM
+  const due=reminders.filter(r=>!r.done && r.datetime<=nowStr && !r.popped);
   due.forEach(r=>showReminderPopup(r));
 }
-function showReminderPopup(r){
-  const existing=document.getElementById("rp-"+r.id);if(existing)return;
-  const div=document.createElement("div");
-  div.className="reminder-popup";div.id="rp-"+r.id;
-  div.innerHTML=`
-    <button class="reminder-popup-close" onclick="dismissReminder('${r.id}')">✕</button>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🔔</div>
-      <div class="reminder-popup-title">Reminder: ${r.leadName||"Lead"}</div>
-    </div>
-    <div class="reminder-popup-sub">${r.note||"Follow up today!"}</div>
-    <div style="display:flex;gap:7px">
-      <button onclick="dismissReminder('${r.id}')" style="flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text2);font-size:12px;cursor:pointer">Dismiss</button>
-      <button onclick="dismissReminder('${r.id}');renderPage('pipeline')" style="flex:1;padding:7px;border-radius:8px;border:none;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:12px;font-weight:700;cursor:pointer">View Lead</button>
-    </div>`;
-  $("reminderContainer").appendChild(div);
-  // Stack multiple popups
-  const all=[...$("reminderContainer").children];
-  all.forEach((el,i)=>{el.style.bottom=(20+i*80)+"px";});
+function updateBellBadge(){
+  const b=$("bellBadge");
+  if(b) b.style.display=reminders.length>0?"block":"none";
 }
-async function dismissReminder(id){
-  try{await COL.reminders().doc(id).update({dismissed:true});}catch(e){}
-  const el=document.getElementById("rp-"+id);if(el)el.remove();
+function showReminderPopup(r){
+  const existing=document.getElementById("rpop-"+r.id);
+  if(existing)return;
+  const div=document.createElement("div");
+  div.className="reminder-popup";
+  div.id="rpop-"+r.id;
+  div.innerHTML=`<div class="reminder-popup-title">⏰ Reminder</div>
+    <div class="reminder-popup-body"><b>${r.leadName||"General"}</b> — ${r.note||"Follow up!"}<br><span style="font-size:11px;color:var(--text)">${r.datetime?.replace("T"," ")}</span></div>
+    <button class="reminder-finish-btn" onclick="finishReminder('${r.id}')">✅ Done / Finish</button>`;
+  $("reminderContainer").appendChild(div);
+}
+async function finishReminder(id){
+  try{
+    await COL.reminders().doc(id).update({done:true});
+    const el=document.getElementById("rpop-"+id);
+    if(el){el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300);}
+    showToast("Reminder marked done ✅");
+  } catch(e){showToast("❌ "+e.message);}
+}
+
+/* ══ REMINDER MODAL (bell icon) ══ */
+function showReminderModal(){
+  const pending=reminders.filter(r=>!r.done);
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⏰ My Reminders</div>
+    <button onclick="closeModal();showAddReminderModal()" style="width:100%;padding:10px;background:${rc()};border:none;border-radius:9px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px">+ Add Reminder</button>
+    ${pending.length?pending.map(r=>`
+      <div style="background:var(--input-bg);border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;border:1px solid ${r.datetime<=new Date().toISOString().slice(0,16)?"#f59e0b44":"var(--border)"}">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px;color:var(--white)">${r.leadName||"General"}</div>
+          <div style="color:var(--text);font-size:11px">${r.note||""}</div>
+          <div style="color:#f59e0b;font-size:10px;margin-top:2px">📅 ${r.datetime?.replace("T"," ")}</div>
+        </div>
+        <button onclick="finishReminder('${r.id}')" style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.3);border-radius:7px;padding:5px 9px;color:#16a34a;font-size:11px;font-weight:700;cursor:pointer">✅ Done</button>
+      </div>`).join(""):`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">✅</div><p>No pending reminders</p></div>`}
+    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:6px">Close</button>
+  </div>`);
+}
+function showAddReminderModal(leadName){
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⏰ Add Reminder</div>
+    <div class="form-row"><label>LEAD / TOPIC</label><input id="rln" list="rLeadNames" value="${leadName||""}" placeholder="Lead name or topic"/><datalist id="rLeadNames">${leads.map(l=>`<option value="${l.name}">`).join("")}</datalist></div>
+    <div class="form-row"><label>NOTE</label><input id="rnote" placeholder="e.g. Call back after 5pm"/></div>
+    <div class="form-row"><label>DATE & TIME</label><input id="rdt" type="datetime-local" value="${new Date(Date.now()+3600000).toISOString().slice(0,16)}"/></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:${rc()}" onclick="addReminder()">Set Reminder</button>
+    </div>
+  </div>`);
+}
+async function addReminder(){
+  const leadName=($("rln").value||"").trim(),note=($("rnote").value||"").trim(),datetime=$("rdt").value;
+  if(!datetime){showToast("Set a date & time");return;}
+  try{
+    await COL.reminders().add({leadName,note,datetime,userId:currentUser.uid,done:false,createdAt:new Date().toISOString()});
+    closeModal();showToast("⏰ Reminder set!");
+  } catch(e){showToast("❌ "+e.message);}
 }
 
 /* ══ AUTH ══ */
 auth.onAuthStateChanged(async user=>{
   if(user){
     try{
-      const docRef=COL.users().doc(user.uid);const snap=await docRef.get();
+      const docRef=COL.users().doc(user.uid);
+      const snap=await docRef.get();
       if(snap.exists){
-        const d=snap.data();currentUser={uid:user.uid,email:user.email,name:d.name||user.email,role:d.role||"agent"};selectedRole=currentUser.role;initApp();
+        const d=snap.data();
+        currentUser={uid:user.uid,email:user.email,name:d.name||user.email,role:d.role||"agent"};
+        selectedRole=currentUser.role;initApp();
       } else {
         const all=await COL.users().limit(1).get();
         if(all.empty){
           const name=user.email.split("@")[0];
           await docRef.set({name,email:user.email,role:"admin",createdAt:new Date().toISOString()});
           currentUser={uid:user.uid,email:user.email,name,role:"admin"};selectedRole="admin";
-          initApp();setTimeout(()=>showToast("👑 First login — you are Admin!",5000),800);
+          initApp();setTimeout(()=>showToast("👑 You are now Admin — first login!",5000),800);
         } else {
           await auth.signOut();showLoginScreen();showErrMsg("No account found. Contact your admin.");
         }
@@ -699,8 +623,7 @@ auth.onAuthStateChanged(async user=>{
   } else {showLoginScreen();}
 });
 function showLoginScreen(){
-  stopListeners();
-  $("appShell").style.display="none";$("app").style.opacity="0";$("app").classList.remove("show");
+  stopListeners();$("app").style.opacity="0";$("app").style.display="none";$("app").classList.remove("show");
   $("loginWrap").style.display="flex";$("loginWrap").classList.remove("hide");
   const btn=$("signInBtn");if(btn){btn.textContent="Sign In →";btn.disabled=false;}
 }
@@ -727,12 +650,7 @@ async function doLogout(){
 function initApp(){
   document.documentElement.style.setProperty("--rc",ROLES[selectedRole].color);
   $("loginWrap").classList.add("hide");
-  setTimeout(()=>{
-    $("loginWrap").style.display="none";
-    $("appShell").style.display="block";
-    $("app").style.display="flex";
-    setTimeout(()=>$("app").classList.add("show"),10);
-  },400);
+  setTimeout(()=>{$("loginWrap").style.display="none";$("app").style.display="flex";setTimeout(()=>$("app").classList.add("show"),10);},400);
   const r=ROLES[selectedRole];
   [$("topAv"),$("drawerAv")].forEach(el=>{if(el){el.textContent=initials(currentUser.name);el.style.background=`linear-gradient(135deg,${r.color},${r.color}88)`;}});
   $("drawerUserName").textContent=currentUser.name;
@@ -748,7 +666,7 @@ function closeDrawer(){$("drawer").classList.remove("open");}
 function buildDrawerNav(){
   const nav=$("drawerNav");nav.innerHTML="";
   const pages=ROLE_NAV[selectedRole]||ROLE_NAV.agent;
-  const all=[{id:"dashboard",icon:"▣",label:"Dashboard"},{id:"inbox",icon:"✉",label:"Inbox"},{id:"pipeline",icon:"◈",label:"Pipeline"},{id:"agents",icon:"◉",label:"Agents"},{id:"followups",icon:"◷",label:"Follow-ups"},{id:"reminders",icon:"🔔",label:"Reminders"},{id:"automation",icon:"⚙",label:"Automation"},{id:"campaigns",icon:"◎",label:"Campaigns"},{id:"templates",icon:"◧",label:"Templates"},{id:"upgrades",icon:"⚡",label:"Upgrade Plan"},{id:"settings",icon:"👥",label:"User Management"}];
+  const all=[{id:"dashboard",icon:"▣",label:"Dashboard"},{id:"inbox",icon:"✉",label:"Inbox"},{id:"pipeline",icon:"◈",label:"Pipeline"},{id:"agents",icon:"◉",label:"Agents"},{id:"followups",icon:"◷",label:"Follow-ups"},{id:"automation",icon:"⚙",label:"Automation"},{id:"campaigns",icon:"◎",label:"Campaigns"},{id:"templates",icon:"◧",label:"Templates"},{id:"settings",icon:"⚡",label:"User Management"}];
   all.filter(n=>pages.includes(n.id)).forEach(n=>{
     const btn=document.createElement("button");btn.className="nav-btn"+(n.id===curPage?" active":"");
     btn.innerHTML=`<div class="nav-dot"></div><span class="nav-icon">${n.icon}</span><span>${n.label}</span>`;
@@ -758,7 +676,7 @@ function buildDrawerNav(){
 function buildBottomNav(){
   const bn=$("bottomNav");bn.innerHTML="";
   const pages=BOTTOM_NAV[selectedRole]||BOTTOM_NAV.agent;
-  const all=[{id:"dashboard",icon:"▣",label:"Home"},{id:"inbox",icon:"✉",label:"Inbox"},{id:"pipeline",icon:"◈",label:"Pipeline"},{id:"followups",icon:"◷",label:"Tasks"},{id:"reminders",icon:"🔔",label:"Alerts"},{id:"templates",icon:"◧",label:"Templates"}];
+  const all=[{id:"dashboard",icon:"▣",label:"Home"},{id:"inbox",icon:"✉",label:"Inbox"},{id:"pipeline",icon:"◈",label:"Pipeline"},{id:"followups",icon:"◷",label:"Tasks"},{id:"templates",icon:"◧",label:"Templates"}];
   all.filter(n=>pages.includes(n.id)).forEach(n=>{
     const btn=document.createElement("button");btn.className="bnav-btn"+(n.id===curPage?" active":"");
     btn.innerHTML=`<span class="bnav-icon">${n.icon}</span><span class="bnav-label">${n.label}</span>`;
@@ -769,97 +687,93 @@ function renderPage(id){
   curPage=id;if(id!=="inbox")chatView=false;
   $("pageTitle").textContent=TITLES[id]||id;
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.querySelector("span:last-child")?.textContent===TITLES[id]));
-  document.querySelectorAll(".bnav-btn").forEach(b=>{const lm={Home:"dashboard",Inbox:"inbox",Pipeline:"pipeline",Tasks:"followups",Alerts:"reminders",Templates:"templates"};b.classList.toggle("active",lm[b.querySelector(".bnav-label")?.textContent]===id);});
+  document.querySelectorAll(".bnav-btn").forEach(b=>{const lm={Home:"dashboard",Inbox:"inbox",Pipeline:"pipeline",Tasks:"followups",Templates:"templates"};b.classList.toggle("active",lm[b.querySelector(".bnav-label")?.textContent]===id);});
   const m=$("mainContent");m.innerHTML="";
-  ({dashboard:pgDashboard,inbox:pgInbox,pipeline:pgPipeline,agents:pgAgents,followups:pgFollowups,automation:pgAutomation,campaigns:pgCampaigns,templates:pgTemplates,settings:pgSettings,upgrades:pgUpgrades,reminders:pgReminders}[id]||pgDashboard)(m);
+  ({dashboard:pgDashboard,inbox:pgInbox,pipeline:pgPipeline,agents:pgAgents,followups:pgFollowups,automation:pgAutomation,campaigns:pgCampaigns,templates:pgTemplates,settings:pgSettings}[id]||pgDashboard)(m);
 }
 
-/* ════════════════════════════
+/* ══════════════════════════════
    DASHBOARD
-════════════════════════════ */
+══════════════════════════════ */
 function pgDashboard(el){
   const closed=leads.filter(l=>l.status==="Closed");
   const conv=leads.length?Math.round(closed.length/leads.length*100):0;
   const revenue=closed.reduce((s,l)=>s+Number(l.value||0),0);
   const showRev=selectedRole==="admin";
+
+  // Fixed leaderboard: count closed deals per agent from leads data
+  const agentStats={};
+  agents.forEach(ag=>{
+    const myLeads=leads.filter(l=>l.agentName===ag.name);
+    const myClosed=myLeads.filter(l=>l.status==="Closed");
+    const myConv=myLeads.length?Math.round(myClosed.length/myLeads.length*100):0;
+    agentStats[ag.name]={...ag,leadsCount:myLeads.length,closedCount:myClosed.length,convRate:myConv,revenue:myClosed.reduce((s,l)=>s+Number(l.value||0),0)};
+  });
+  const leaderboard=Object.values(agentStats).sort((a,b)=>b.convRate-a.convRate||b.closedCount-a.closedCount);
+
+  // Plan revenue breakdown (admin only)
+  const planRevHtml=showRev?`
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">💎 Revenue by Plan</div>
+      <div class="plan-rev-grid">
+        ${PLAN_NAMES.map(p=>{
+          const pl=leads.filter(l=>l.status==="Closed"&&l.plan===p);
+          const rev=pl.reduce((s,l)=>s+Number(l.value||0),0);
+          const plan=PLANS[p];
+          return `<div class="plan-rev-card" style="background:linear-gradient(135deg,${plan.gradient})">
+            <div style="font-size:20px">${plan.icon}</div>
+            <div class="plan-rev-val">${fmtCur(rev)}</div>
+            <div class="plan-rev-key">${p} Plan</div>
+            <div class="plan-rev-count">${pl.length} member${pl.length!==1?"s":""}</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`:"";
+
   const stats=[
     {label:"Total Leads",val:leads.length,delta:"All time",icon:"👥",a:"#6366f1",b:"#4f46e5"},
     {label:"Closed Deals",val:closed.length,delta:"Converted",icon:"🎯",a:"#16a34a",b:"#15803d"},
     {label:"Conversion",val:conv+"%",delta:"Rate",icon:"📈",a:"#0ea5e9",b:"#0284c7"},
     {label:"Revenue",val:showRev?fmtCur(revenue):"🔒",delta:showRev?"Total closed":"Admin only",icon:"💰",a:"#f97316",b:"#ea580c"},
   ];
-  const sortedAgents=[...agents].sort((a,b)=>(b.conv||0)-(a.conv||0));
-  // Calculate real conversion from leads data for leaderboard
-  agents.forEach(ag=>{
-    const agLeads=leads.filter(l=>l.agentName===ag.name);
-    const agClosed=agLeads.filter(l=>l.status==="Closed").length;
-    ag._realConv=agLeads.length?Math.round(agClosed/agLeads.length*100):ag.conv||0;
-    ag._leads=agLeads.length;
-    ag._rev=agLeads.filter(l=>l.status==="Closed").reduce((s,l)=>s+Number(l.value||0),0);
-  });
-  const topAgents=[...agents].sort((a,b)=>(b._realConv||0)-(a._realConv||0)).slice(0,5);
-  const podiumColors=["#f59e0b","#94a3b8","#f97316"];
+
   el.innerHTML=`<div class="page">
-    <div class="stat-grid">${stats.map(s=>`<div class="stat-card" style="background:linear-gradient(135deg,${s.a},${s.b});box-shadow:0 4px 20px ${s.a}44"><div class="stat-icon">${s.icon}</div><div class="stat-val">${s.val}</div><div class="stat-label">${s.label}</div><span class="stat-delta">${s.delta}</span></div>`).join("")}</div>
+    <div class="stat-grid">${stats.map(s=>`<div class="stat-card" style="background:linear-gradient(135deg,${s.a},${s.b});box-shadow:0 4px 16px ${s.a}33"><div class="stat-icon">${s.icon}</div><div class="stat-val">${s.val}</div><div class="stat-label">${s.label}</div><span class="stat-delta">${s.delta}</span></div>`).join("")}</div>
+    ${planRevHtml}
     <div class="two-col">
       <div class="card">
         <div class="card-title">🏆 Leaderboard</div>
-        ${topAgents.length>=3?`
-        <div class="podium">
-          ${[topAgents[1],topAgents[0],topAgents[2]].map((ag,i)=>{
-            const heights=[70,100,55];const ranks=[2,1,3];
-            if(!ag)return`<div class="podium-col"></div>`;
-            return `<div class="podium-col">
-              <div class="podium-av" style="order:-1">
-                ${i===1?`<div class="podium-crown">👑</div>`:""}
-                ${av(initials(ag.name),i===1?44:36,i===0?"#94a3b8,#6b7280":i===1?"#f59e0b,#f97316":"#f97316,#ea580c")}
-              </div>
-              <div class="podium-name">${ag.name}</div>
-              <div class="podium-conv" style="color:${podiumColors[ranks[i]-1]}">${ag._realConv}%</div>
-              <div class="podium-bar" style="height:${heights[i]}px;background:linear-gradient(to top,${podiumColors[ranks[i]-1]},${podiumColors[ranks[i]-1]}55)"></div>
-            </div>`;
-          }).join("")}
-        </div>`:""}
-        ${topAgents.map((ag,i)=>`
-          <div class="lb-row">
-            <span style="font-weight:800;font-size:12px;width:18px;color:${podiumColors[i]||"#64748b"}">#${i+1}</span>
-            ${av(initials(ag.name),26,i===0?"#f59e0b,#f97316":null)}
-            <div style="flex:1;min-width:0">
+        ${leaderboard.length?leaderboard.slice(0,5).map((ag,i)=>{
+          const medals=["🥇","🥈","🥉"];
+          return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <span style="font-size:${i<3?16:11}px;width:20px;text-align:center">${medals[i]||"#"+(i+1)}</span>
+            ${av(initials(ag.name),28,i===0?"#f59e0b,#f97316":i===1?"#94a3b8,#64748b":i===2?"#f97316,#c2410c":null)}
+            <div style="flex:1">
               <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--white)">
                 <span>${ag.name}</span>
-                <span style="color:var(--text)">${ag._leads} leads · ${ag._realConv}%</span>
+                <span style="color:var(--text)">${ag.convRate}% · ${ag.closedCount}✓</span>
               </div>
-              ${bar(ag._realConv,100,i===0?"#f59e0b":rc())}
+              ${bar(ag.convRate,100,i===0?"#f59e0b":rc())}
             </div>
-            ${showRev?`<span style="color:#16a34a;font-size:11px;font-weight:700;min-width:60px;text-align:right">${fmtCur(ag._rev)}</span>`:""}
-          </div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No agents yet</p>`}
+          </div>`;
+        }).join(""):`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No agents yet</p>`}
       </div>
       <div class="card">
         <div class="card-title">🔥 Recent Leads</div>
-        ${leads.slice(0,5).map(l=>`<div class="lead-row" onclick="openLead('${l.id}')">${av(initials(l.name),28)}<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div><div style="color:var(--text);font-size:10px">${l.source||""}</div></div>${pill(l.status,(stageColors[l.status]||DEFAULT_STAGE_COLORS[l.status]||rc()))}</div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No leads yet</p>`}
+        ${leads.slice(0,5).map(l=>`<div class="lead-row" onclick="openLead('${l.id}')">${av(initials(l.name),28)}<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.name}</div><div style="color:var(--text);font-size:10px">${l.plan?`${PLANS[l.plan]?.icon||""} ${l.plan} · `:""}${l.source||""}</div></div>${pill(l.status,STAGE_COLORS[l.status]||rc())}</div>`).join("")||`<p style="color:var(--text);font-size:13px;text-align:center;padding:16px 0">No leads yet</p>`}
       </div>
     </div>
     <div class="card">
       <div class="card-title">📊 Pipeline Summary</div>
-      ${stages.map(s=>{const c=leads.filter(l=>l.status===s).length,mx=Math.max(...stages.map(st=>leads.filter(l=>l.status===st).length),1);return `<div style="display:flex;align-items:center;gap:9px;margin-bottom:7px"><div style="width:8px;height:8px;border-radius:50%;background:${stageColors[s]||rc()};flex-shrink:0"></div><span style="font-size:12px;color:var(--white);flex:1">${s}</span><span style="font-size:12px;font-weight:700;color:var(--white);min-width:24px;text-align:right">${c}</span><div style="flex:2">${bar(c,mx,stageColors[s]||rc())}</div></div>`;}).join("")}
+      ${STAGES.map(s=>{const c=leads.filter(l=>l.status===s).length,mx=Math.max(...STAGES.map(st=>leads.filter(l=>l.status===st).length),1);return `<div style="display:flex;align-items:center;gap:9px;margin-bottom:7px"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div><span style="font-size:12px;color:var(--white);flex:1">${s}</span><span style="font-size:12px;font-weight:700;color:var(--white);min-width:24px;text-align:right">${c}</span><div style="flex:2">${bar(c,mx,STAGE_COLORS[s])}</div></div>`;}).join("")}
     </div>
-    ${reminders.filter(r=>!r.dismissed&&r.date===todayStr()).length?`
-    <div class="card" style="border-color:rgba(124,58,237,.4)">
-      <div class="card-title">🔔 Today's Reminders</div>
-      ${reminders.filter(r=>!r.dismissed&&r.date===todayStr()).map(r=>`
-        <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(124,58,237,.08);border-radius:9px;margin-bottom:6px">
-          <span style="font-size:18px">🔔</span>
-          <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--white)">${r.leadName||"Lead"}</div><div style="color:var(--text);font-size:11px">${r.note||""}</div></div>
-          <button onclick="dismissReminder('${r.id}')" style="background:none;border:none;color:var(--text);cursor:pointer;font-size:12px">✕</button>
-        </div>`).join("")}
-    </div>`:""}
   </div>`;
 }
 function openLead(id){selectedLead=leads.find(l=>l.id===id)||null;chatView=true;renderPage("inbox");}
 
-/* ════════════════════════════
+/* ══════════════════════════════
    INBOX
-════════════════════════════ */
+══════════════════════════════ */
 function pgInbox(el){
   const myLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
   if(chatView&&selectedLead){
@@ -867,10 +781,10 @@ function pgInbox(el){
     el.innerHTML=renderChatView();loadChatMessages(selectedLead.id);return;
   }
   el.innerHTML=`<div style="height:100%;display:flex;flex-direction:column;overflow:hidden">
-    <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(26,29,39,.8);backdrop-filter:blur(20px)">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface)">
       <div style="display:flex;gap:7px;align-items:center">
         <input class="list-search" id="leadSearch" placeholder="Search leads…" oninput="filterLeads(this.value)" style="flex:1"/>
-        ${selectedRole!=="agent"?`<button onclick="showAddLeadModal()" style="background:linear-gradient(135deg,${rc()},${rc()}cc);border:none;border-radius:8px;color:#fff;font-size:20px;width:36px;height:36px;cursor:pointer;flex-shrink:0;box-shadow:0 2px 10px ${rc()}44">+</button>`:""}
+        ${selectedRole!=="agent"?`<button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;color:#fff;font-size:20px;width:36px;height:36px;cursor:pointer;flex-shrink:0">+</button>`:`<button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;color:#fff;font-size:20px;width:36px;height:36px;cursor:pointer;flex-shrink:0">+</button>`}
       </div>
       <div class="tab-row">
         <button class="tab-btn active-tab" onclick="filterPlatform('all',this)">All</button>
@@ -889,34 +803,40 @@ function renderLeadList(arr){
       <div style="flex:1;min-width:0" onclick="selectLead('${l.id}')">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="font-size:13px;font-weight:700;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${l.name}</span>
-          <span style="color:var(--text);font-size:10px;flex-shrink:0">${l.createdAt?new Date(l.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short"}):""}</span>
+          <span style="color:var(--text);font-size:10px;flex-shrink:0">${l.enquiryDate||l.createdAt?new Date(l.enquiryDate||l.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short"}):""}</span>
         </div>
-        <div style="color:var(--text);font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px">${pill(l.status,stageColors[l.status]||DEFAULT_STAGE_COLORS[l.status]||rc())}<span>${l.agentName||"Unassigned"}</span></div>
+        <div style="color:var(--text);font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          ${pill(l.status,STAGE_COLORS[l.status]||rc())}
+          ${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}">${PLANS[l.plan]?.icon||""} ${l.plan}</span>`:""}
+          <span>${l.agentName||"Unassigned"}</span>
+        </div>
       </div>
       <div style="display:flex;gap:5px;flex-shrink:0">
-        ${selectedRole!=="agent"?`<button onclick="showEditLeadModal('${l.id}')" style="background:${rc()}15;border:1px solid ${rc()}33;border-radius:7px;padding:5px 8px;color:${rc()};font-size:11px;cursor:pointer">✏️</button>`:""}
+        ${selectedRole!=="agent"?`<button onclick="showEditLeadModal('${l.id}')" style="background:${rc()}15;border:1px solid ${rc()}33;border-radius:7px;padding:5px 8px;color:${rc()};font-size:11px;font-weight:600;cursor:pointer">✏️</button>`:""}
         <button onclick="selectLead('${l.id}')" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:7px;padding:5px 8px;color:var(--text2);font-size:11px;cursor:pointer">💬</button>
       </div>
     </div>`).join("");
 }
 function renderChatView(){
   const sl=selectedLead;
-  const sc=stageColors[sl.status]||DEFAULT_STAGE_COLORS[sl.status]||rc();
   return `<div class="chat-view" style="height:100%;overflow:hidden">
     <div class="chat-head">
       <button class="chat-back" onclick="chatView=false;renderPage('inbox')">‹</button>
       ${av(initials(sl.name),34)}
-      <div style="flex:1;min-width:0"><div class="chat-name">${sl.name}</div><div class="chat-sub">${sl.phone||sl.source||""}</div></div>
+      <div style="flex:1;min-width:0">
+        <div class="chat-name">${sl.name} ${sl.plan?`<span class="pill plan-${sl.plan.toLowerCase()}" style="margin-left:4px">${PLANS[sl.plan]?.icon||""} ${sl.plan}</span>`:""}</div>
+        <div class="chat-sub">${sl.phone||sl.source||""}</div>
+      </div>
       <div class="chat-hactions">
-        <button class="action-btn" onclick="showAddReminderModal('${sl.id}','${sl.name}')">🔔</button>
-        <button class="action-btn" onclick="showEditLeadModal('${sl.id}')">✏️</button>
+        <button class="action-btn" onclick="showAddReminderModal('${sl.name.replace(/'/g,"\\'")}')">⏰</button>
+        ${selectedRole!=="agent"?`<button class="action-btn" onclick="showEditLeadModal('${sl.id}')">✏️ Edit</button>`:""}
         <button class="action-btn" onclick="openDetailSheet('${sl.id}')">⋯</button>
-        <button class="action-btn" onclick="showStageModal('${sl.id}')">${pill(sl.status,sc)}</button>
+        <button class="action-btn" onclick="showStageModal('${sl.id}')">${pill(sl.status,STAGE_COLORS[sl.status]||rc())}</button>
       </div>
     </div>
     <div class="chat-msgs" id="chatMsgs"><div style="text-align:center;color:var(--text);padding:20px;font-size:12px">Loading…</div></div>
     <div class="chat-input-row">
-      <button style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:14px;flex-shrink:0" onclick="showTemplatePicker('${sl.id}')">📋</button>
+      <button class="emoji-btn" onclick="showTemplatePicker('${sl.id}')">📋</button>
       <input id="msgInput" class="msg-input" placeholder="Message…" onkeydown="if(event.key==='Enter')sendMsg()"/>
       <button class="send-btn" style="background:linear-gradient(135deg,${rc()},${rc()}bb)" onclick="sendMsg()">Send</button>
     </div>
@@ -929,7 +849,8 @@ function loadChatMessages(lid){
     const msgs=snap.docs.map(d=>d.data());
     const sl=leads.find(l=>l.id===lid)||selectedLead;
     const noteHtml=sl&&sl.notes?`<div style="text-align:center;margin-bottom:8px"><span style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2);border-radius:99px;padding:3px 12px;font-size:11px">📌 ${sl.notes}</span></div>`:"";
-    box.innerHTML=noteHtml+(msgs.length?msgs.map(m=>`<div style="display:flex;justify-content:${m.from==="agent"?"flex-end":"flex-start"}"><div class="msg-bubble ${m.from==="agent"?"msg-out":"msg-in"}" style="${m.from==="agent"?`background:linear-gradient(135deg,${rc()},${rc()}cc)`:""}"> ${m.text}<div class="msg-time">${m.time||""}</div></div></div>`).join(""):`<div style="text-align:center;color:var(--text);padding:40px 20px;font-size:13px">No messages yet.</div>`);
+    const dateHtml=sl&&sl.enquiryDate?`<div style="text-align:center;margin-bottom:8px"><span style="background:rgba(59,130,246,.1);color:#3b82f6;border:1px solid rgba(59,130,246,.2);border-radius:99px;padding:3px 12px;font-size:11px">📅 Enquiry: ${new Date(sl.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</span></div>`:"";
+    box.innerHTML=dateHtml+noteHtml+(msgs.length?msgs.map(m=>`<div style="display:flex;justify-content:${m.from==="agent"?"flex-end":"flex-start"}"><div class="msg-bubble ${m.from==="agent"?"msg-out":"msg-in"}" style="${m.from==="agent"?`background:linear-gradient(135deg,${rc()},${rc()}cc)`:""}"> ${m.text}<div class="msg-time">${m.time||""}</div></div></div>`).join(""):`<div style="text-align:center;color:var(--text);padding:40px 20px;font-size:13px">No messages yet.</div>`);
     box.scrollTop=box.scrollHeight;
   });
 }
@@ -940,63 +861,103 @@ async function sendMsg(){
   try{await COL.messages(selectedLead.id).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});}
   catch(e){showToast("❌ "+e.message);}
 }
-function filterLeads(val){const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;const li=$("leadItems");if(li)li.innerHTML=renderLeadList(val?my.filter(l=>l.name.toLowerCase().includes(val.toLowerCase())||(l.phone&&l.phone.includes(val))):my);}
-function filterPlatform(plat,btn){document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active-tab"));btn.classList.add("active-tab");const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;const li=$("leadItems");if(li)li.innerHTML=renderLeadList(plat==="all"?my:my.filter(l=>l.platform===plat));}
+function filterLeads(val){
+  const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
+  const li=$("leadItems");if(li)li.innerHTML=renderLeadList(val?my.filter(l=>l.name.toLowerCase().includes(val.toLowerCase())||(l.phone&&l.phone.includes(val))):my);
+}
+function filterPlatform(plat,btn){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active-tab"));btn.classList.add("active-tab");
+  const my=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
+  const li=$("leadItems");if(li)li.innerHTML=renderLeadList(plat==="all"?my:my.filter(l=>l.platform===plat));
+}
 
-/* ─── LEAD MODALS ─── */
+/* ── LEAD MODALS ── */
 function showAddLeadModal(){_leadModal(null);}
 function showEditLeadModal(id){_leadModal(leads.find(l=>l.id===id));}
 function _leadModal(l){
   const isEdit=!!l;
+  const canAssign=selectedRole!=="agent";
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">${isEdit?"✏️ Edit Lead":"➕ Add Lead"}</div>
     <div class="form-row"><label>FULL NAME *</label><input id="ln" value="${l?l.name:""}" placeholder="Rajesh Kumar"/></div>
     <div class="form-row"><label>PHONE</label><input id="lp" type="tel" value="${l?l.phone||"":""}" placeholder="+91 98765 43210"/></div>
     <div class="form-row"><label>INSTAGRAM</label><input id="lig" value="${l?l.instagram||"":""}" placeholder="@handle"/></div>
+    <div class="form-row"><label>ENQUIRY DATE</label><input id="ledate" type="date" value="${l?l.enquiryDate||todayStr():todayStr()}"/></div>
     <div class="form-row"><label>SOURCE</label><select id="ls">${SOURCES.map(s=>`<option${l&&l.source===s?" selected":""}>${s}</option>`).join("")}</select></div>
     <div class="form-row"><label>PLATFORM</label><select id="lpl">${PLATFORMS.map(p=>`<option${l&&l.platform===p?" selected":""}>${p}</option>`).join("")}</select></div>
-    <div class="form-row"><label>ASSIGN TO</label><select id="lag"><option value=""${!l||!l.agentName||l.agentName==="Unassigned"?" selected":""}>Unassigned</option>${agents.map(a=>`<option${l&&l.agentName===a.name?" selected":""}>${a.name}</option>`).join("")}</select></div>
+    <div class="form-row"><label>PLAN</label><select id="lplan"><option value="">Select Plan</option>${PLAN_NAMES.map(p=>`<option value="${p}"${l&&l.plan===p?" selected":""}>${PLANS[p].icon} ${p}</option>`).join("")}</select></div>
+    ${canAssign?`<div class="form-row"><label>ASSIGN TO</label><select id="lag"><option value=""${!l||!l.agentName||l.agentName==="Unassigned"?" selected":""}>Unassigned</option>${agents.map(a=>`<option${l&&l.agentName===a.name?" selected":""}>${a.name}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>DEAL VALUE (₹)</label><input id="lv" type="number" value="${l?l.value||"":""}" placeholder="25000"/></div>
-    ${isEdit?`<div class="form-row"><label>STATUS</label><select id="lst">${stages.map(s=>`<option${l.status===s?" selected":""}>${s}</option>`).join("")}</select></div>`:""}
+    ${isEdit?`<div class="form-row"><label>STATUS</label><select id="lst">${STAGES.map(s=>`<option${l.status===s?" selected":""}>${s}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>NOTES</label><textarea id="lnotes">${l?l.notes||"":""}</textarea></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${l.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" onclick="${isEdit?`updateLead('${l.id}')`:"addLead()"}">${isEdit?"Save Changes":"Add Lead"}</button>
+      ${isEdit&&selectedRole!=="agent"?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${l.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateLead('${l.id}')`:"addLead()"}">${isEdit?"Save Changes":"Add Lead"}</button>
     </div>
   </div>`);
 }
 async function addLead(){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
-  const data={name,phone:$("lp").value||"",instagram:$("lig").value||"",source:$("ls").value,platform:$("lpl").value,agentName:$("lag").value||"Unassigned",value:Number($("lv").value)||0,status:"New Lead",notes:$("lnotes").value||"",createdAt:new Date().toISOString()};
-  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added`);}catch(e){showToast("❌ "+e.message);}
+  const canAssign=selectedRole!=="agent";
+  const data={
+    name,phone:$("lp").value||"",instagram:$("lig").value||"",
+    enquiryDate:$("ledate").value||todayStr(),
+    source:$("ls").value,platform:$("lpl").value,
+    plan:$("lplan").value||"",
+    agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
+    value:Number($("lv").value)||0,status:"New Lead",
+    notes:$("lnotes").value||"",createdAt:new Date().toISOString()
+  };
+  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added`);}
+  catch(e){showToast("❌ "+e.message);}
 }
 async function updateLead(id){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
-  const data={name,phone:$("lp").value||"",instagram:$("lig").value||"",source:$("ls").value,platform:$("lpl").value,agentName:$("lag").value||"Unassigned",value:Number($("lv").value)||0,status:$("lst").value,notes:$("lnotes").value||"",updatedAt:new Date().toISOString()};
-  try{await COL.leads().doc(id).update(data);closeModal();showToast("✅ Lead updated");}catch(e){showToast("❌ "+e.message);}
+  const canAssign=selectedRole!=="agent";
+  const data={
+    name,phone:$("lp").value||"",instagram:$("lig").value||"",
+    enquiryDate:$("ledate").value||todayStr(),
+    source:$("ls").value,platform:$("lpl").value,
+    plan:$("lplan").value||"",
+    agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
+    value:Number($("lv").value)||0,
+    status:$("lst")?$("lst").value:(leads.find(l=>l.id===id)?.status||"New Lead"),
+    notes:$("lnotes").value||"",updatedAt:new Date().toISOString()
+  };
+  try{
+    await COL.leads().doc(id).update(data);closeModal();showToast("✅ Lead updated");
+    if(chatView){selectedLead=leads.find(l=>l.id===id);renderPage("inbox");}
+  } catch(e){showToast("❌ "+e.message);}
 }
-async function deleteLead(id){try{await COL.leads().doc(id).delete();chatView=false;selectedLead=null;renderPage("inbox");showToast("Lead deleted");}catch(e){showToast("❌ "+e.message);}}
+async function deleteLead(id){
+  try{await COL.leads().doc(id).delete();chatView=false;selectedLead=null;renderPage("inbox");showToast("Lead deleted");}
+  catch(e){showToast("❌ "+e.message);}
+}
+
+/* ── DETAIL SHEET ── */
 function openDetailSheet(lid){
   const l=leads.find(x=>x.id===lid);if(!l)return;
-  const sc=stageColors[l.status]||DEFAULT_STAGE_COLORS[l.status]||rc();
   $("detailPanel").innerHTML=`
     <div class="detail-handle"></div>
     <div style="text-align:center;margin-bottom:16px">
       ${av(initials(l.name),48,`${rc()},${rc()}88`)}
       <p style="font-weight:700;font-size:14px;margin:9px 0 6px;color:var(--white)">${l.name}</p>
-      ${pill(l.status,sc)}
+      <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap">${pill(l.status,STAGE_COLORS[l.status]||rc())}${l.plan?`<span class="pill plan-${l.plan.toLowerCase()}">${PLANS[l.plan]?.icon||""} ${l.plan}</span>`:""}</div>
     </div>
     <div class="detail-block"><div class="detail-key">📞 Phone</div><div class="detail-val">${l.phone||"—"}</div></div>
+    <div class="detail-block"><div class="detail-key">📸 Instagram</div><div class="detail-val">${l.instagram||"—"}</div></div>
+    <div class="detail-block"><div class="detail-key">📅 Enquiry Date</div><div class="detail-val">${l.enquiryDate?new Date(l.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}):"—"}</div></div>
     <div class="detail-block"><div class="detail-key">📡 Source</div><div class="detail-val">${l.source||"—"}</div></div>
     <div class="detail-block"><div class="detail-key">👤 Agent</div><div class="detail-val">${l.agentName||"Unassigned"}</div></div>
-    ${selectedRole==="admin"?`<div class="detail-block"><div class="detail-key">💰 Value</div><div class="detail-val">${fmtCur(l.value)}</div></div>`:""}
+    ${selectedRole==="admin"?`<div class="detail-block"><div class="detail-key">💰 Deal Value</div><div class="detail-val">${fmtCur(l.value)}</div></div>`:""}
     ${l.notes?`<div class="detail-block"><div class="detail-key">📌 Notes</div><div class="detail-val">${l.notes}</div></div>`:""}
     <div style="height:12px"></div>
+    <button class="ghost-btn" style="border:1px solid #f59e0b44;background:#f59e0b12;color:#f59e0b" onclick="closeDetailSheet();showAddReminderModal('${l.name.replace(/'/g,"\\'")}')">⏰ Set Reminder</button>
     <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()}" onclick="closeDetailSheet();showEditLeadModal('${lid}')">✏️ Edit Lead</button>
     <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()}" onclick="closeDetailSheet();showStageModal('${lid}')">🔄 Change Stage</button>
-    <button class="ghost-btn" style="border:1px solid rgba(124,58,237,.3);background:rgba(124,58,237,.06);color:#7c3aed" onclick="closeDetailSheet();showAddReminderModal('${lid}','${l.name}')">🔔 Set Reminder</button>
-    ${selectedRole!=="agent"?`<button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444" onclick="closeDetailSheet();confirmDelete('Delete lead?','deleteLead(\\'${lid}\\')')">🗑 Delete</button>`:""}
+    ${selectedRole!=="agent"?`<button class="ghost-btn" style="border:1px solid var(--border);background:var(--input-bg);color:var(--text2)" onclick="closeDetailSheet();showReassignModal('${lid}')">👤 Reassign</button>`:""}
+    ${selectedRole!=="agent"?`<button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444" onclick="closeDetailSheet();confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${lid}\\')')">🗑 Delete Lead</button>`:""}
   `;
   $("detailSheet").classList.add("open");
 }
@@ -1004,19 +965,25 @@ function closeDetailSheet(){$("detailSheet").classList.remove("open");}
 function showStageModal(lid){
   const l=leads.find(x=>x.id===lid);if(!l)return;
   showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Change Stage — ${l.name}</div>
-    ${stages.map(s=>{const sc=stageColors[s]||DEFAULT_STAGE_COLORS[s]||"#666";return `<button class="stage-btn${l.status===s?" current":""}" onclick="changeStage('${lid}','${s}')"><div style="width:8px;height:8px;border-radius:50%;background:${sc};flex-shrink:0"></div>${s}</button>`;}).join("")}
+    ${STAGES.map(s=>`<button class="stage-btn${l.status===s?" current":""}" onclick="changeStage('${lid}','${s}')"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div>${s}</button>`).join("")}
     <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button>
   </div>`);
 }
-async function changeStage(lid,stage){try{await COL.leads().doc(lid).update({status:stage});closeModal();showToast(`✅ Moved to ${stage}`);}catch(e){showToast("❌ "+e.message);}}
+async function changeStage(lid,stage){
+  try{await COL.leads().doc(lid).update({status:stage});closeModal();showToast(`✅ Moved to ${stage}`);}
+  catch(e){showToast("❌ "+e.message);}
+}
 function showReassignModal(lid){
   const l=leads.find(x=>x.id===lid);if(!l)return;
   showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Reassign — ${l.name}</div>
-    ${agents.map(ag=>`<button class="stage-btn${l.agentName===ag.name?" current":""}" onclick="reassignLead('${lid}','${ag.name}')">👤 ${ag.name}</button>`).join("")||`<p style="color:var(--text);font-size:13px;padding:12px 0">No agents yet.</p>`}
+    ${agents.length?agents.map(ag=>`<button class="stage-btn${l.agentName===ag.name?" current":""}" onclick="reassignLead('${lid}','${ag.name}')">👤 ${ag.name}</button>`).join(""):`<p style="color:var(--text);font-size:13px;padding:12px 0">No agents added yet.</p>`}
     <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button>
   </div>`);
 }
-async function reassignLead(lid,agentName){try{await COL.leads().doc(lid).update({agentName});closeModal();showToast(`✅ Reassigned to ${agentName}`);}catch(e){showToast("❌ "+e.message);}}
+async function reassignLead(lid,agentName){
+  try{await COL.leads().doc(lid).update({agentName});closeModal();showToast(`✅ Reassigned to ${agentName}`);}
+  catch(e){showToast("❌ "+e.message);}
+}
 function showTemplatePicker(lid){
   if(!templates.length){showToast("No templates yet!");return;}
   showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">📋 Use Template</div>
@@ -1027,254 +994,155 @@ function showTemplatePicker(lid){
 async function useTemplate(lid,tid){
   const t=templates.find(x=>x.id===tid),l=leads.find(x=>x.id===lid);if(!t||!l)return;
   const text=t.content.replace(/{{name}}/g,l.name);
-  try{await COL.messages(lid).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});closeModal();showToast("Template sent ✅");}catch(e){showToast("❌ "+e.message);}
+  try{await COL.messages(lid).add({from:"agent",text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});closeModal();showToast("Template sent ✅");}
+  catch(e){showToast("❌ "+e.message);}
 }
 
-/* ════════════════════════════
-   REMINDERS
-════════════════════════════ */
-function showAddReminderModal(lid,lname){
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">🔔 Set Reminder</div>
-    <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:9px;padding:9px 12px;margin-bottom:14px;font-size:12px;color:#a78bfa">
-      Lead: <strong>${lname||"—"}</strong>
-    </div>
-    <div class="form-row"><label>DATE *</label><input id="rdate" type="date" value="${todayStr()}"/></div>
-    <div class="form-row"><label>NOTE</label><input id="rnote" placeholder="e.g. Follow up on pricing"/></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="addReminder('${lid}','${lname}')">Set Reminder 🔔</button>
-    </div>
-  </div>`);
-}
-async function addReminder(lid,lname){
-  const date=$("rdate").value,note=$("rnote").value;
-  if(!date){showToast("Pick a date");return;}
-  try{
-    await COL.reminders().add({leadId:lid,leadName:lname,date,note,dismissed:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});
-    closeModal();showToast("🔔 Reminder set for "+date);
-  }catch(e){showToast("❌ "+e.message);}
-}
-function pgReminders(el){
-  const ts=todayStr();
-  const today_r=reminders.filter(r=>!r.dismissed&&r.date===ts);
-  const upcoming=reminders.filter(r=>!r.dismissed&&r.date>ts).sort((a,b)=>a.date.localeCompare(b.date));
-  const past=reminders.filter(r=>!r.dismissed&&r.date<ts);
-  const dismissed=reminders.filter(r=>r.dismissed);
-  el.innerHTML=`<div class="page">
-    <div class="fu-counters">
-      <div class="fu-counter"><div class="fu-num" style="color:#ef4444">${today_r.length}</div><div class="fu-lbl">Today</div></div>
-      <div class="fu-counter"><div class="fu-num" style="color:#7c3aed">${upcoming.length}</div><div class="fu-lbl">Upcoming</div></div>
-      <div class="fu-counter"><div class="fu-num" style="color:#f59e0b">${past.length}</div><div class="fu-lbl">Overdue</div></div>
-    </div>
-    <div class="card">
-      <div class="section-head">
-        <div class="section-title">🔔 All Reminders</div>
-        <button onclick="showModal('<div class=modal><div class=modal-handle></div><div class=modal-title>🔔 New Reminder</div><div class=form-row><label>LEAD NAME</label><input id=rln list=rleadNames placeholder=Lead name/><datalist id=rleadNames>${leads.map(l=>`<option value=\\'${l.name}\\'>`).join("")}</datalist></div><div class=form-row><label>DATE *</label><input id=rdate type=date value=${todayStr()}/></div><div class=form-row><label>NOTE</label><input id=rnote placeholder=Follow up note/></div><div class=modal-footer><button class=btn-cancel onclick=closeModal()>Cancel</button><button class=btn-save onclick=addReminderManual()>Set 🔔</button></div></div>')" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button>
-      </div>
-      ${[...today_r,...past,...upcoming].length?[...today_r.map(r=>({...r,_tag:"today"})),...past.map(r=>({...r,_tag:"overdue"})),...upcoming.map(r=>({...r,_tag:"upcoming"}))].map(r=>{
-        const tagC=r._tag==="today"?"#ef4444":r._tag==="overdue"?"#f59e0b":"#7c3aed";
-        const tagL=r._tag==="today"?"🔴 Today":r._tag==="overdue"?"🟡 Overdue":"🟣 "+r.date;
-        return `<div class="task-item">
-          <div style="width:8px;height:8px;border-radius:50%;background:${tagC};flex-shrink:0"></div>
-          <div style="flex:1;min-width:0">
-            <div class="task-lead">${r.leadName||"Lead"}</div>
-            <div class="task-info">${r.note||"—"} · <span style="color:${tagC}">${tagL}</span></div>
-          </div>
-          <div class="task-actions">
-            <button class="task-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="dismissReminder('${r.id}');safeRender(['reminders'])">✓</button>
-            <button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="deleteReminderDoc('${r.id}')">🗑</button>
-          </div>
-        </div>`;
-      }).join(""):`<div style="text-align:center;padding:24px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">🔔</div><p>No reminders yet</p></div>`}
-    </div>
-    ${dismissed.length?`<div class="card"><div class="card-title" style="color:var(--text)">✓ Dismissed (${dismissed.length})</div>${dismissed.slice(0,5).map(r=>`<div class="task-item" style="opacity:.5"><div style="flex:1;min-width:0"><div class="task-lead" style="text-decoration:line-through">${r.leadName||"Lead"}</div><div class="task-info">${r.date} · ${r.note||""}</div></div><button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="deleteReminderDoc('${r.id}')">🗑</button></div>`).join("")}</div>`:""}
-  </div>`;
-}
-async function addReminderManual(){
-  const lname=($("rln")?$("rln").value:""),date=$("rdate").value,note=($("rnote")?$("rnote").value:"");
-  const lead=leads.find(l=>l.name===lname);
-  if(!date){showToast("Pick a date");return;}
-  try{await COL.reminders().add({leadId:lead?lead.id:"",leadName:lname,date,note,dismissed:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});closeModal();showToast("🔔 Reminder set!");}catch(e){showToast("❌ "+e.message);}
-}
-async function deleteReminderDoc(id){
-  try{await COL.reminders().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
-}
-
-/* ════════════════════════════
-   PIPELINE — DRAG & DROP + CUSTOM STAGES
-════════════════════════════ */
-let dragLead2=null;
+/* ══════════════════════════════
+   PIPELINE — ALL ROLES + DEMO COL
+══════════════════════════════ */
+let dragLead=null;
 function pgPipeline(el){
-  const grouped={};stages.forEach(s=>grouped[s]=[]);
-  leads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);else{if(!grouped["Other"])grouped["Other"]=[];grouped["Other"].push(l);}});
+  // Agents see only their leads; others see all
+  const visibleLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
+  const grouped={};STAGES.forEach(s=>grouped[s]=[]);
+  visibleLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
+
   el.innerHTML=`<div class="pipeline-wrap">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <span style="color:var(--text);font-size:11px">← Scroll · Drag cards to move stages</span>
-      ${selectedRole==="admin"?`<div style="display:flex;gap:7px"><button onclick="showAddStageModal()" style="background:${rc()};border:none;border-radius:8px;padding:6px 12px;color:#fff;font-size:11px;font-weight:700;cursor:pointer">+ Stage</button><button onclick="showManageStagesModal()" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer">⚙ Manage</button></div>`:""}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <p style="color:var(--text);font-size:12px">← Scroll · Drag to move · ${selectedRole==="agent"?"Showing your leads":"All leads"}</p>
+      <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ New Lead</button>
     </div>
-    <div class="kanban">
-      ${stages.map(col=>{const sc=stageColors[col]||DEFAULT_STAGE_COLORS[col]||"#666";return `
-        <div class="col-wrap">
-          <div class="col-inner" id="col-${col.replace(/[^a-z0-9]/gi,'-')}"
-            ondragover="pipeOver(event,'${col}')"
-            ondragleave="pipeLeave(event)"
+    <div class="kanban" id="kanban">
+      ${STAGES.map(col=>`
+        <div class="col-wrap${col==="Demo"?" demo-col":""}">
+          <div class="col-inner" id="col-${col.replace(/ /g,'-')}"
+            ondragover="pipeDragOver(event,'${col}')"
+            ondragleave="pipeDragLeave(event)"
             ondrop="pipeDrop(event,'${col}')">
             <div class="col-head">
-              <div class="col-title"><div class="col-dot" style="background:${sc}"></div>${col}</div>
-              <div style="display:flex;align-items:center;gap:5px">
-                <span class="col-count">${(grouped[col]||[]).length}</span>
-                ${selectedRole!=="agent"?`<button onclick="showAddLeadInStage('${col}')" style="background:${sc}22;border:1px solid ${sc}44;border-radius:5px;width:18px;height:18px;color:${sc};font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>`:""}
+              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}${col==="Demo"?" 🎯":""}</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="col-count">${grouped[col].length}</span>
+                <button onclick="showAddLeadInStage('${col}')" style="background:${STAGE_COLORS[col]}22;border:1px solid ${STAGE_COLORS[col]}44;border-radius:5px;width:18px;height:18px;color:${STAGE_COLORS[col]};font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
               </div>
             </div>
             <div class="col-body">
-              ${(grouped[col]||[]).length?(grouped[col]||[]).map(c=>{
-                const cRem=reminders.filter(r=>!r.dismissed&&r.leadId===c.id);
-                const todayRem=cRem.filter(r=>r.date===todayStr());
-                return `<div class="k-card" id="kcard-${c.id}" draggable="true"
-                  ondragstart="pipeStart(event,'${c.id}','${col}')"
-                  ondragend="pipeEnd(event)">
-                  <div class="k-card-top">${av(initials(c.name),22)}<span class="k-name">${c.name}</span>${todayRem.length?`<span title="Reminder today!" style="font-size:14px;cursor:pointer" onclick="showReminderPopup({id:'${cRem[0]?.id}',leadName:'${c.name}',note:'${cRem[0]?.note||""}'})">🔔</span>`:""}
-                  </div>
+              ${grouped[col].length?grouped[col].map(c=>`
+                <div class="k-card" id="kcard-${c.id}" draggable="true"
+                  ondragstart="pipeDragStart(event,'${c.id}','${col}')"
+                  ondragend="pipeDragEnd(event)">
+                  <div class="k-card-top">${av(initials(c.name),22)}<span class="k-name">${c.name}</span>${c.plan?`<span class="pill plan-${c.plan.toLowerCase()}" style="font-size:9px;padding:1px 5px">${PLANS[c.plan]?.icon}</span>`:""}</div>
                   <div class="k-val">${fmtCur(c.value)}</div>
-                  <div class="k-src">${c.source||"—"} · ${c.agentName||"—"}</div>
-                  ${cRem.length?`<div class="k-reminder" style="background:${todayRem.length?"rgba(239,68,68,.12)":"rgba(124,58,237,.1)"};color:${todayRem.length?"#ef4444":"#a78bfa"}">🔔 ${cRem[0].date}${cRem[0].note?" · "+cRem[0].note:""}</div>`:""}
+                  <div class="k-src">${c.source||"—"} · ${c.agentName||"Unassigned"}</div>
+                  ${c.enquiryDate?`<div style="color:var(--text);font-size:9px;margin-top:2px">📅 ${new Date(c.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}</div>`:""}
                   <div class="k-actions">
-                    <button class="k-act-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="selectLead('${c.id}');renderPage('inbox')">💬</button>
-                    ${selectedRole!=="agent"?`<button class="k-act-btn" style="background:var(--input-bg);color:var(--text2);border:1px solid var(--border)" onclick="showEditLeadModal('${c.id}')">✏️</button>`:""}
-                    <button class="k-act-btn" style="background:rgba(124,58,237,.1);color:#a78bfa;border:1px solid rgba(124,58,237,.2)" onclick="showAddReminderModal('${c.id}','${c.name}')">🔔</button>
+                    <button class="k-act-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="selectLead('${c.id}');renderPage('inbox')">💬 Chat</button>
+                    <button class="k-act-btn" style="background:var(--input-bg);color:var(--text2);border:1px solid var(--border)" onclick="showEditLeadModal('${c.id}')">✏️</button>
+                    <button class="k-act-btn" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.3)" onclick="showAddReminderModal('${c.name.replace(/'/g,"\\'")}')">⏰</button>
                   </div>
-                </div>`;
-              }).join(""):`<div class="drop-zone" id="dz-${col.replace(/[^a-z0-9]/gi,'-')}">Drop here</div>`}
+                </div>`).join(""):`<div class="drop-zone" id="dz-${col.replace(/ /g,'-')}">Drop here</div>`}
             </div>
           </div>
-        </div>`;}).join("")}
+        </div>`).join("")}
     </div>
   </div>`;
 }
-function pipeStart(e,id,fromCol){dragLead2={id,fromCol};document.getElementById("kcard-"+id)?.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",id);}
-function pipeEnd(e){dragLead2=null;document.querySelectorAll(".k-card").forEach(c=>c.classList.remove("dragging"));document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));}
-function pipeOver(e,col){e.preventDefault();if(!dragLead2||dragLead2.fromCol===col)return;document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));document.getElementById("col-"+col.replace(/[^a-z0-9]/gi,"-"))?.classList.add("drag-over");}
-function pipeLeave(e){if(!e.currentTarget.contains(e.relatedTarget))e.currentTarget.classList.remove("drag-over");}
+function pipeDragStart(e,id,fromCol){
+  dragLead={id,fromCol};
+  const el=document.getElementById("kcard-"+id);if(el)el.classList.add("dragging");
+  e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",id);
+}
+function pipeDragEnd(e){
+  dragLead=null;
+  document.querySelectorAll(".k-card").forEach(c=>c.classList.remove("dragging"));
+  document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
+  document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));
+}
+function pipeDragOver(e,col){
+  e.preventDefault();e.dataTransfer.dropEffect="move";
+  if(!dragLead||dragLead.fromCol===col)return;
+  document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
+  const colEl=document.getElementById("col-"+col.replace(/ /g,"-"));
+  if(colEl)colEl.classList.add("drag-over");
+  document.querySelectorAll(".drop-zone").forEach(c=>c.classList.remove("active"));
+  const dz=document.getElementById("dz-"+col.replace(/ /g,"-"));
+  if(dz)dz.classList.add("active");
+}
+function pipeDragLeave(e){if(!e.currentTarget.contains(e.relatedTarget)){e.currentTarget.classList.remove("drag-over");}}
 async function pipeDrop(e,toCol){
-  e.preventDefault();document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
-  if(!dragLead2||dragLead2.fromCol===toCol){dragLead2=null;return;}
-  const{id}=dragLead2;dragLead2=null;
-  try{await COL.leads().doc(id).update({status:toCol});showToast(`✅ Moved to ${toCol}`);}catch(e){showToast("❌ "+e.message);}
+  e.preventDefault();
+  document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));
+  if(!dragLead||dragLead.fromCol===toCol){dragLead=null;return;}
+  const {id}=dragLead;dragLead=null;
+  try{await COL.leads().doc(id).update({status:toCol});showToast(`✅ Moved to ${toCol}`);}
+  catch(err){showToast("❌ "+err.message);}
 }
 function showAddLeadInStage(stage){
-  const sc=stageColors[stage]||DEFAULT_STAGE_COLORS[stage]||rc();
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">➕ Add to ${stage}</div>
+    <div class="modal-title">➕ Add Lead to ${stage}</div>
     <div class="form-row"><label>FULL NAME *</label><input id="ln" placeholder="Rajesh Kumar"/></div>
     <div class="form-row"><label>PHONE</label><input id="lp" type="tel" placeholder="+91 98765 43210"/></div>
+    <div class="form-row"><label>ENQUIRY DATE</label><input id="ledate" type="date" value="${todayStr()}"/></div>
     <div class="form-row"><label>SOURCE</label><select id="ls">${SOURCES.map(s=>`<option>${s}</option>`).join("")}</select></div>
     <div class="form-row"><label>PLATFORM</label><select id="lpl">${PLATFORMS.map(p=>`<option>${p}</option>`).join("")}</select></div>
-    <div class="form-row"><label>ASSIGN TO</label><select id="lag"><option value="">Unassigned</option>${agents.map(a=>`<option>${a.name}</option>`).join("")}</select></div>
+    <div class="form-row"><label>PLAN</label><select id="lplan"><option value="">Select Plan</option>${PLAN_NAMES.map(p=>`<option value="${p}">${PLANS[p].icon} ${p}</option>`).join("")}</select></div>
+    ${selectedRole!=="agent"?`<div class="form-row"><label>ASSIGN TO</label><select id="lag"><option value="">Unassigned</option>${agents.map(a=>`<option>${a.name}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>DEAL VALUE (₹)</label><input id="lv" type="number" placeholder="25000"/></div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" style="background:${sc}" onclick="addLeadInStage('${stage}')">Add</button>
+      <button class="btn-save" style="background:${STAGE_COLORS[stage]}" onclick="addLeadInStage('${stage}')">Add</button>
     </div>
   </div>`);
 }
 async function addLeadInStage(stage){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
-  const data={name,phone:$("lp").value||"",instagram:"",source:$("ls").value,platform:$("lpl").value,agentName:$("lag").value||"Unassigned",value:Number($("lv").value)||0,status:stage,notes:"",createdAt:new Date().toISOString()};
-  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}catch(e){showToast("❌ "+e.message);}
+  const canAssign=selectedRole!=="agent";
+  const data={
+    name,phone:$("lp").value||"",instagram:"",
+    enquiryDate:$("ledate").value||todayStr(),
+    source:$("ls").value,platform:$("lpl").value,
+    plan:$("lplan")?.value||"",
+    agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
+    value:Number($("lv").value)||0,status:stage,notes:"",createdAt:new Date().toISOString()
+  };
+  try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}
+  catch(e){showToast("❌ "+e.message);}
 }
 
-/* ─── CUSTOM PIPELINE STAGES (Admin) ─── */
-function showAddStageModal(){
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">➕ New Pipeline Stage</div>
-    <div class="form-row"><label>STAGE NAME *</label><input id="sname" placeholder="e.g. Trial Period"/></div>
-    <div class="form-row"><label>COLOR</label><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">${STAGE_COLOR_OPTIONS.map(c=>`<div onclick="selectStageColor('${c}',this)" style="width:28px;height:28px;border-radius:7px;background:${c};cursor:pointer;border:2px solid transparent;transition:transform .15s" data-color="${c}"></div>`).join("")}</div></div>
-    <input type="hidden" id="scolor" value="${STAGE_COLOR_OPTIONS[0]}"/>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="addCustomStage()">Add Stage</button>
-    </div>
-  </div>`);
-  setTimeout(()=>{const first=document.querySelector('[data-color]');if(first)first.style.border="2px solid white";},100);
-}
-function selectStageColor(c,el){
-  document.querySelectorAll('[data-color]').forEach(e=>e.style.border="2px solid transparent");
-  el.style.border="2px solid white";el.style.transform="scale(1.2)";
-  const sc=$("scolor");if(sc)sc.value=c;
-}
-async function addCustomStage(){
-  const name=($("sname").value||"").trim();const color=$("scolor")?.value||STAGE_COLOR_OPTIONS[0];
-  if(!name){showToast("Stage name required");return;}
-  if(stages.includes(name)){showToast("Stage already exists");return;}
-  try{
-    await COL.stages().add({name,color,order:stages.length,createdAt:new Date().toISOString()});
-    closeModal();showToast(`✅ Stage "${name}" added`);
-  }catch(e){showToast("❌ "+e.message);}
-}
-async function showManageStagesModal(){
-  const snap=await COL.stages().orderBy("order").get();
-  const docs=snap.docs.map(d=>({id:d.id,...d.data()}));
-  showModal(`<div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⚙ Manage Pipeline Stages</div>
-    <p style="color:var(--text);font-size:12px;margin-bottom:12px">Default stages cannot be deleted. Custom stages can be removed.</p>
-    ${[...DEFAULT_STAGES,...docs.filter(d=>!DEFAULT_STAGES.includes(d.name)).map(d=>d.name)].map(s=>{
-      const doc=docs.find(d=>d.name===s);
-      const isDefault=DEFAULT_STAGES.includes(s);
-      const sc=stageColors[s]||DEFAULT_STAGE_COLORS[s]||"#666";
-      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--input-bg);border-radius:9px;margin-bottom:6px">
-        <div style="width:12px;height:12px;border-radius:4px;background:${sc};flex-shrink:0"></div>
-        <span style="flex:1;font-size:13px;color:var(--white)">${s}</span>
-        ${isDefault?`<span style="font-size:10px;color:var(--text);font-style:italic">default</span>`:`<button onclick="deleteCustomStage('${doc?.id}','${s}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:7px;padding:4px 9px;color:#ef4444;font-size:11px;cursor:pointer">🗑 Remove</button>`}
-      </div>`;
-    }).join("")}
-    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:8px">Close</button>
-  </div>`);
-}
-async function deleteCustomStage(docId,name){
-  if(!docId){showToast("Cannot delete default stage");return;}
-  const leadsInStage=leads.filter(l=>l.status===name).length;
-  if(leadsInStage>0){showToast(`❌ Move ${leadsInStage} lead(s) out of "${name}" first`);return;}
-  try{await COL.stages().doc(docId).delete();closeModal();showToast(`Stage "${name}" removed`);}catch(e){showToast("❌ "+e.message);}
-}
-
-/* ════════════════════════════
+/* ══════════════════════════════
    AGENTS
-════════════════════════════ */
+══════════════════════════════ */
 function pgAgents(el){
-  // Compute real stats from leads
-  const enriched=agents.map(ag=>{
-    const agLeads=leads.filter(l=>l.agentName===ag.name);
-    const agClosed=agLeads.filter(l=>l.status==="Closed");
-    return {...ag,_leads:agLeads.length,_rev:agClosed.reduce((s,l)=>s+Number(l.value||0),0),_realConv:agLeads.length?Math.round(agClosed.length/agLeads.length*100):ag.conv||0};
-  }).sort((a,b)=>b._realConv-a._realConv);
   el.innerHTML=`<div class="agent-grid">
     ${selectedRole==="admin"?`<div class="agent-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;min-height:120px" onclick="showAddAgentModal()"><div style="font-size:28px;color:var(--text)">+</div><p style="color:var(--text);font-size:13px;margin-top:6px">Add Agent</p></div>`:""}
-    ${enriched.map((ag,idx)=>`
-      <div class="agent-card">
+    ${agents.map(ag=>{
+      const myLeads=leads.filter(l=>l.agentName===ag.name);
+      const myClosed=myLeads.filter(l=>l.status==="Closed");
+      const convRate=myLeads.length?Math.round(myClosed.length/myLeads.length*100):0;
+      const rev=myClosed.reduce((s,l)=>s+Number(l.value||0),0);
+      return `<div class="agent-card">
         <div class="agent-head">
           ${av(initials(ag.name),40,ag.status==="online"?"#16a34a,#15803d":ag.status==="away"?"#f59e0b,#d97706":"#9ca3af,#6b7280")}
           <div style="flex:1;min-width:0">
-            <div style="font-weight:800;font-size:13px;color:var(--white);display:flex;align-items:center;gap:6px">${ag.name}${idx===0&&ag._leads>0?`<span style="font-size:12px">🏆</span>`:""}</div>
+            <div style="font-weight:800;font-size:13px;color:var(--white)">${ag.name}</div>
             <div style="display:flex;align-items:center;gap:5px;margin-top:2px"><span style="width:7px;height:7px;border-radius:50%;background:${ag.status==="online"?"#16a34a":ag.status==="away"?"#f59e0b":"#9ca3af"};display:inline-block"></span><span style="color:var(--text);font-size:11px">${ag.status}</span></div>
           </div>
-          <div class="agent-conv"><div class="agent-conv-val">${ag._realConv}%</div><div class="agent-conv-lbl">conversion</div></div>
+          <div class="agent-conv"><div class="agent-conv-val">${convRate}%</div><div class="agent-conv-lbl">conv.</div></div>
         </div>
         <div class="agent-stats">
-          <div class="agent-stat"><div class="agent-stat-val">${ag._leads}</div><div class="agent-stat-key">Leads</div></div>
-          <div class="agent-stat"><div class="agent-stat-val">${selectedRole==="admin"?fmtCur(ag._rev):"🔒"}</div><div class="agent-stat-key">Revenue</div></div>
+          <div class="agent-stat"><div class="agent-stat-val">${myLeads.length}</div><div class="agent-stat-key">Leads</div></div>
+          <div class="agent-stat"><div class="agent-stat-val">${selectedRole==="admin"?fmtCur(rev):"🔒"}</div><div class="agent-stat-key">Revenue</div></div>
           <div class="agent-stat"><div class="agent-stat-val">${ag.resp||"—"}</div><div class="agent-stat-key">Resp</div></div>
         </div>
-        ${bar(ag._realConv,100,rc())}
+        ${bar(convRate,100,rc())}
         ${selectedRole==="admin"?`<div style="display:flex;gap:7px;margin-top:10px">
           <button class="ghost-btn" style="border:1px solid ${rc()}44;background:${rc()}12;color:${rc()};flex:1;padding:8px" onclick="showEditAgentModal('${ag.id}')">✏️ Edit</button>
-          <button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;flex:1;padding:8px" onclick="confirmDelete('Remove agent <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\')')">🗑</button>
+          <button class="ghost-btn" style="border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;flex:1;padding:8px" onclick="confirmDelete('Remove agent <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\')')">🗑 Remove</button>
         </div>`:""}
-      </div>`).join("")}
+      </div>`;
+    }).join("")}
   </div>`;
 }
 function showAddAgentModal(){_agentModal(null);}
@@ -1284,24 +1152,33 @@ function _agentModal(ag){
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">${isEdit?"✏️ Edit Agent":"➕ Add Agent"}</div>
-    <div class="form-row"><label>FULL NAME *</label><input id="an" value="${ag?ag.name:""}" placeholder="Priya Menon"/></div>
+    <div class="form-row"><label>FULL NAME *</label><input id="an" value="${ag?ag.name:""}" placeholder="e.g. Priya Menon"/></div>
     <div class="form-row"><label>EMAIL</label><input id="ae" type="email" value="${ag?ag.email||"":""}" placeholder="priya@homegym.in"/></div>
     <div class="form-row"><label>STATUS</label><select id="as2"><option${!ag||ag.status==="online"?" selected":""}>online</option><option${ag&&ag.status==="away"?" selected":""}>away</option><option${ag&&ag.status==="offline"?" selected":""}>offline</option></select></div>
-    <div class="form-row"><label>AVG RESPONSE TIME</label><input id="ar" value="${ag?ag.resp||"":""}" placeholder="5m"/></div>
-    <div class="form-row"><label>MANUAL CONVERSION % <span style="color:var(--text);font-weight:400">(overridden by live data)</span></label><input id="ac" type="number" value="${ag?ag.conv||0:0}" min="0" max="100"/></div>
+    <div class="form-row"><label>AVG RESPONSE TIME</label><input id="ar" value="${ag?ag.resp||"":""}" placeholder="e.g. 5m"/></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Remove agent?','deleteAgent(\\'${ag.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" onclick="${isEdit?`updateAgent('${ag.id}')`:"addAgent()"}">${isEdit?"Save":"Add"}</button>
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Remove agent <b>${ag.name}</b>?','deleteAgent(\\'${ag.id}\\');closeModal()')">🗑 Remove</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateAgent('${ag.id}')`:"addAgent()"}">${isEdit?"Save":"Add Agent"}</button>
     </div>
   </div>`);
 }
-async function addAgent(){const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.agents().add({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—",conv:Number($("ac").value)||0,createdAt:new Date().toISOString()});closeModal();showToast(`✅ "${name}" added`);}catch(e){showToast("❌ "+e.message);}}
-async function updateAgent(id){const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.agents().doc(id).update({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—",conv:Number($("ac").value)||0});closeModal();showToast("Agent updated ✅");}catch(e){showToast("❌ "+e.message);}}
-async function deleteAgent(id){try{await COL.agents().doc(id).delete();showToast("Agent removed");}catch(e){showToast("❌ "+e.message);}}
+async function addAgent(){
+  const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}
+  try{await COL.agents().add({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—",createdAt:new Date().toISOString()});closeModal();showToast(`✅ "${name}" added`);}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function updateAgent(id){
+  const name=($("an").value||"").trim();if(!name){showToast("Name required");return;}
+  try{await COL.agents().doc(id).update({name,email:$("ae").value||"",status:$("as2").value,resp:$("ar").value||"—"});closeModal();showToast("Agent updated ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function deleteAgent(id){
+  try{await COL.agents().doc(id).delete();showToast("Agent removed");}catch(e){showToast("❌ "+e.message);}
+}
 
-/* ════════════════════════════
+/* ══════════════════════════════
    FOLLOW-UPS / TASKS
-════════════════════════════ */
+══════════════════════════════ */
 function pgFollowups(el){
   const ts=todayStr();
   const pending=tasks.filter(t=>!t.done);
@@ -1314,7 +1191,10 @@ function pgFollowups(el){
     <div class="card">
       <div class="section-head">
         <div class="section-title">📋 Tasks</div>
-        <button onclick="showAddTaskModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button>
+        <div style="display:flex;gap:7px">
+          <button onclick="showAddReminderModal()" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:7px 12px;color:#f59e0b;font-size:12px;font-weight:700;cursor:pointer">⏰ Reminder</button>
+          <button onclick="showAddTaskModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Task</button>
+        </div>
       </div>
       <div id="taskList">${renderTaskList()}</div>
     </div>
@@ -1332,7 +1212,7 @@ function renderTaskList(){
       <div class="task-actions">
         ${!t.done?`<button class="task-btn" style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33" onclick="markTaskDone('${t.id}')">✓</button>`:`<span style="color:#16a34a;font-size:12px;padding:4px">✓</span>`}
         <button class="task-btn" style="background:var(--input-bg);color:var(--text2);border:1px solid var(--border)" onclick="showEditTaskModal('${t.id}')">✏️</button>
-        <button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="confirmDelete('Delete this task?','deleteTask(\\'${t.id}\\')')">🗑</button>
+        <button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="confirmDelete('Delete this task?','deleteTask(\\'${t.id}\\')' )">🗑</button>
       </div>
     </div>`).join("");
 }
@@ -1344,27 +1224,46 @@ function _taskModal(t){
     <div class="modal-handle"></div>
     <div class="modal-title">${isEdit?"✏️ Edit Task":"➕ Add Task"}</div>
     <div class="form-row"><label>LEAD NAME *</label><input id="tln" list="leadNames" value="${t?t.leadName:""}" placeholder="Type lead name"/><datalist id="leadNames">${leads.map(l=>`<option value="${l.name}">`).join("")}</datalist></div>
-    <div class="form-row"><label>TASK *</label><input id="tt" value="${t?t.task:""}" placeholder="Send product catalog"/></div>
+    <div class="form-row"><label>TASK *</label><input id="tt" value="${t?t.task:""}" placeholder="e.g. Send product catalog"/></div>
     <div class="form-row"><label>DUE DATE</label><input id="td" type="date" value="${t?t.due||"":""}"/></div>
     <div class="form-row"><label>PRIORITY</label><select id="tp"><option value="high"${t&&t.priority==="high"?" selected":""}>High</option><option value="medium"${t&&t.priority==="medium"?" selected":""}>Medium</option><option value="low"${!t||t.priority==="low"?" selected":""}>Low</option></select></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete task?','deleteTask(\\'${t.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" onclick="${isEdit?`updateTask('${t.id}')`:"addTask()"}">${isEdit?"Save":"Add"}</button>
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete this task?','deleteTask(\\'${t.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateTask('${t.id}')`:"addTask()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addTask(){const leadName=($("tln").value||"").trim(),task=($("tt").value||"").trim();if(!leadName||!task){showToast("Fill required fields");return;}try{await COL.tasks().add({leadName,task,due:$("td").value||"",priority:$("tp").value,done:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});closeModal();showToast("Task added ✅");}catch(e){showToast("❌ "+e.message);}}
-async function updateTask(id){const leadName=($("tln").value||"").trim(),task=($("tt").value||"").trim();if(!leadName||!task){showToast("Fill required fields");return;}try{await COL.tasks().doc(id).update({leadName,task,due:$("td").value||"",priority:$("tp").value});closeModal();showToast("Task updated ✅");}catch(e){showToast("❌ "+e.message);}}
-async function markTaskDone(id){try{await COL.tasks().doc(id).update({done:true});showToast("Done ✅");}catch(e){showToast("❌ "+e.message);}}
-async function deleteTask(id){try{await COL.tasks().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+async function addTask(){
+  const leadName=($("tln").value||"").trim(),task=($("tt").value||"").trim();
+  if(!leadName||!task){showToast("Fill required fields");return;}
+  try{await COL.tasks().add({leadName,task,due:$("td").value||"",priority:$("tp").value,done:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});closeModal();showToast("Task added ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function updateTask(id){
+  const leadName=($("tln").value||"").trim(),task=($("tt").value||"").trim();
+  if(!leadName||!task){showToast("Fill required fields");return;}
+  try{await COL.tasks().doc(id).update({leadName,task,due:$("td").value||"",priority:$("tp").value});closeModal();showToast("Task updated ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function markTaskDone(id){
+  try{await COL.tasks().doc(id).update({done:true});showToast("Done ✅");}catch(e){showToast("❌ "+e.message);}
+}
+async function deleteTask(id){
+  try{await COL.tasks().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
+}
 
-/* ════════════════════════════
+/* ══════════════════════════════
    AUTOMATION
-════════════════════════════ */
+══════════════════════════════ */
+const TRIGGERS=["New lead arrives","No reply in 24h","Call not answered","Stage → Interested","Stage → Demo","Stage → Closed","Stage → Payment Pending"];
+const ACTIONS=["Send welcome message","Send follow-up reminder","Schedule retry call","Assign to agent","Create task","Send notification"];
 function pgAutomation(el){
   if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("Automation")}</div>`;return;}
   el.innerHTML=`<div class="page"><div class="card">
-    <div class="section-head"><div class="section-title">⚡ Automation Rules</div><button onclick="showAddAutoModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button></div>
+    <div class="section-head">
+      <div class="section-title">⚡ Automation Rules</div>
+      <button onclick="showAddAutoModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button>
+    </div>
     ${autos.length?autos.map(a=>`
       <div class="auto-item">
         <div style="flex:1;min-width:0">
@@ -1372,8 +1271,8 @@ function pgAutomation(el){
           <div style="display:flex;align-items:center;gap:7px"><span class="tag" style="background:${rc()}18;color:${rc()}">THEN</span><span style="color:var(--text2);font-size:12px">${a.action}</span></div>
         </div>
         <button onclick="showEditAutoModal('${a.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:6px">✏️</button>
-        <div class="toggle" style="background:${a.on?rc():"rgba(127,127,127,.2)"}" onclick="toggleAuto('${a.id}')"><div class="toggle-knob" style="left:${a.on?"23px":"3px"}"></div></div>
-        <button onclick="confirmDelete('Delete rule?','deleteAuto(\\'${a.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:4px;margin-left:6px">🗑</button>
+        <div class="toggle" style="background:${a.on?rc():"rgba(127,127,127,.2)"}" onclick="toggleAuto('${a.id}')"><div class="toggle-knob" style="left:${a.on?"22px":"3px"}"></div></div>
+        <button onclick="confirmDelete('Delete this rule?','deleteAuto(\\'${a.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:4px;margin-left:6px">🗑</button>
       </div>`).join(""):`<div style="text-align:center;padding:24px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">🤖</div><p>No rules yet</p></div>`}
   </div></div>`;
 }
@@ -1387,19 +1286,30 @@ function _autoModal(a){
     <div class="form-row"><label>TRIGGER (IF)</label><select id="at2">${TRIGGERS.map(t=>`<option${a&&a.trigger===t?" selected":""}>${t}</option>`).join("")}</select></div>
     <div class="form-row"><label>ACTION (THEN)</label><select id="aa">${ACTIONS.map(t=>`<option${a&&a.action===t?" selected":""}>${t}</option>`).join("")}</select></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete rule?','deleteAuto(\\'${a.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" onclick="${isEdit?`updateAuto('${a.id}')`:"addAuto()"}">${isEdit?"Save":"Add"}</button>
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete this rule?','deleteAuto(\\'${a.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateAuto('${a.id}')`:"addAuto()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addAuto(){try{await COL.autos().add({trigger:$("at2").value,action:$("aa").value,on:true,createdAt:new Date().toISOString()});closeModal();showToast("Rule added ✅");}catch(e){showToast("❌ "+e.message);}}
-async function updateAuto(id){try{await COL.autos().doc(id).update({trigger:$("at2").value,action:$("aa").value});closeModal();showToast("Rule updated ✅");}catch(e){showToast("❌ "+e.message);}}
-async function toggleAuto(id){const a=autos.find(x=>x.id===id);if(!a)return;try{await COL.autos().doc(id).update({on:!a.on});}catch(e){showToast("❌ "+e.message);}}
-async function deleteAuto(id){try{await COL.autos().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+async function addAuto(){
+  try{await COL.autos().add({trigger:$("at2").value,action:$("aa").value,on:true,createdAt:new Date().toISOString()});closeModal();showToast("Rule added ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function updateAuto(id){
+  try{await COL.autos().doc(id).update({trigger:$("at2").value,action:$("aa").value});closeModal();showToast("Rule updated ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function toggleAuto(id){
+  const a=autos.find(x=>x.id===id);if(!a)return;
+  try{await COL.autos().doc(id).update({on:!a.on});}catch(e){showToast("❌ "+e.message);}
+}
+async function deleteAuto(id){
+  try{await COL.autos().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
+}
 
-/* ════════════════════════════
+/* ══════════════════════════════
    CAMPAIGNS
-════════════════════════════ */
+══════════════════════════════ */
 function pgCampaigns(el){
   if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("Campaigns")}</div>`;return;}
   const ts=campaigns.reduce((s,c)=>s+Number(c.spend||0),0),tr=campaigns.reduce((s,c)=>s+Number(c.revenue||0),0),tl=campaigns.reduce((s,c)=>s+Number(c.leads||0),0);
@@ -1411,14 +1321,17 @@ function pgCampaigns(el){
       <div class="camp-stat"><div class="camp-stat-icon">📈</div><div class="camp-stat-val">${ts?(tr/ts).toFixed(1)+"x":"—"}</div><div class="camp-stat-key">ROAS</div></div>
     </div>
     <div class="card">
-      <div class="section-head"><div class="section-title">📊 Campaigns</div><button onclick="showAddCampaignModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button></div>
+      <div class="section-head">
+        <div class="section-title">📊 Campaigns</div>
+        <button onclick="showAddCampaignModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ Add</button>
+      </div>
       ${campaigns.length?campaigns.map(c=>`
         <div class="camp-row">
           <div style="flex:1;min-width:0"><div class="camp-name">${c.name}</div><div class="camp-sub">${c.leads||0} leads · ${c.status}</div></div>
           <div class="camp-metric"><div class="camp-metric-val">₹${Number(c.spend||0).toLocaleString("en-IN")}</div><div class="camp-metric-key">Spend</div></div>
           <div class="camp-metric"><div class="camp-metric-val" style="color:#16a34a">${c.spend?(Number(c.revenue||0)/Number(c.spend)).toFixed(1)+"x":"—"}</div><div class="camp-metric-key">ROAS</div></div>
           <button onclick="showEditCampaignModal('${c.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:4px">✏️</button>
-          <button onclick="confirmDelete('Delete <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">🗑</button>
+          <button onclick="confirmDelete('Delete campaign <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\')')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">🗑</button>
         </div>`).join(""):`<div style="text-align:center;padding:28px;color:var(--text)"><div style="font-size:32px;margin-bottom:8px">📊</div><p>No campaigns yet</p></div>`}
     </div>
   </div>`;
@@ -1430,24 +1343,34 @@ function _campaignModal(c){
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">${isEdit?"✏️ Edit Campaign":"➕ Add Campaign"}</div>
-    <div class="form-row"><label>NAME *</label><input id="cn" value="${c?c.name:""}" placeholder="Diwali Sale 2026"/></div>
+    <div class="form-row"><label>NAME *</label><input id="cn" value="${c?c.name:""}" placeholder="e.g. Diwali Sale 2026"/></div>
     <div class="form-row"><label>AD SPEND (₹)</label><input id="cs" type="number" value="${c?c.spend||0:0}"/></div>
     <div class="form-row"><label>LEADS</label><input id="cl" type="number" value="${c?c.leads||0:0}"/></div>
     <div class="form-row"><label>REVENUE (₹)</label><input id="cr" type="number" value="${c?c.revenue||0:0}"/></div>
     <div class="form-row"><label>STATUS</label><select id="cst"><option${!c||c.status==="Active"?" selected":""}>Active</option><option${c&&c.status==="Paused"?" selected":""}>Paused</option><option${c&&c.status==="Ended"?" selected":""}>Ended</option></select></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete campaign?','deleteCampaign(\\'${c.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" onclick="${isEdit?`updateCampaign('${c.id}')`:"addCampaign()"}">${isEdit?"Save":"Add"}</button>
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete campaign <b>${c.name}</b>?','deleteCampaign(\\'${c.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateCampaign('${c.id}')`:"addCampaign()"}">${isEdit?"Save":"Add"}</button>
     </div>
   </div>`);
 }
-async function addCampaign(){const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.campaigns().add({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value,createdAt:new Date().toISOString()});closeModal();showToast("Campaign added ✅");}catch(e){showToast("❌ "+e.message);}}
-async function updateCampaign(id){const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.campaigns().doc(id).update({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value});closeModal();showToast("Campaign updated ✅");}catch(e){showToast("❌ "+e.message);}}
-async function deleteCampaign(id){try{await COL.campaigns().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+async function addCampaign(){
+  const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}
+  try{await COL.campaigns().add({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value,createdAt:new Date().toISOString()});closeModal();showToast("Campaign added ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function updateCampaign(id){
+  const name=($("cn").value||"").trim();if(!name){showToast("Name required");return;}
+  try{await COL.campaigns().doc(id).update({name,spend:Number($("cs").value)||0,leads:Number($("cl").value)||0,revenue:Number($("cr").value)||0,status:$("cst").value});closeModal();showToast("Campaign updated ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function deleteCampaign(id){
+  try{await COL.campaigns().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
+}
 
-/* ════════════════════════════
+/* ══════════════════════════════
    TEMPLATES
-════════════════════════════ */
+══════════════════════════════ */
 function pgTemplates(el){
   el.innerHTML=`<div class="tpl-grid">
     <div class="tpl-add" onclick="showAddTemplateModal()"><div style="font-size:28px;color:var(--text)">+</div><div style="color:var(--text);font-size:12px;margin-top:7px">New Template</div></div>
@@ -1458,8 +1381,8 @@ function pgTemplates(el){
         <div class="tpl-foot">
           <span class="tpl-uses">Used ${t.uses||0}×</span>
           <div style="display:flex;gap:6px">
-            <button style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="showEditTemplateModal('${t.id}')">✏️</button>
-            ${selectedRole!=="agent"?`<button style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="confirmDelete('Delete template?','deleteTemplate(\\'${t.id}\\')')">🗑</button>`:""}
+            <button style="background:${rc()}18;color:${rc()};border:1px solid ${rc()}33;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="showEditTemplateModal('${t.id}')">✏️ Edit</button>
+            <button style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer" onclick="confirmDelete('Delete template <b>${t.title}</b>?','deleteTemplate(\\'${t.id}\\')')">🗑</button>
           </div>
         </div>
       </div>`).join("")}
@@ -1472,68 +1395,40 @@ function _templateModal(t){
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">${isEdit?"✏️ Edit Template":"➕ New Template"}</div>
-    <div class="form-row"><label>TITLE *</label><input id="ttl" value="${t?t.title:""}" placeholder="Welcome Message"/></div>
+    <div class="form-row"><label>TITLE *</label><input id="ttl" value="${t?t.title:""}" placeholder="e.g. Welcome Message"/></div>
     <div class="form-row"><label>TYPE</label><select id="tty"><option${!t||t.type==="Text"?" selected":""}>Text</option><option${t&&t.type==="Audio"?" selected":""}>Audio</option><option${t&&t.type==="Image"?" selected":""}>Image</option></select></div>
     <div class="form-row"><label>CONTENT (use {{name}})</label><textarea id="tcn">${t?t.content:""}</textarea></div>
     <div class="modal-footer">
-      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete template?','deleteTemplate(\\'${t.id}\\');closeModal()')">🗑</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
-      <button class="btn-save" onclick="${isEdit?`updateTemplate('${t.id}')`:"addTemplate()"}">${isEdit?"Save":"Create"}</button>
+      ${isEdit?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete template <b>${t.title}</b>?','deleteTemplate(\\'${t.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
+      <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateTemplate('${t.id}')`:"addTemplate()"}">${isEdit?"Save":"Create"}</button>
     </div>
   </div>`);
 }
-async function addTemplate(){const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}try{await COL.templates().add({title,type:$("tty").value,content,uses:0,createdAt:new Date().toISOString()});closeModal();showToast("Template saved ✅");}catch(e){showToast("❌ "+e.message);}}
-async function updateTemplate(id){const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}try{await COL.templates().doc(id).update({title,type:$("tty").value,content});closeModal();showToast("Template updated ✅");}catch(e){showToast("❌ "+e.message);}}
-async function deleteTemplate(id){try{await COL.templates().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
-
-/* ════════════════════════════
-   UPGRADE PLANS
-════════════════════════════ */
-function pgUpgrades(el){
-  if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("Upgrade Plans")}</div>`;return;}
-  const plans=[
-    {name:"Starter",price:"Free",icon:"🌱",color:"#16a34a",features:["Up to 3 agents","100 leads/month","Basic pipeline","WhatsApp integration","Email support"],current:true,btn:"Current Plan"},
-    {name:"Pro",price:"₹2,999/mo",icon:"⚡",color:"#7c3aed",features:["Up to 10 agents","Unlimited leads","Custom pipelines","Advanced automation","Campaign analytics","Priority support","Reminder system","API access"],current:false,btn:"Upgrade to Pro",popular:true},
-    {name:"Enterprise",price:"₹7,999/mo",icon:"🏢",color:"#f59e0b",features:["Unlimited agents","Unlimited leads","Multi-location","Custom integrations","Dedicated manager","White-label option","SLA guarantee","Custom training"],current:false,btn:"Contact Sales"},
-  ];
-  el.innerHTML=`<div class="page">
-    <div style="text-align:center;margin-bottom:20px">
-      <h2 style="font-size:20px;font-weight:800;color:var(--white);margin-bottom:6px">⚡ Upgrade Your Plan</h2>
-      <p style="color:var(--text);font-size:13px">Scale your HomeGym™ sales team with more power</p>
-    </div>
-    <div class="upgrade-grid">
-      ${plans.map(p=>`
-        <div class="upgrade-card${p.current?" active-plan":""}">
-          ${p.popular?`<span class="upgrade-badge" style="background:linear-gradient(135deg,${p.color},${p.color}cc);color:#fff">⭐ Most Popular</span>`:""}
-          ${p.current?`<span class="upgrade-badge" style="background:rgba(22,163,74,.15);color:#16a34a;border:1px solid rgba(22,163,74,.3)">✓ Current</span>`:""}
-          <div class="upgrade-icon">${p.icon}</div>
-          <div class="upgrade-name">${p.name}</div>
-          <div class="upgrade-price" style="color:${p.color}">${p.price}</div>
-          ${p.features.map(f=>`<div class="upgrade-feature"><span style="color:${p.color}">✓</span>${f}</div>`).join("")}
-          <button class="upgrade-btn" style="background:${p.current?"var(--input-bg)":"linear-gradient(135deg,"+p.color+","+p.color+"cc)"};color:${p.current?"var(--text)":"#fff"};box-shadow:${p.current?"none":"0 4px 16px "+p.color+"44"}" onclick="showToast('${p.current?"You are on "+p.name:"Upgrade to "+p.name+" — contact support@homegym.in"}',4000)">${p.btn}</button>
-        </div>`).join("")}
-    </div>
-    <div class="card" style="margin-top:0">
-      <div class="card-title">💡 Feature Comparison</div>
-      ${[
-        ["Custom Pipeline Stages","—","✓","✓"],
-        ["Automation Rules","3 max","Unlimited","Unlimited"],
-        ["Campaign Analytics","Basic","Advanced","Enterprise"],
-        ["Reminder System","—","✓","✓"],
-        ["API Access","—","✓","✓"],
-        ["White Label","—","—","✓"],
-      ].map(([f,...vals])=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="flex:2;font-size:12px;color:var(--text2)">${f}</span>${vals.map((v,i)=>`<span style="flex:1;text-align:center;font-size:12px;color:${v==="✓"?["#16a34a","#7c3aed","#f59e0b"][i]:"var(--text)"};font-weight:${v==="✓"?"700":"400"}">${v}</span>`).join("")}</div>`).join("")}
-    </div>
-  </div>`;
+async function addTemplate(){
+  const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}
+  try{await COL.templates().add({title,type:$("tty").value,content,uses:0,createdAt:new Date().toISOString()});closeModal();showToast("Template saved ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function updateTemplate(id){
+  const title=($("ttl").value||"").trim(),content=($("tcn").value||"").trim();if(!title||!content){showToast("Fill all fields");return;}
+  try{await COL.templates().doc(id).update({title,type:$("tty").value,content});closeModal();showToast("Template updated ✅");}
+  catch(e){showToast("❌ "+e.message);}
+}
+async function deleteTemplate(id){
+  try{await COL.templates().doc(id).delete();}catch(e){showToast("❌ "+e.message);}
 }
 
-/* ════════════════════════════
+/* ══════════════════════════════
    USER MANAGEMENT
-════════════════════════════ */
+══════════════════════════════ */
 async function pgSettings(el){
   if(selectedRole!=="admin"){el.innerHTML=`<div class="page">${accessDenied("User Management")}</div>`;return;}
   el.innerHTML=`<div class="page"><div style="text-align:center;padding:40px;color:var(--text)"><div class="spinner" style="border-top-color:${rc()};width:24px;height:24px"></div></div></div>`;
-  try{const snap=await COL.users().get();managedUsers=snap.docs.map(d=>({uid:d.id,...d.data()}));_renderSettings(el);}
-  catch(e){el.innerHTML=`<div class="page"><p style="color:#ef4444;padding:20px">Error: ${e.message}</p></div>`;}
+  try{
+    const snap=await COL.users().get();
+    managedUsers=snap.docs.map(d=>({uid:d.id,...d.data()}));
+    _renderSettings(el);
+  } catch(e){el.innerHTML=`<div class="page"><p style="color:#ef4444;padding:20px">Error: ${e.message}</p></div>`;}
 }
 function _renderSettings(el){
   const rC={admin:"#7c3aed",manager:"#0ea5e9",agent:"#16a34a"};
@@ -1569,19 +1464,19 @@ function showCreateUserModal(){
     <div class="modal-handle"></div>
     <div class="modal-title">➕ Create User</div>
     <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#3b82f6">ℹ️ Creates a Firebase Auth account. Share credentials with the user.</div>
-    <div class="form-row"><label>FULL NAME *</label><input id="un" placeholder="Arjun Nair"/></div>
+    <div class="form-row"><label>FULL NAME *</label><input id="un" placeholder="e.g. Arjun Nair"/></div>
     <div class="form-row"><label>EMAIL *</label><input id="ue" type="email" placeholder="arjun@homegym.in"/></div>
     <div class="form-row"><label>PASSWORD *</label><input id="upw" type="text" placeholder="Min 6 characters" autocomplete="new-password"/></div>
     <div class="form-row"><label>ROLE</label><select id="ur"><option value="manager">Manager</option><option value="agent">Sales Agent</option></select></div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" id="createUserBtn" onclick="createUser()">Create Account</button>
+      <button class="btn-save" style="background:${rc()}" id="createUserBtn" onclick="createUser()">Create Account</button>
     </div>
   </div>`);
 }
 async function createUser(){
   const name=($("un").value||"").trim(),email=($("ue").value||"").trim(),pw=$("upw").value,role=$("ur").value;
-  if(!name||!email||!pw){showToast("Fill all fields");return;}
+  if(!name||!email||!pw){showToast("Fill all required fields");return;}
   if(pw.length<6){showToast("Password must be 6+ characters");return;}
   const btn=$("createUserBtn");btn.innerHTML=`<span class="spinner"></span>Creating…`;btn.disabled=true;
   try{
@@ -1590,7 +1485,10 @@ async function createUser(){
     await COL.users().doc(cred.user.uid).set({name,email,role,createdBy:currentUser.uid,createdAt:new Date().toISOString()});
     await secApp.auth().signOut();
     closeModal();showToast(`✅ Account created for ${name}`,4000);pgSettings($("mainContent"));
-  }catch(e){const msgs={"auth/email-already-in-use":"Email already exists.","auth/invalid-email":"Invalid email.","auth/weak-password":"Password too weak."};showToast("❌ "+(msgs[e.code]||e.message));btn.textContent="Create Account";btn.disabled=false;}
+  } catch(e){
+    const msgs={"auth/email-already-in-use":"Email already exists.","auth/invalid-email":"Invalid email.","auth/weak-password":"Password too weak."};
+    showToast("❌ "+(msgs[e.code]||e.message));btn.textContent="Create Account";btn.disabled=false;
+  }
 }
 function showEditUserModal(uid2){
   const u=managedUsers.find(x=>x.uid===uid2);if(!u)return;
@@ -1603,12 +1501,16 @@ function showEditUserModal(uid2){
       <div><div style="font-weight:700;font-size:14px;color:var(--white)">${u.name||"—"}</div><div style="color:var(--text);font-size:12px">${u.email||u.uid}</div></div>
     </div>
     <div class="form-row"><label>FULL NAME</label><input id="eun" value="${u.name||""}"/></div>
-    <div class="form-row"><label>ROLE</label><select id="eur"><option value="admin"${u.role==="admin"?" selected":""}>Admin / CSO</option><option value="manager"${u.role==="manager"?" selected":""}>Manager</option><option value="agent"${u.role==="agent"?" selected":""}>Sales Agent</option></select></div>
+    <div class="form-row"><label>ROLE</label><select id="eur">
+      <option value="admin"${u.role==="admin"?" selected":""}>Admin / CSO</option>
+      <option value="manager"${u.role==="manager"?" selected":""}>Manager</option>
+      <option value="agent"${u.role==="agent"?" selected":""}>Sales Agent</option>
+    </select></div>
     ${isSelf?`<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:9px;padding:9px 12px;font-size:12px;color:#f59e0b;margin-bottom:8px">⚠️ This is your own account.</div>`:""}
     <div class="modal-footer" style="flex-direction:column;gap:8px">
       <div style="display:flex;gap:8px;width:100%">
         <button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button>
-        <button class="btn-save" style="flex:2" id="editUserBtn" onclick="editUser('${uid2}')">Save Changes</button>
+        <button class="btn-save" style="background:${rc()};flex:2" id="editUserBtn" onclick="editUser('${uid2}')">Save Changes</button>
       </div>
       ${!isSelf?`<button onclick="confirmRemoveUser('${uid2}')" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer">🗑 Remove User</button>`:""}
     </div>
@@ -1616,8 +1518,10 @@ function showEditUserModal(uid2){
 }
 async function editUser(uid2){
   const btn=$("editUserBtn");btn.innerHTML=`<span class="spinner"></span>Saving…`;btn.disabled=true;
-  try{await COL.users().doc(uid2).update({name:$("eun").value,role:$("eur").value});closeModal();showToast("✅ User updated");pgSettings($("mainContent"));}
-  catch(e){showToast("❌ "+e.message);btn.textContent="Save Changes";btn.disabled=false;}
+  try{
+    await COL.users().doc(uid2).update({name:$("eun").value,role:$("eur").value});
+    closeModal();showToast("✅ User updated");pgSettings($("mainContent"));
+  } catch(e){showToast("❌ "+e.message);btn.textContent="Save Changes";btn.disabled=false;}
 }
 function confirmRemoveUser(uid2){
   const u=managedUsers.find(x=>x.uid===uid2);if(!u)return;
@@ -1625,21 +1529,20 @@ function confirmRemoveUser(uid2){
   showModal(`<div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" style="color:#ef4444">🗑 Remove User</div>
-    <div style="background:var(--input-bg);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:12px">${av(initials(u.name||u.email||"?"),40)}<div><div style="font-weight:700;font-size:14px;color:var(--white)">${u.name||"—"}</div><div style="color:var(--text);font-size:12px">${u.email||u.uid}</div></div></div>
-    <p style="color:var(--text2);font-size:14px;margin-bottom:6px">Remove <b>${u.name||u.email}</b> from the platform?</p>
-    <p style="color:var(--text);font-size:12px;margin-bottom:4px">• Profile deleted from Firestore</p>
-    <p style="color:var(--text);font-size:12px;margin-bottom:14px">• They can no longer log in</p>
-    <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:9px;padding:9px 12px;font-size:12px;color:#f59e0b;margin-bottom:4px">⚠️ Delete Auth account from Firebase Console if needed.</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:14px">Remove <b>${u.name||u.email}</b>? They will lose access.</p>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" style="background:#ef4444" id="removeUserBtn" onclick="removeUser('${uid2}')">Yes, Remove</button>
+      <button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button>
+      <button class="btn-save" style="background:#ef4444;flex:2" id="removeUserBtn" onclick="removeUser('${uid2}')">Yes, Remove</button>
     </div>
   </div>`);
 }
 async function removeUser(uid2){
   const btn=$("removeUserBtn");btn.innerHTML=`<span class="spinner"></span>Removing…`;btn.disabled=true;
-  try{await COL.users().doc(uid2).delete();managedUsers=managedUsers.filter(u=>u.uid!==uid2);closeModal();showToast("✅ User removed",4000);pgSettings($("mainContent"));}
-  catch(e){showToast("❌ Failed: "+e.message);btn.textContent="Yes, Remove";btn.disabled=false;}
+  try{
+    await COL.users().doc(uid2).delete();
+    managedUsers=managedUsers.filter(u=>u.uid!==uid2);
+    closeModal();showToast("✅ User removed",4000);pgSettings($("mainContent"));
+  } catch(e){showToast("❌ Failed: "+e.message);btn.textContent="Yes, Remove";btn.disabled=false;}
 }
 </script>
 </body>
