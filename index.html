@@ -951,15 +951,61 @@ function _leadModal(l){
 }
 async function addLead(){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
+  const phone=($("lp").value||"").trim();
+  const instagram=($("lig").value||"").trim();
+
+  // Duplicate check
+  const dupes=leads.filter(l=>{
+    const nameMatch=l.name.toLowerCase()===name.toLowerCase();
+    const phoneMatch=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");
+    const igMatch=instagram&&l.instagram&&l.instagram.toLowerCase()===instagram.toLowerCase();
+    return nameMatch||phoneMatch||igMatch;
+  });
+
+  if(dupes.length>0){
+    const d=dupes[0];
+    const matchReason=
+      (d.name.toLowerCase()===name.toLowerCase()?"Name":"")||
+      (phone&&d.phone&&d.phone.replace(/\s/g,"")===phone.replace(/\s/g,"")?"Phone":"")||
+      (instagram&&d.instagram&&d.instagram.toLowerCase()===instagram.toLowerCase()?"Instagram":"");
+    showModal(`<div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>${matchReason}</b> already exists:</p>
+      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+        ${av(initials(d.name),38)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div>
+          <div style="font-size:11px;color:var(--text);margin-top:2px">${d.phone||""}${d.instagram?" · "+d.instagram:""}</div>
+          <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">
+            ${pill(d.status,STAGE_COLORS[d.status]||rc())}
+            ${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}
+            <span style="font-size:10px;color:var(--text)">${d.agentName||"Unassigned"}</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="closeModal();openLead('${d.id}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">👁 View Existing Lead</button>
+        <button onclick="closeModal();_doAddLead()" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--white);font-weight:700;font-size:13px;cursor:pointer">➕ Add as New Anyway</button>
+        <button onclick="closeModal();_leadModal(null)" class="btn-cancel" style="width:100%">← Go Back & Edit</button>
+      </div>
+    </div>`);
+    return;
+  }
+  await _doAddLead();
+}
+
+async function _doAddLead(){
+  const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
   const data={
-    name,phone:$("lp").value||"",instagram:$("lig").value||"",
-    enquiryDate:$("ledate").value||todayStr(),
-    source:$("ls").value,platform:$("lpl").value,
-    plan:$("lplan").value||"",
+    name,phone:($("lp")?.value||"").trim(),instagram:($("lig")?.value||"").trim(),
+    enquiryDate:$("ledate")?.value||todayStr(),
+    source:$("ls")?.value||"",platform:$("lpl")?.value||"",
+    plan:$("lplan")?.value||"",
     agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
-    value:Number($("lv").value)||0,status:"New Lead",
-    notes:$("lnotes").value||"",createdAt:new Date().toISOString()
+    value:Number($("lv")?.value)||0,status:"New Lead",
+    notes:$("lnotes")?.value||"",createdAt:new Date().toISOString()
   };
   try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added`);}
   catch(e){showToast("❌ "+e.message);}
@@ -1150,14 +1196,54 @@ function showAddLeadInStage(stage){
 }
 async function addLeadInStage(stage){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
+  const phone=($("lp").value||"").trim();
+
+  const dupes=leads.filter(l=>{
+    const nameMatch=l.name.toLowerCase()===name.toLowerCase();
+    const phoneMatch=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");
+    return nameMatch||phoneMatch;
+  });
+
+  if(dupes.length>0){
+    const d=dupes[0];
+    const matchReason=(d.name.toLowerCase()===name.toLowerCase()?"Name":"Phone");
+    showModal(`<div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>${matchReason}</b> already exists:</p>
+      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+        ${av(initials(d.name),38)}
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div>
+          <div style="font-size:11px;color:var(--text);margin-top:2px">${d.phone||""}${d.instagram?" · "+d.instagram:""}</div>
+          <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">
+            ${pill(d.status,STAGE_COLORS[d.status]||rc())}
+            ${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}
+            <span style="font-size:10px;color:var(--text)">${d.agentName||"Unassigned"}</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="closeModal();openLead('${d.id}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">👁 View Existing Lead</button>
+        <button onclick="closeModal();_doAddLeadInStage('${stage}')" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--white);font-weight:700;font-size:13px;cursor:pointer">➕ Add as New Anyway</button>
+        <button onclick="closeModal();showAddLeadInStage('${stage}')" class="btn-cancel" style="width:100%">← Go Back & Edit</button>
+      </div>
+    </div>`);
+    return;
+  }
+  await _doAddLeadInStage(stage);
+}
+
+async function _doAddLeadInStage(stage){
+  const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
   const data={
-    name,phone:$("lp").value||"",instagram:"",
-    enquiryDate:$("ledate").value||todayStr(),
-    source:$("ls").value,platform:$("lpl").value,
+    name,phone:($("lp")?.value||"").trim(),instagram:"",
+    enquiryDate:$("ledate")?.value||todayStr(),
+    source:$("ls")?.value||"",platform:$("lpl")?.value||"",
     plan:$("lplan")?.value||"",
     agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
-    value:Number($("lv").value)||0,status:stage,notes:"",createdAt:new Date().toISOString()
+    value:Number($("lv")?.value)||0,status:stage,notes:"",createdAt:new Date().toISOString()
   };
   try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}
   catch(e){showToast("❌ "+e.message);}
