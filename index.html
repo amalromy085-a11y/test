@@ -459,8 +459,11 @@ function toggleTheme(){darkMode=!darkMode;applyTheme();}
 applyTheme();
 
 /* ══ CONSTANTS ══ */
-const STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Interested":"#8b5cf6","Payment Pending":"#f97316","Closed":"#16a34a","Not Interested":"#ef4444","Demo":"#06b6d4"};
-const STAGES=["New Lead","Contacted","Demo","Interested","Payment Pending","Closed","Not Interested"];
+const DEFAULT_STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Interested":"#8b5cf6","Payment Pending":"#f97316","Closed":"#16a34a","Not Interested":"#ef4444","Demo":"#06b6d4"};
+const DEFAULT_STAGES=["New Lead","Contacted","Demo","Interested","Payment Pending","Closed","Not Interested"];
+let STAGE_COLORS={...DEFAULT_STAGE_COLORS};
+let STAGES=[...DEFAULT_STAGES];
+const STAGE_COLOR_OPTIONS=["#3b82f6","#f59e0b","#8b5cf6","#f97316","#16a34a","#ef4444","#06b6d4","#ec4899","#14b8a6","#f43f5e","#84cc16","#a855f7"];
 const PLATFORMS=["WhatsApp","Instagram"];
 const SOURCES=["Meta Ad","Organic","Referral","WhatsApp","Instagram","Google Ad"];
 const ROLES={admin:{label:"Admin / CSO",icon:"👑",color:"#7c3aed"},manager:{label:"Manager",icon:"🧑‍💼",color:"#0ea5e9"},agent:{label:"Sales Agent",icon:"💬",color:"#16a34a"}};
@@ -470,8 +473,8 @@ const TITLES={dashboard:"Dashboard",inbox:"Inbox",pipeline:"Pipeline",agents:"Ag
 
 /* ══ STATE ══ */
 let currentUser=null,selectedRole=null,curPage="dashboard",selectedLead=null,chatView=false;
-let leads=[],agents=[],tasks=[],templates=[],autos=[],campaigns=[],managedUsers=[],reminders=[];
-let unsubLeads=null,unsubAgents=null,unsubTasks=null,unsubTemplates=null,unsubAutos=null,unsubCampaigns=null,unsubMessages=null,unsubReminders=null;
+let leads=[],agents=[],tasks=[],templates=[],autos=[],campaigns=[],managedUsers=[],reminders=[],customStages=[];
+let unsubLeads=null,unsubAgents=null,unsubTasks=null,unsubTemplates=null,unsubAutos=null,unsubCampaigns=null,unsubMessages=null,unsubReminders=null,unsubStages=null;
 let reminderCheckInterval=null;
 
 /* ══ FIRESTORE REFS ══ */
@@ -484,45 +487,110 @@ const COL={
   campaigns:()=>db.collection("campaigns"),
   messages:(lid)=>db.collection("leads").doc(lid).collection("messages"),
   users:()=>db.collection("users"),
-  reminders:()=>db.collection("reminders")
+  reminders:()=>db.collection("reminders"),
+  stages:()=>db.collection("pipelineStages")
 };
 
 /* ══ LISTENERS ══ */
+let dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false,stages:false};
+let initialRenderDone=false;
+
+function checkInitialRender(){
+  if(initialRenderDone)return;
+  if(Object.values(dataReady).every(Boolean)){
+    initialRenderDone=true;
+    hideAppLoader();
+    renderPage(selectedRole==="agent"?"inbox":"dashboard");
+  }
+}
+
+function showAppLoader(){
+  const m=$("mainContent");
+  if(m) m.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;padding:40px">
+    <div style="width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--rc);border-radius:50%;animation:spin .8s linear infinite"></div>
+    <p style="color:var(--text);font-size:13px;font-weight:600">Loading your data…</p>
+  </div>`;
+}
+
+function hideAppLoader(){/* content replaced by renderPage */}
+
 function startListeners(){
+  showAppLoader();
   unsubLeads=COL.leads().orderBy("createdAt","desc").onSnapshot(snap=>{
     leads=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!chatView)safeRender(["dashboard","inbox","pipeline"]);
-  });
+    if(!dataReady.leads){dataReady.leads=true;checkInitialRender();}
+    else if(initialRenderDone&&!chatView)safeRender(["dashboard","inbox","pipeline"]);
+  },()=>{dataReady.leads=true;checkInitialRender();});
+
   unsubAgents=COL.agents().orderBy("createdAt").onSnapshot(snap=>{
     agents=snap.docs.map(d=>({id:d.id,...d.data()}));
-    safeRender(["agents","dashboard"]);
-  });
+    if(!dataReady.agents){dataReady.agents=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["agents","dashboard"]);
+  },()=>{dataReady.agents=true;checkInitialRender();});
+
   unsubTasks=COL.tasks().orderBy("createdAt","desc").onSnapshot(snap=>{
     tasks=snap.docs.map(d=>({id:d.id,...d.data()}));
-    safeRender(["followups"]);
-  });
+    if(!dataReady.tasks){dataReady.tasks=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["followups"]);
+  },()=>{dataReady.tasks=true;checkInitialRender();});
+
   unsubTemplates=COL.templates().orderBy("createdAt").onSnapshot(snap=>{
     templates=snap.docs.map(d=>({id:d.id,...d.data()}));
-    safeRender(["templates"]);
-  });
+    if(!dataReady.templates){dataReady.templates=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["templates"]);
+  },()=>{dataReady.templates=true;checkInitialRender();});
+
   unsubAutos=COL.autos().orderBy("createdAt").onSnapshot(snap=>{
     autos=snap.docs.map(d=>({id:d.id,...d.data()}));
-    safeRender(["automation"]);
-  });
+    if(!dataReady.autos){dataReady.autos=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["automation"]);
+  },()=>{dataReady.autos=true;checkInitialRender();});
+
   unsubCampaigns=COL.campaigns().orderBy("createdAt","desc").onSnapshot(snap=>{
     campaigns=snap.docs.map(d=>({id:d.id,...d.data()}));
-    safeRender(["campaigns"]);
-  });
+    if(!dataReady.campaigns){dataReady.campaigns=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["campaigns"]);
+  },()=>{dataReady.campaigns=true;checkInitialRender();});
+
+  unsubStages=COL.stages().orderBy("order").onSnapshot(snap=>{
+    customStages=snap.docs.map(d=>({id:d.id,...d.data()}));
+    rebuildStages();
+    if(!dataReady.stages){dataReady.stages=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["pipeline","dashboard"]);
+  },()=>{dataReady.stages=true;checkInitialRender();});
+
   unsubReminders=COL.reminders().where("userId","==",currentUser.uid).where("done","==",false).onSnapshot(snap=>{
     reminders=snap.docs.map(d=>({id:d.id,...d.data()}));
-    checkReminders();
-    updateBellBadge();
-  });
+    checkReminders();updateBellBadge();
+  },()=>{});
+
   reminderCheckInterval=setInterval(checkReminders,60000);
+
+  // Fallback: force render after 6s even if some collections are slow/empty
+  setTimeout(()=>{
+    if(!initialRenderDone){
+      Object.keys(dataReady).forEach(k=>dataReady[k]=true);
+      checkInitialRender();
+    }
+  },6000);
+}
+
+function rebuildStages(){
+  // Merge default stages with custom ones, custom go after defaults (but before Closed/Not Interested)
+  const custom=customStages.map(s=>s.name).filter(n=>!DEFAULT_STAGES.includes(n));
+  const insertBefore=["Closed","Not Interested"];
+  const base=DEFAULT_STAGES.filter(s=>!insertBefore.includes(s));
+  const tail=DEFAULT_STAGES.filter(s=>insertBefore.includes(s));
+  STAGES=[...base,...custom,...tail];
+  // Merge colors
+  STAGE_COLORS={...DEFAULT_STAGE_COLORS};
+  customStages.forEach(s=>{if(s.name&&s.color)STAGE_COLORS[s.name]=s.color;});
 }
 function stopListeners(){
-  [unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders].forEach(u=>u&&u());
+  [unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders,unsubStages].forEach(u=>u&&u());
   if(reminderCheckInterval)clearInterval(reminderCheckInterval);
+  dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false,stages:false};
+  initialRenderDone=false;
 }
 function safeRender(pages){if(pages.includes(curPage))renderPage(curPage);}
 
@@ -656,8 +724,7 @@ function initApp(){
   $("drawerUserName").textContent=currentUser.name;
   $("drawerUserEmail").textContent=currentUser.email||"";
   $("pageDate").textContent=today();
-  buildDrawerNav();buildBottomNav();startListeners();
-  renderPage(selectedRole==="agent"?"inbox":"dashboard");applyTheme();
+  buildDrawerNav();buildBottomNav();startListeners();applyTheme();
 }
 
 /* ══ NAV ══ */
@@ -891,7 +958,6 @@ function _leadModal(l){
     <div class="form-row"><label>DEAL VALUE (₹)</label><input id="lv" type="number" value="${l?l.value||"":""}" placeholder="25000"/></div>
     ${isEdit?`<div class="form-row"><label>STATUS</label><select id="lst">${STAGES.map(s=>`<option${l.status===s?" selected":""}>${s}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>NOTES</label><textarea id="lnotes">${l?l.notes||"":""}</textarea></div>
-    <div class="modal-footer">
       ${isEdit&&selectedRole!=="agent"?`<button class="btn-cancel" style="background:rgba(239,68,68,.08);color:#ef4444;border-color:rgba(239,68,68,.2)" onclick="confirmDelete('Delete lead <b>${l.name}</b>?','deleteLead(\\'${l.id}\\');closeModal()')">🗑 Delete</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancel</button>`}
       <button class="btn-save" style="background:${rc()}" onclick="${isEdit?`updateLead('${l.id}')`:"addLead()"}">${isEdit?"Save Changes":"Add Lead"}</button>
     </div>
@@ -1003,15 +1069,17 @@ async function useTemplate(lid,tid){
 ══════════════════════════════ */
 let dragLead=null;
 function pgPipeline(el){
-  // Agents see only their leads; others see all
   const visibleLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
   const grouped={};STAGES.forEach(s=>grouped[s]=[]);
   visibleLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
 
   el.innerHTML=`<div class="pipeline-wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <p style="color:var(--text);font-size:12px">← Scroll · Drag to move · ${selectedRole==="agent"?"Showing your leads":"All leads"}</p>
-      <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ New Lead</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap">
+      <p style="color:var(--text);font-size:12px">${selectedRole==="agent"?"Showing your leads":"All leads"} · ${visibleLeads.length} total</p>
+      <div style="display:flex;gap:7px">
+        ${selectedRole==="admin"?`<button onclick="showManageStagesModal()" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer">⚙️ Stages</button>`:""}
+        <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ New Lead</button>
+      </div>
     </div>
     <div class="kanban" id="kanban">
       ${STAGES.map(col=>`
@@ -1021,10 +1089,11 @@ function pgPipeline(el){
             ondragleave="pipeDragLeave(event)"
             ondrop="pipeDrop(event,'${col}')">
             <div class="col-head">
-              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}${col==="Demo"?" 🎯":""}</div>
-              <div style="display:flex;align-items:center;gap:6px">
+              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}</div>
+              <div style="display:flex;align-items:center;gap:4px">
                 <span class="col-count">${grouped[col].length}</span>
                 <button onclick="showAddLeadInStage('${col}')" style="background:${STAGE_COLORS[col]}22;border:1px solid ${STAGE_COLORS[col]}44;border-radius:5px;width:18px;height:18px;color:${STAGE_COLORS[col]};font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+                ${selectedRole==="admin"&&!DEFAULT_STAGES.includes(col)?`<button onclick="confirmDeleteStage('${col}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:5px;width:18px;height:18px;color:#ef4444;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>`:""}
               </div>
             </div>
             <div class="col-body">
@@ -1047,6 +1116,122 @@ function pgPipeline(el){
         </div>`).join("")}
     </div>
   </div>`;
+}
+
+/* ── MANAGE STAGES MODAL ── */
+function showManageStagesModal(){
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ Manage Pipeline Stages</div>
+    <div style="background:var(--input-bg);border-radius:10px;padding:10px 12px;margin-bottom:14px">
+      <p style="font-size:11px;color:var(--text);margin-bottom:8px">DEFAULT STAGES (cannot be removed)</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${DEFAULT_STAGES.map(s=>`<span class="pill" style="background:${STAGE_COLORS[s]}22;color:${STAGE_COLORS[s]};border:1px solid ${STAGE_COLORS[s]}44">${s}</span>`).join("")}
+      </div>
+    </div>
+    ${customStages.length?`<div style="margin-bottom:14px">
+      <p style="font-size:11px;color:var(--text);margin-bottom:8px;font-weight:600">CUSTOM STAGES</p>
+      ${customStages.map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:9px;margin-bottom:6px;border:1px solid var(--border)">
+        <div style="width:12px;height:12px;border-radius:50%;background:${s.color};flex-shrink:0"></div>
+        <span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s.name}</span>
+        <button onclick="closeModal();showEditStageModal('${s.id}')" style="background:${rc()}18;border:1px solid ${rc()}33;border-radius:6px;padding:4px 8px;color:${rc()};font-size:11px;cursor:pointer">✏️</button>
+        <button onclick="closeModal();confirmDeleteStage('${s.name}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:4px 8px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>
+      </div>`).join("")}
+    </div>`:""}
+    <button onclick="closeModal();showAddStageModal()" style="width:100%;padding:12px;background:${rc()};border:none;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer">+ Add New Stage</button>
+    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:8px">Close</button>
+  </div>`);
+}
+
+function showAddStageModal(){
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ New Pipeline Stage</div>
+    <div class="form-row"><label>STAGE NAME *</label><input id="sname" placeholder="e.g. Trial, Negotiation, On Hold"/></div>
+    <div class="form-row">
+      <label>COLOUR</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="colorPicker">
+        ${STAGE_COLOR_OPTIONS.map((c,i)=>`<div onclick="selectStageColor('${c}')" id="sc-${i}" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:border-color .15s" title="${c}"></div>`).join("")}
+      </div>
+      <input type="hidden" id="scolor" value="${STAGE_COLOR_OPTIONS[0]}"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:${rc()}" onclick="addStage()">Add Stage</button>
+    </div>
+  </div>`);
+  setTimeout(()=>selectStageColor(STAGE_COLOR_OPTIONS[0]),50);
+}
+
+function showEditStageModal(id){
+  const s=customStages.find(x=>x.id===id);if(!s)return;
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Edit Stage</div>
+    <div class="form-row"><label>STAGE NAME *</label><input id="sname" value="${s.name}"/></div>
+    <div class="form-row">
+      <label>COLOUR</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="colorPicker">
+        ${STAGE_COLOR_OPTIONS.map((c,i)=>`<div onclick="selectStageColor('${c}')" id="sc-${i}" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:border-color .15s" title="${c}"></div>`).join("")}
+      </div>
+      <input type="hidden" id="scolor" value="${s.color}"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="confirmDeleteStage('${s.name}');closeModal()" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)">🗑 Delete</button>
+      <button class="btn-save" style="background:${rc()}" onclick="updateStage('${id}')">Save</button>
+    </div>
+  </div>`);
+  setTimeout(()=>selectStageColor(s.color),50);
+}
+
+function selectStageColor(color){
+  $("scolor").value=color;
+  document.querySelectorAll("#colorPicker div").forEach(d=>{
+    d.style.borderColor=d.title===color?"#fff":"transparent";
+    d.style.transform=d.title===color?"scale(1.2)":"scale(1)";
+  });
+}
+
+async function addStage(){
+  const name=($("sname").value||"").trim(),color=$("scolor").value;
+  if(!name){showToast("Stage name required");return;}
+  if(STAGES.includes(name)){showToast("Stage already exists");return;}
+  try{
+    await COL.stages().add({name,color,order:customStages.length+DEFAULT_STAGES.length,createdAt:new Date().toISOString()});
+    closeModal();showToast(`✅ "${name}" stage added`);
+  } catch(e){showToast("❌ "+e.message);}
+}
+
+async function updateStage(id){
+  const name=($("sname").value||"").trim(),color=$("scolor").value;
+  if(!name){showToast("Stage name required");return;}
+  try{
+    await COL.stages().doc(id).update({name,color});
+    closeModal();showToast("Stage updated ✅");
+  } catch(e){showToast("❌ "+e.message);}
+}
+
+function confirmDeleteStage(stageName){
+  const leadsInStage=leads.filter(l=>l.status===stageName).length;
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:#ef4444">🗑 Delete Stage</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:8px">Delete the <b>${stageName}</b> stage?</p>
+    ${leadsInStage>0?`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#ef4444">⚠️ ${leadsInStage} lead${leadsInStage!==1?"s are":" is"} currently in this stage. They will remain but won't appear in the pipeline until reassigned.</div>`:""}
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:#ef4444" onclick="deleteStage('${stageName}')">Delete</button>
+    </div>
+  </div>`);
+}
+
+async function deleteStage(stageName){
+  const s=customStages.find(x=>x.name===stageName);
+  if(!s){closeModal();showToast("Cannot delete a default stage");return;}
+  try{
+    await COL.stages().doc(s.id).delete();
+    closeModal();showToast(`Stage "${stageName}" deleted`);
+  } catch(e){showToast("❌ "+e.message);}
 }
 function pipeDragStart(e,id,fromCol){
   dragLead={id,fromCol};
