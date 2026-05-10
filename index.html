@@ -1096,20 +1096,23 @@ async function useTemplate(lid,tid){
   catch(e){showToast("❌ "+e.message);}
 }
 
+
 /* ══════════════════════════════
    PIPELINE — ALL ROLES + DEMO COL
 ══════════════════════════════ */
 let dragLead=null;
 function pgPipeline(el){
-  // Agents see only their leads; others see all
   const visibleLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
   const grouped={};STAGES.forEach(s=>grouped[s]=[]);
   visibleLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
 
   el.innerHTML=`<div class="pipeline-wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <p style="color:var(--text);font-size:12px">← Scroll · Drag to move · ${selectedRole==="agent"?"Showing your leads":"All leads"}</p>
-      <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ New Lead</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap">
+      <p style="color:var(--text);font-size:12px">${selectedRole==="agent"?"Showing your leads":"All leads"} · ${visibleLeads.length} total</p>
+      <div style="display:flex;gap:7px">
+        ${selectedRole==="admin"?`<button onclick="showManageStagesModal()" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer">⚙️ Stages</button>`:""}
+        <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">+ New Lead</button>
+      </div>
     </div>
     <div class="kanban" id="kanban">
       ${STAGES.map(col=>`
@@ -1119,10 +1122,11 @@ function pgPipeline(el){
             ondragleave="pipeDragLeave(event)"
             ondrop="pipeDrop(event,'${col}')">
             <div class="col-head">
-              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}${col==="Demo"?" 🎯":""}</div>
-              <div style="display:flex;align-items:center;gap:6px">
+              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}</div>
+              <div style="display:flex;align-items:center;gap:4px">
                 <span class="col-count">${grouped[col].length}</span>
                 <button onclick="showAddLeadInStage('${col}')" style="background:${STAGE_COLORS[col]}22;border:1px solid ${STAGE_COLORS[col]}44;border-radius:5px;width:18px;height:18px;color:${STAGE_COLORS[col]};font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+                ${selectedRole==="admin"&&!DEFAULT_STAGES.includes(col)?`<button onclick="confirmDeleteStage('${col}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:5px;width:18px;height:18px;color:#ef4444;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>`:""}
               </div>
             </div>
             <div class="col-body">
@@ -1145,6 +1149,122 @@ function pgPipeline(el){
         </div>`).join("")}
     </div>
   </div>`;
+}
+
+/* ── MANAGE STAGES MODAL ── */
+function showManageStagesModal(){
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ Manage Pipeline Stages</div>
+    <div style="background:var(--input-bg);border-radius:10px;padding:10px 12px;margin-bottom:14px">
+      <p style="font-size:11px;color:var(--text);margin-bottom:8px">DEFAULT STAGES (cannot be removed)</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${DEFAULT_STAGES.map(s=>`<span class="pill" style="background:${STAGE_COLORS[s]}22;color:${STAGE_COLORS[s]};border:1px solid ${STAGE_COLORS[s]}44">${s}</span>`).join("")}
+      </div>
+    </div>
+    ${customStages.length?`<div style="margin-bottom:14px">
+      <p style="font-size:11px;color:var(--text);margin-bottom:8px;font-weight:600">CUSTOM STAGES</p>
+      ${customStages.map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:9px;margin-bottom:6px;border:1px solid var(--border)">
+        <div style="width:12px;height:12px;border-radius:50%;background:${s.color};flex-shrink:0"></div>
+        <span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s.name}</span>
+        <button onclick="closeModal();showEditStageModal('${s.id}')" style="background:${rc()}18;border:1px solid ${rc()}33;border-radius:6px;padding:4px 8px;color:${rc()};font-size:11px;cursor:pointer">✏️</button>
+        <button onclick="closeModal();confirmDeleteStage('${s.name}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:4px 8px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>
+      </div>`).join("")}
+    </div>`:""}
+    <button onclick="closeModal();showAddStageModal()" style="width:100%;padding:12px;background:${rc()};border:none;border-radius:10px;color:#fff;font-weight:700;font-size:13px;cursor:pointer">+ Add New Stage</button>
+    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:8px">Close</button>
+  </div>`);
+}
+
+function showAddStageModal(){
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ New Pipeline Stage</div>
+    <div class="form-row"><label>STAGE NAME *</label><input id="sname" placeholder="e.g. Trial, Negotiation, On Hold"/></div>
+    <div class="form-row">
+      <label>COLOUR</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="colorPicker">
+        ${STAGE_COLOR_OPTIONS.map((c,i)=>`<div onclick="selectStageColor('${c}')" id="sc-${i}" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:border-color .15s" title="${c}"></div>`).join("")}
+      </div>
+      <input type="hidden" id="scolor" value="${STAGE_COLOR_OPTIONS[0]}"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:${rc()}" onclick="addStage()">Add Stage</button>
+    </div>
+  </div>`);
+  setTimeout(()=>selectStageColor(STAGE_COLOR_OPTIONS[0]),50);
+}
+
+function showEditStageModal(id){
+  const s=customStages.find(x=>x.id===id);if(!s)return;
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Edit Stage</div>
+    <div class="form-row"><label>STAGE NAME *</label><input id="sname" value="${s.name}"/></div>
+    <div class="form-row">
+      <label>COLOUR</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="colorPicker">
+        ${STAGE_COLOR_OPTIONS.map((c,i)=>`<div onclick="selectStageColor('${c}')" id="sc-${i}" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:border-color .15s" title="${c}"></div>`).join("")}
+      </div>
+      <input type="hidden" id="scolor" value="${s.color}"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="confirmDeleteStage('${s.name}');closeModal()" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)">🗑 Delete</button>
+      <button class="btn-save" style="background:${rc()}" onclick="updateStage('${id}')">Save</button>
+    </div>
+  </div>`);
+  setTimeout(()=>selectStageColor(s.color),50);
+}
+
+function selectStageColor(color){
+  $("scolor").value=color;
+  document.querySelectorAll("#colorPicker div").forEach(d=>{
+    d.style.borderColor=d.title===color?"#fff":"transparent";
+    d.style.transform=d.title===color?"scale(1.2)":"scale(1)";
+  });
+}
+
+async function addStage(){
+  const name=($("sname").value||"").trim(),color=$("scolor").value;
+  if(!name){showToast("Stage name required");return;}
+  if(STAGES.includes(name)){showToast("Stage already exists");return;}
+  try{
+    await COL.stages().add({name,color,order:customStages.length+DEFAULT_STAGES.length,createdAt:new Date().toISOString()});
+    closeModal();showToast(`✅ "${name}" stage added`);
+  } catch(e){showToast("❌ "+e.message);}
+}
+
+async function updateStage(id){
+  const name=($("sname").value||"").trim(),color=$("scolor").value;
+  if(!name){showToast("Stage name required");return;}
+  try{
+    await COL.stages().doc(id).update({name,color});
+    closeModal();showToast("Stage updated ✅");
+  } catch(e){showToast("❌ "+e.message);}
+}
+
+function confirmDeleteStage(stageName){
+  const leadsInStage=leads.filter(l=>l.status===stageName).length;
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:#ef4444">🗑 Delete Stage</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:8px">Delete the <b>${stageName}</b> stage?</p>
+    ${leadsInStage>0?`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#ef4444">⚠️ ${leadsInStage} lead${leadsInStage!==1?"s are":" is"} currently in this stage. They will remain but won't appear in the pipeline until reassigned.</div>`:""}
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:#ef4444" onclick="deleteStage('${stageName}')">Delete</button>
+    </div>
+  </div>`);
+}
+
+async function deleteStage(stageName){
+  const s=customStages.find(x=>x.name===stageName);
+  if(!s){closeModal();showToast("Cannot delete a default stage");return;}
+  try{
+    await COL.stages().doc(s.id).delete();
+    closeModal();showToast(`Stage "${stageName}" deleted`);
+  } catch(e){showToast("❌ "+e.message);}
 }
 function pipeDragStart(e,id,fromCol){
   dragLead={id,fromCol};
@@ -1196,54 +1316,14 @@ function showAddLeadInStage(stage){
 }
 async function addLeadInStage(stage){
   const name=($("ln").value||"").trim();if(!name){showToast("Name is required");return;}
-  const phone=($("lp").value||"").trim();
-
-  const dupes=leads.filter(l=>{
-    const nameMatch=l.name.toLowerCase()===name.toLowerCase();
-    const phoneMatch=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");
-    return nameMatch||phoneMatch;
-  });
-
-  if(dupes.length>0){
-    const d=dupes[0];
-    const matchReason=(d.name.toLowerCase()===name.toLowerCase()?"Name":"Phone");
-    showModal(`<div class="modal">
-      <div class="modal-handle"></div>
-      <div class="modal-title" style="color:#f59e0b">⚠️ Duplicate Found</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>${matchReason}</b> already exists:</p>
-      <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-        ${av(initials(d.name),38)}
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px;color:var(--white)">${d.name}</div>
-          <div style="font-size:11px;color:var(--text);margin-top:2px">${d.phone||""}${d.instagram?" · "+d.instagram:""}</div>
-          <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">
-            ${pill(d.status,STAGE_COLORS[d.status]||rc())}
-            ${d.plan?`<span class="pill plan-${d.plan.toLowerCase()}">${PLANS[d.plan]?.icon} ${d.plan}</span>`:""}
-            <span style="font-size:10px;color:var(--text)">${d.agentName||"Unassigned"}</span>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button onclick="closeModal();openLead('${d.id}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">👁 View Existing Lead</button>
-        <button onclick="closeModal();_doAddLeadInStage('${stage}')" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--white);font-weight:700;font-size:13px;cursor:pointer">➕ Add as New Anyway</button>
-        <button onclick="closeModal();showAddLeadInStage('${stage}')" class="btn-cancel" style="width:100%">← Go Back & Edit</button>
-      </div>
-    </div>`);
-    return;
-  }
-  await _doAddLeadInStage(stage);
-}
-
-async function _doAddLeadInStage(stage){
-  const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
   const data={
-    name,phone:($("lp")?.value||"").trim(),instagram:"",
-    enquiryDate:$("ledate")?.value||todayStr(),
-    source:$("ls")?.value||"",platform:$("lpl")?.value||"",
+    name,phone:$("lp").value||"",instagram:"",
+    enquiryDate:$("ledate").value||todayStr(),
+    source:$("ls").value,platform:$("lpl").value,
     plan:$("lplan")?.value||"",
     agentName:canAssign?($("lag")?.value||"Unassigned"):(currentUser.name),
-    value:Number($("lv")?.value)||0,status:stage,notes:"",createdAt:new Date().toISOString()
+    value:Number($("lv").value)||0,status:stage,notes:"",createdAt:new Date().toISOString()
   };
   try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}
   catch(e){showToast("❌ "+e.message);}
