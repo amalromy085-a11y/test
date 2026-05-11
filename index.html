@@ -318,6 +318,19 @@ function refreshStageCfg(){
 }
 function saveCustomStages(){localStorage.setItem("customStages",JSON.stringify(customStages));refreshStageCfg();}
 
+/* ══ PIPELINE BOARDS CONFIG ══ */
+// Each board: {id, name, color, stages:[{name,color}]}
+let pipelineBoards=JSON.parse(localStorage.getItem("pipelineBoards")||"null");
+if(!pipelineBoards){
+  pipelineBoards=[{id:"default",name:"New Members",color:"#7c3aed",stages:DEFAULT_STAGES.map(s=>({name:s,color:DEFAULT_STAGE_COLORS[s]}))}];
+  localStorage.setItem("pipelineBoards",JSON.stringify(pipelineBoards));
+}
+let activeBoardId=localStorage.getItem("activeBoardId")||"default";
+function getActiveBoard(){return pipelineBoards.find(b=>b.id===activeBoardId)||pipelineBoards[0];}
+function savePipelineBoards(){localStorage.setItem("pipelineBoards",JSON.stringify(pipelineBoards));localStorage.setItem("activeBoardId",activeBoardId);}
+function getBoardStages(board){return(board||getActiveBoard()).stages.map(s=>s.name);}
+function getBoardStageColors(board){const c={};(board||getActiveBoard()).stages.forEach(s=>{c[s.name]=s.color;});return c;}
+
 /* ══ PLAN CONFIG ══ */
 const PLANS={Silver:{color:"#64748b",gradient:"#94a3b8,#64748b",icon:"🥈"},Gold:{color:"#d97706",gradient:"#f59e0b,#d97706",icon:"🥇"},Platinum:{color:"#7c3aed",gradient:"#8b5cf6,#6d28d9",icon:"💎"},Couple:{color:"#be185d",gradient:"#ec4899,#be185d",icon:"💑"}};
 const PLAN_NAMES=Object.keys(PLANS);
@@ -595,7 +608,7 @@ async function addLead(){
 async function _doAddLead(){
   const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
-  const data={name,phone:($("lp")?.value||"").trim(),instagram:($("lig")?.value||"").trim(),enquiryDate:$("ledate")?.value||todayStr(),source:$("ls")?.value||"",platform:$("lpl")?.value||"",plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv")?.value)||0,status:"New Lead",notes:$("lnotes")?.value||"",createdAt:new Date().toISOString()};
+  const data={name,phone:($("lp")?.value||"").trim(),instagram:($("lig")?.value||"").trim(),enquiryDate:$("ledate")?.value||todayStr(),source:$("ls")?.value||"",platform:$("lpl")?.value||"",plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv")?.value)||0,status:"New Lead",boardId:activeBoardId,notes:$("lnotes")?.value||"",createdAt:new Date().toISOString()};
   try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added`);}catch(e){showToast("❌ "+e.message);}
 }
 async function updateLead(id){
@@ -628,9 +641,14 @@ function openDetailSheet(lid){
 }
 function closeDetailSheet(){$("detailSheet").classList.remove("open");}
 function showStageModal(lid){
-  refreshStageCfg();
+  const board=getActiveBoard();
+  const bStages=getBoardStages(board);
+  const bColors=getBoardStageColors(board);
   const l=leads.find(x=>x.id===lid);if(!l)return;
-  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Change Stage — ${l.name}</div>${STAGES.map(s=>`<button class="stage-btn${l.status===s?" current":""}" onclick="changeStage('${lid}','${s}')"><div style="width:8px;height:8px;border-radius:50%;background:${STAGE_COLORS[s]};flex-shrink:0"></div>${s}</button>`).join("")}<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>`);
+  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Change Stage — ${l.name}</div>
+    ${bStages.map(s=>`<button class="stage-btn${l.status===s?" current":""}" onclick="changeStage('${lid}','${s}')"><div style="width:8px;height:8px;border-radius:50%;background:${bColors[s]};flex-shrink:0"></div>${s}</button>`).join("")}
+    <button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button>
+  </div>`);
 }
 async function changeStage(lid,stage){try{await COL.leads().doc(lid).update({status:stage});closeModal();showToast(`✅ Moved to ${stage}`);}catch(e){showToast("❌ "+e.message);}}
 function showReassignModal(lid){const l=leads.find(x=>x.id===lid);if(!l)return;showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">Reassign — ${l.name}</div>${agents.length?agents.map(ag=>`<button class="stage-btn${l.agentName===ag.name?" current":""}" onclick="reassignLead('${lid}','${ag.name}')">👤 ${ag.name}</button>`).join(""):`<p style="color:var(--text);font-size:13px;padding:12px 0">No agents yet.</p>`}<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>`);}
@@ -641,27 +659,40 @@ async function useTemplate(lid,tid){const t=templates.find(x=>x.id===tid),l=lead
 /* ══ PIPELINE ══ */
 let dragLead=null;
 function pgPipeline(el){
-  refreshStageCfg();
+  const board=getActiveBoard();
+  const bStages=getBoardStages(board);
+  const bColors=getBoardStageColors(board);
   const visibleLeads=selectedRole==="agent"?leads.filter(l=>l.agentName===currentUser.name):leads;
-  const grouped={};STAGES.forEach(s=>{grouped[s]=[];});
-  visibleLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
+  // filter leads belonging to this board
+  const boardLeads=visibleLeads.filter(l=>(l.boardId||"default")===board.id);
+  const grouped={};bStages.forEach(s=>{grouped[s]=[];});
+  boardLeads.forEach(l=>{if(grouped[l.status])grouped[l.status].push(l);});
+
   el.innerHTML=`<div class="pipeline-wrap">
+    <!-- Board tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:4px;flex-shrink:0">
+      ${pipelineBoards.map(b=>`
+        <button onclick="switchBoard('${b.id}')" style="flex-shrink:0;padding:6px 14px;border-radius:8px;border:2px solid ${activeBoardId===b.id?b.color:"var(--border)"};background:${activeBoardId===b.id?b.color+"22":"var(--input-bg)"};color:${activeBoardId===b.id?b.color:"var(--text)"};font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s">${b.name}</button>`).join("")}
+      ${selectedRole==="admin"?`<button onclick="showAddBoardModal()" style="flex-shrink:0;padding:6px 12px;border-radius:8px;border:2px dashed var(--border);background:transparent;color:var(--text);font-size:12px;cursor:pointer;white-space:nowrap">+ New Pipeline</button>`:""}
+    </div>
+    <!-- Board header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px">
-      <p style="color:var(--text);font-size:12px">${selectedRole==="agent"?"Your leads":"All leads"} · Drag to move</p>
+      <p style="color:var(--text);font-size:12px">${selectedRole==="agent"?"Your leads":"All leads"} · <span style="color:${board.color};font-weight:600">${board.name}</span></p>
       <div style="display:flex;gap:7px;flex-shrink:0">
-        ${selectedRole==="admin"?`<button onclick="showManageStagesModal()" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer">⚙️ Stages</button>`:""}
+        ${selectedRole==="admin"?`<button onclick="showManageBoardModal('${board.id}')" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer">⚙️ Edit</button>`:""}
         <button onclick="showAddLeadModal()" style="background:${rc()};border:none;border-radius:8px;padding:7px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">+ New Lead</button>
       </div>
     </div>
+    <!-- Kanban -->
     <div class="kanban" id="kanban">
-      ${STAGES.map(col=>`
+      ${bStages.map(col=>`
         <div class="col-wrap">
           <div class="col-inner" id="col-${col.replace(/ /g,'-')}" ondragover="pipeDragOver(event,'${col}')" ondragleave="pipeDragLeave(event)" ondrop="pipeDrop(event,'${col}')">
             <div class="col-head">
-              <div class="col-title"><div class="col-dot" style="background:${STAGE_COLORS[col]}"></div>${col}</div>
+              <div class="col-title"><div class="col-dot" style="background:${bColors[col]}"></div>${col}</div>
               <div style="display:flex;align-items:center;gap:4px">
                 <span class="col-count">${grouped[col].length}</span>
-                <button onclick="showAddLeadInStage('${col}')" style="background:${STAGE_COLORS[col]}22;border:1px solid ${STAGE_COLORS[col]}44;border-radius:5px;width:18px;height:18px;color:${STAGE_COLORS[col]};font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+                <button onclick="showAddLeadInStage('${col}')" style="background:${bColors[col]}22;border:1px solid ${bColors[col]}44;border-radius:5px;width:18px;height:18px;color:${bColors[col]};font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
               </div>
             </div>
             <div class="col-body">
@@ -684,57 +715,146 @@ function pgPipeline(el){
   </div>`;
 }
 
-/* ── MANAGE STAGES ── */
-function showManageStagesModal(){
-  refreshStageCfg();
-  showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">⚙️ Manage Pipeline Stages</div>
-    <p style="color:var(--text);font-size:12px;margin-bottom:12px">Default stages cannot be deleted. Custom stages can be added or removed.</p>
-    <div style="margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:8px">DEFAULT STAGES</div>
-      ${DEFAULT_STAGES.map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:8px;margin-bottom:5px;border:1px solid var(--border)"><div style="width:10px;height:10px;border-radius:50%;background:${DEFAULT_STAGE_COLORS[s]};flex-shrink:0"></div><span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s}</span><span style="font-size:10px;color:var(--text);background:rgba(127,127,127,.15);padding:2px 7px;border-radius:5px">Default</span></div>`).join("")}
-    </div>
-    <div style="margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:8px">CUSTOM STAGES</div>
-      <div id="customStageList">${renderCustomStageList()}</div>
-    </div>
-    <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:10px">ADD NEW STAGE</div>
-      <div class="form-row" style="margin-bottom:8px"><input id="newStageName" placeholder="Stage name e.g. Trial" style="width:100%;background:var(--surface);border:1px solid var(--input-border);border-radius:8px;padding:9px 11px;color:var(--white);font-size:13px;outline:none"/></div>
-      <div style="margin-bottom:10px">
-        <div style="font-size:11px;color:var(--text);margin-bottom:6px">COLOUR</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="colorPicker">${PALETTE.map((c,i)=>`<div onclick="selectStageColor('${c}')" data-color="${c}" style="width:24px;height:24px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:all .15s" title="${c}"></div>`).join("")}</div>
+function switchBoard(id){activeBoardId=id;localStorage.setItem("activeBoardId",id);renderPage("pipeline");}
+
+/* ── ADD BOARD MODAL ── */
+function showAddBoardModal(){
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ New Pipeline Board</div>
+    <div class="form-row"><label>PIPELINE NAME *</label><input id="bname" placeholder="e.g. Renewal Members"/></div>
+    <div class="form-row">
+      <label>BOARD COLOUR</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="bColorPicker">
+        ${PALETTE.map(c=>`<div onclick="selectBoardColor('${c}')" data-color="${c}" style="width:26px;height:26px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:all .15s"></div>`).join("")}
       </div>
-      <input type="hidden" id="newStageColor" value="${PALETTE[0]}"/>
-      <button onclick="addCustomStage()" style="width:100%;padding:10px;background:${rc()};border:none;border-radius:8px;color:#fff;font-weight:700;font-size:13px;cursor:pointer">+ Add Stage</button>
+      <input type="hidden" id="bcolor" value="${PALETTE[4]}"/>
     </div>
-    <button class="btn-cancel" onclick="closeModal();renderPage('pipeline')" style="width:100%;margin-top:10px">Done</button>
+    <p style="color:var(--text);font-size:12px;margin-bottom:14px">The new board will start with the same default stages. You can customise them after creating.</p>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:${rc()}" onclick="addPipelineBoard()">Create Pipeline</button>
+    </div>
   </div>`);
-  setTimeout(()=>selectStageColor(PALETTE[0]),50);
+  setTimeout(()=>selectBoardColor(PALETTE[4]),50);
 }
-function renderCustomStageList(){
-  if(!customStages.length)return`<div style="text-align:center;padding:14px;color:var(--text);font-size:12px">No custom stages yet</div>`;
-  return customStages.map((s,i)=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:8px;margin-bottom:5px;border:1px solid var(--border)"><div style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0"></div><span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s.name}</span><span style="font-size:11px;color:var(--text)">${leads.filter(l=>l.status===s.name).length} leads</span><button onclick="deleteCustomStage(${i})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:3px 8px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button></div>`).join("");
+
+function selectBoardColor(color){
+  const inp=document.getElementById("bcolor");if(inp)inp.value=color;
+  document.querySelectorAll("#bColorPicker div").forEach(d=>{const sel=d.dataset.color===color;d.style.border=sel?"3px solid var(--white)":"2px solid transparent";d.style.transform=sel?"scale(1.25)":"scale(1)";});
 }
-function selectStageColor(color){
-  const inp=document.getElementById("newStageColor");if(inp)inp.value=color;
-  document.querySelectorAll("#colorPicker div").forEach(d=>{const sel=d.dataset.color===color;d.style.border=sel?"3px solid var(--white)":"2px solid transparent";d.style.transform=sel?"scale(1.25)":"scale(1)";});
+
+function addPipelineBoard(){
+  const nameEl=document.getElementById("bname"),colorEl=document.getElementById("bcolor");
+  const name=(nameEl?.value||"").trim(),color=colorEl?.value||PALETTE[4];
+  if(!name){showToast("Enter a pipeline name");return;}
+  if(pipelineBoards.find(b=>b.name.toLowerCase()===name.toLowerCase())){showToast("Pipeline already exists");return;}
+  const id="board_"+Date.now();
+  pipelineBoards.push({id,name,color,stages:DEFAULT_STAGES.map(s=>({name:s,color:DEFAULT_STAGE_COLORS[s]}))});
+  savePipelineBoards();
+  activeBoardId=id;
+  closeModal();showToast(`✅ "${name}" pipeline created`);renderPage("pipeline");
 }
-function addCustomStage(){
-  const nameEl=document.getElementById("newStageName"),colorEl=document.getElementById("newStageColor");
+
+/* ── MANAGE BOARD MODAL (edit stages + rename + delete) ── */
+function showManageBoardModal(boardId){
+  const board=pipelineBoards.find(b=>b.id===boardId);if(!board)return;
+  const isDefault=boardId==="default";
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ Edit — ${board.name}</div>
+    ${!isDefault?`<div class="form-row"><label>PIPELINE NAME</label><input id="editBname" value="${board.name}"/></div>`:""}
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:8px">STAGES</div>
+      <div id="boardStageList">${renderBoardStageList(board)}</div>
+    </div>
+    <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.4px;margin-bottom:10px">ADD STAGE</div>
+      <div class="form-row" style="margin-bottom:8px"><input id="newBStageName" placeholder="Stage name" style="width:100%;background:var(--surface);border:1px solid var(--input-border);border-radius:8px;padding:9px 11px;color:var(--white);font-size:13px;outline:none"/></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="bsColorPicker">
+        ${PALETTE.map(c=>`<div onclick="selectBSColor('${c}')" data-color="${c}" style="width:22px;height:22px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:all .15s"></div>`).join("")}
+      </div>
+      <input type="hidden" id="newBStageColor" value="${PALETTE[0]}"/>
+      <button onclick="addBoardStage('${boardId}')" style="width:100%;padding:9px;background:${rc()};border:none;border-radius:8px;color:#fff;font-weight:700;font-size:13px;cursor:pointer">+ Add Stage</button>
+    </div>
+    <div class="modal-footer" style="flex-direction:column;gap:8px">
+      ${!isDefault?`<button onclick="saveBoardName('${boardId}')" style="width:100%;padding:11px;border-radius:10px;background:${rc()};border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer">💾 Save Name</button>`:""}
+      ${!isDefault?`<button onclick="confirmDeleteBoard('${boardId}')" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer">🗑 Delete This Pipeline</button>`:""}
+      <button class="btn-cancel" onclick="closeModal();renderPage('pipeline')" style="width:100%">Done</button>
+    </div>
+  </div>`);
+  setTimeout(()=>selectBSColor(PALETTE[0]),50);
+}
+
+function renderBoardStageList(board){
+  return board.stages.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--input-bg);border-radius:8px;margin-bottom:5px;border:1px solid var(--border)">
+      <div style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0"></div>
+      <span style="flex:1;font-size:13px;font-weight:600;color:var(--white)">${s.name}</span>
+      <span style="font-size:11px;color:var(--text)">${leads.filter(l=>l.status===s.name&&(l.boardId||"default")===board.id).length} leads</span>
+      <button onclick="deleteBoardStage('${board.id}',${i})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:3px 8px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>
+    </div>`).join("");
+}
+
+function selectBSColor(color){
+  const inp=document.getElementById("newBStageColor");if(inp)inp.value=color;
+  document.querySelectorAll("#bsColorPicker div").forEach(d=>{const sel=d.dataset.color===color;d.style.border=sel?"3px solid var(--white)":"2px solid transparent";d.style.transform=sel?"scale(1.2)":"scale(1)";});
+}
+
+function saveBoardName(boardId){
+  const nameEl=document.getElementById("editBname");
+  const name=(nameEl?.value||"").trim();if(!name){showToast("Enter a name");return;}
+  const board=pipelineBoards.find(b=>b.id===boardId);if(board){board.name=name;savePipelineBoards();showToast("✅ Renamed");renderPage("pipeline");}
+}
+
+function addBoardStage(boardId){
+  const nameEl=document.getElementById("newBStageName"),colorEl=document.getElementById("newBStageColor");
   const name=(nameEl?.value||"").trim(),color=colorEl?.value||PALETTE[0];
   if(!name){showToast("Enter a stage name");return;}
-  if(STAGES.includes(name)){showToast("Stage already exists");return;}
-  customStages.push({name,color});saveCustomStages();
+  const board=pipelineBoards.find(b=>b.id===boardId);if(!board)return;
+  if(board.stages.find(s=>s.name.toLowerCase()===name.toLowerCase())){showToast("Stage already exists");return;}
+  board.stages.push({name,color});savePipelineBoards();
   if(nameEl)nameEl.value="";
-  const list=document.getElementById("customStageList");if(list)list.innerHTML=renderCustomStageList();
+  const list=document.getElementById("boardStageList");if(list)list.innerHTML=renderBoardStageList(board);
   showToast(`✅ "${name}" added`);
 }
-function deleteCustomStage(i){
-  const s=customStages[i],count=leads.filter(l=>l.status===s.name).length;
+
+function deleteBoardStage(boardId,idx){
+  const board=pipelineBoards.find(b=>b.id===boardId);if(!board)return;
+  const s=board.stages[idx];
+  const count=leads.filter(l=>l.status===s.name&&(l.boardId||"default")===boardId).length;
   if(count>0){showToast(`⚠️ Move ${count} lead(s) out of "${s.name}" first`);return;}
-  customStages.splice(i,1);saveCustomStages();
-  const list=document.getElementById("customStageList");if(list)list.innerHTML=renderCustomStageList();
+  board.stages.splice(idx,1);savePipelineBoards();
+  const list=document.getElementById("boardStageList");if(list)list.innerHTML=renderBoardStageList(board);
   showToast(`"${s.name}" removed`);
+}
+
+function confirmDeleteBoard(boardId){
+  const board=pipelineBoards.find(b=>b.id===boardId);if(!board)return;
+  const count=leads.filter(l=>(l.boardId||"default")===boardId).length;
+  closeModal();
+  showModal(`<div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:#ef4444">🗑 Delete Pipeline</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:8px">Delete <b>${board.name}</b>?</p>
+    ${count>0?`<p style="color:#f59e0b;font-size:12px;margin-bottom:14px">⚠️ ${count} lead(s) in this pipeline will be moved to <b>New Members</b>.</p>`:`<p style="color:var(--text);font-size:12px;margin-bottom:14px">This board has no leads.</p>`}
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" style="background:#ef4444" onclick="deletePipelineBoard('${boardId}')">Delete</button>
+    </div>
+  </div>`);
+}
+
+async function deletePipelineBoard(boardId){
+  // Move leads to default board
+  const boardLeads=leads.filter(l=>(l.boardId||"default")===boardId);
+  const batch=db.batch();
+  boardLeads.forEach(l=>batch.update(COL.leads().doc(l.id),{boardId:"default",status:"New Lead"}));
+  if(boardLeads.length>0)await batch.commit();
+  pipelineBoards=pipelineBoards.filter(b=>b.id!==boardId);
+  if(activeBoardId===boardId)activeBoardId="default";
+  savePipelineBoards();
+  closeModal();showToast("Pipeline deleted");renderPage("pipeline");
 }
 
 /* ── PIPELINE DRAG ── */
@@ -745,6 +865,8 @@ function pipeDragLeave(e){if(!e.currentTarget.contains(e.relatedTarget))e.curren
 async function pipeDrop(e,toCol){e.preventDefault();document.querySelectorAll(".col-inner").forEach(c=>c.classList.remove("drag-over"));if(!dragLead||dragLead.fromCol===toCol){dragLead=null;return;}const{id}=dragLead;dragLead=null;try{await COL.leads().doc(id).update({status:toCol});showToast(`✅ Moved to ${toCol}`);}catch(err){showToast("❌ "+err.message);}}
 
 function showAddLeadInStage(stage){
+  const board=getActiveBoard();
+  const bColors=getBoardStageColors(board);
   showModal(`<div class="modal"><div class="modal-handle"></div><div class="modal-title">➕ Add to ${stage}</div>
     <div class="form-row"><label>FULL NAME *</label><input id="ln" placeholder="Rajesh Kumar"/></div>
     <div class="form-row"><label>PHONE</label><input id="lp" type="tel" placeholder="+91 98765 43210"/></div>
@@ -754,7 +876,7 @@ function showAddLeadInStage(stage){
     <div class="form-row"><label>PLAN</label><select id="lplan"><option value="">Select Plan</option>${PLAN_NAMES.map(p=>`<option value="${p}">${PLANS[p].icon} ${p}</option>`).join("")}</select></div>
     ${selectedRole!=="agent"?`<div class="form-row"><label>ASSIGN TO</label><select id="lag"><option value="">Unassigned</option>${agents.map(a=>`<option>${a.name}</option>`).join("")}</select></div>`:""}
     <div class="form-row"><label>DEAL VALUE (₹)</label><input id="lv" type="number" placeholder="25000"/></div>
-    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:${STAGE_COLORS[stage]||rc()}" onclick="addLeadInStage('${stage}')">Add</button></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:${bColors[stage]||rc()}" onclick="addLeadInStage('${stage}')">Add</button></div>
   </div>`);
 }
 async function addLeadInStage(stage){
@@ -779,7 +901,7 @@ async function addLeadInStage(stage){
 async function _doAddLeadInStage(stage){
   const name=($("ln")?.value||"").trim();if(!name){showToast("Name is required");return;}
   const canAssign=selectedRole!=="agent";
-  const data={name,phone:($("lp")?.value||"").trim(),instagram:"",enquiryDate:$("ledate")?.value||todayStr(),source:$("ls")?.value||"",platform:$("lpl")?.value||"",plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv")?.value)||0,status:stage,notes:"",createdAt:new Date().toISOString()};
+  const data={name,phone:($("lp")?.value||"").trim(),instagram:"",enquiryDate:$("ledate")?.value||todayStr(),source:$("ls")?.value||"",platform:$("lpl")?.value||"",plan:$("lplan")?.value||"",agentName:canAssign?($("lag")?.value||"Unassigned"):currentUser.name,value:Number($("lv")?.value)||0,status:stage,boardId:activeBoardId,notes:"",createdAt:new Date().toISOString()};
   try{await COL.leads().add(data);closeModal();showToast(`✅ "${name}" added to ${stage}`);}catch(e){showToast("❌ "+e.message);}
 }
 
