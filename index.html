@@ -549,8 +549,47 @@ async function submitMissedReasonPopup(sessionId,clientName,trainerName,date,tim
 function openDotsMenu(menuId){document.querySelectorAll('.dots-dropdown').forEach(d=>{if(d.id!==menuId)d.classList.remove('open');});const dd=document.getElementById(menuId);if(dd)dd.classList.toggle('open');}
 document.addEventListener('click',e=>{if(!e.target.closest('.dots-menu-wrap')){document.querySelectorAll('.dots-dropdown').forEach(d=>d.classList.remove('open'));}});
 function toggleCollapsible(id){const hd=document.getElementById('col-hd-'+id);const body=document.getElementById('col-body-'+id);if(!hd||!body)return;const isOpen=body.classList.contains('open');hd.classList.toggle('open',!isOpen);body.classList.toggle('open',!isOpen);}
-function getTcVisibleSessions(tcEntries,clients,todayStr){
-  const now=new Date();const result=[];
+
+function renderDashTodaySessions(todayS, tcVisible, canStart) {
+  const realClientIds = new Set(todayS.map(s => s.clientId).filter(Boolean));
+
+  // Only show TC entries for clients NOT already in real sessions
+  const tcFiltered = tcVisible.filter(tc => !realClientIds.has(tc.clientId));
+
+  // Deduplicate real sessions by clientId+time (remove any duplicate session docs)
+  const seenKey = new Set();
+  const dedupedSessions = todayS.filter(s => {
+    const key = `${s.clientId}_${s.time}`;
+    if (seenKey.has(key)) return false;
+    seenKey.add(key);
+    return true;
+  });
+
+  const combined = [...dedupedSessions, ...tcFiltered];
+  combined.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+  if (!combined.length) return emptyState('📅', 'No sessions today', '', '', '');
+
+  const rows = combined.map(s => {
+    const isTc = !!s._isTc;
+    const tcBadge = isTc ? `<span class="tc-dash-badge" title="From Time Chart">📋 Fixed</span>` : '';
+    const actBtns = canStart
+      ? `${s.status === 'not-started' ? `<button class="btn btn-gr btn-sm" onclick="markSessionStatus('${s.id}','onair')">▶ Start</button>` : ''}
+         ${s.status === 'onair' ? `<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed')">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed')">✗ Miss</button>` : ''}`
+      : '';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);min-width:80px">${to12h(s.time)}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${s.clientName || '—'} ${tcBadge}</div>
+        <div style="font-size:12px;color:var(--muted)">${s.trainerName || '—'} • ${s.type || 'Session'}</div>
+      </div>
+      ${statusBadge(s.status)}
+      <div style="display:flex;gap:5px">${actBtns}</div>
+    </div>`;
+  }).join('');
+
+  return `<div style="padding:0 2px">${rows}</div>`;
+}  const now=new Date();const result=[];
   for(const tc of tcEntries){
     if(!tc.sessionTime)continue;const[h,m]=tc.sessionTime.split(':').map(Number);if(isNaN(h)||isNaN(m))continue;
     const sessTime=new Date(now);sessTime.setHours(h,m,0,0);const showFrom=new Date(sessTime.getTime()-60*60*1000);
@@ -1171,7 +1210,13 @@ async function dash(){
     if(CR==='admin'){[coordUsers,headUsers]=await Promise.all([fsGetAll('users',fn().where('role','==','coordinator')),fsGetAll('users',fn().where('role','==','coordinatorhead'))]);}
     const activeClients=clients.filter(c=>c.active!==false),inactiveClients=clients.filter(c=>c.active===false);
     const today=new Date().toDateString();
-    const todayS=sessions.filter(s=>s.date&&new Date(s.date).toDateString()===today);
+   const activeClientIds=new Set(activeClients.map(c=>c.id));
+   const todayS=sessions.filter(s=>{
+     if(!s.date||new Date(s.date).toDateString()!==today)return false;
+     // keep sessions that belong to an active client (or have no clientId assigned)
+     if(s.clientId&&!activeClientIds.has(s.clientId))return false;
+     return true;
+   });
     const onair=todayS.filter(s=>s.status==='onair').length,missed=todayS.filter(s=>s.status==='missed').length;
     const tcVisible=getTcVisibleSessions(tcEntries,activeClients,todayStr);
     const ranked=buildLeaderboard(trainers,allRatings,activeClients);
@@ -2107,19 +2152,106 @@ async function delSession(id){
   if(!confirm('Delete this session?'))return;
   try{await fsDel('sessions',id);toast('Deleted','success');sessions();}
   catch(e){toast('Error: '+e.message,'error');}
-}// ══════════════════════════════════════════════════════════════
-// TIME CHART
+}
 // ══════════════════════════════════════════════════════════════
+// TIME CHART — paste this entire block replacing from
+// "function injectTcStyles(){" down to closing } of exportTcPDF
 // ══════════════════════════════════════════════════════════════
-// TIME CHART — Full Replacement (Fixed)
-// Replace everything from async function timechart()
-// down to async function saveTcStatus(clientId)
+        // ══════════════════════════════════════════════════════════════
+// UPDATED getTcVisibleSessions — filters by sessionDays
+// Replace the existing getTcVisibleSessions function
 // ══════════════════════════════════════════════════════════════
 
-function injectTcStyles(){
-  if(document.getElementById('tc-styles'))return;
-  const s=document.createElement('style');s.id='tc-styles';
-  s.textContent=`
+function getTcVisibleSessions(tcEntries, clients, todayStr) {
+  const now = new Date();
+  const todayDow = now.toLocaleDateString('en-IN', { weekday: 'short' });
+  const activeClientIds = new Set(clients.map(c => c.id));  // ← only active clients
+  const result = [];
+
+  for (const tc of tcEntries) {
+    if (!tc.sessionTime) continue;
+
+    // ── skip if client no longer exists / is inactive ──
+    if (tc.clientId && !activeClientIds.has(tc.clientId)) continue;
+
+    const [h, m] = tc.sessionTime.split(':').map(Number);
+    if (isNaN(h) || isNaN(m)) continue;
+
+    if (tc.sessionDays && tc.sessionDays.length > 0) {
+      if (!tc.sessionDays.includes(todayDow)) continue;
+    }
+
+    const sessTime = new Date(now);
+    sessTime.setHours(h, m, 0, 0);
+    const showFrom = new Date(sessTime.getTime() - 60 * 60 * 1000);
+    if (now < showFrom) continue;
+
+    const client = clients.find(c => c.id === tc.clientId) || {};
+    result.push({
+      id: `tc_${tc.id}`,
+      _isTc: true,
+      _tcId: tc.id,
+      clientId: tc.clientId,
+      clientName: tc.clientName || client.name || '—',
+      trainerId: tc.trainerId || client.trainerId || '',
+      trainerName: tc.trainerName || client.trainerName || '—',
+      time: tc.sessionTime,
+      date: todayStr,
+      type: tc.sessionType || client.goal || 'General Fitness',
+      status: tc.todayStatus || 'not-started',
+      _tcEntry: tc
+    });
+  }
+
+  // ── deduplicate by clientId (keep only one entry per client) ──
+  const seen = new Set();
+  return result.filter(r => {
+    if (!r.clientId) return true;
+    if (seen.has(r.clientId)) return false;
+    seen.add(r.clientId);
+    return true;
+  });
+}
+    // ── NEW: check if today's day is in sessionDays ──────
+    if (tc.sessionDays && tc.sessionDays.length > 0) {
+      if (!tc.sessionDays.includes(todayDow)) continue; // skip — not scheduled today
+    }
+    // if sessionDays is empty/undefined, show every day (backward compatible)
+
+    const sessTime = new Date(now);
+    sessTime.setHours(h, m, 0, 0);
+    const showFrom = new Date(sessTime.getTime() - 60 * 60 * 1000);
+    if (now < showFrom) continue;
+
+    const client = clients.find(c => c.id === tc.clientId) || {};
+    result.push({
+      id: `tc_${tc.id}`,
+      _isTc: true,
+      _tcId: tc.id,
+      clientId: tc.clientId,
+      clientName: tc.clientName || client.name || '—',
+      trainerId: tc.trainerId || client.trainerId || '',
+      trainerName: tc.trainerName || client.trainerName || '—',
+      time: tc.sessionTime,
+      date: todayStr,
+      type: tc.sessionType || client.goal || 'General Fitness',
+      status: tc.todayStatus || 'not-started',
+      _tcEntry: tc
+    });
+  }
+  return result;
+}
+
+// ══════════════════════════════════════════════════════════════
+// UPDATED TIME CHART SECTION
+// Replace everything from "function injectTcStyles(){" down to
+// the closing } of "async function exportTcPDF()"
+// ══════════════════════════════════════════════════════════════
+
+function injectTcStyles() {
+  if (document.getElementById('tc-styles')) return;
+  const s = document.createElement('style'); s.id = 'tc-styles';
+  s.textContent = `
 .tc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:18px}
 .tc-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
 .tc-card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.18)}
@@ -2153,132 +2285,157 @@ function injectTcStyles(){
 .tc-ftab.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
 .tc-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;overflow:hidden}
 .tc-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--accent))}
-@media(max-width:768px){
-  .tc-grid{grid-template-columns:1fr}
-  .tc-list-row{grid-template-columns:1fr 1fr;gap:4px}
-}
+.day-pill{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:10px;font-weight:700;border:1px solid var(--border2);color:var(--muted);background:var(--bg);flex-shrink:0}
+.day-pill.active-day{background:var(--accent);color:#000;border-color:var(--accent)}
+.day-pill.today-day{box-shadow:0 0 0 2px var(--green)}
+.day-btn-sel{padding:6px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;min-width:40px;text-align:center}
+.day-btn-sel.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+@media(max-width:768px){.tc-grid{grid-template-columns:1fr}.tc-list-row{grid-template-columns:1fr 1fr;gap:4px}}
   `;
   document.head.appendChild(s);
 }
 
-async function timechart(){
-  $('page').innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto 10px"></div>Loading…</div>`;
+async function timechart() {
+  $('page').innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto 10px"></div>Loading…</div>`;
   injectTcStyles();
 
-  const[clients,sessions,tcEntries]=await Promise.all([
-    fsGetAll('clients',fn().where('active','==',true)),
+  const [clients, sessions, tcEntriesRaw] = await Promise.all([
+    fsGetAll('clients', fn().where('active', '==', true)),
     fsGetAll('sessions'),
     fsGetAll('timechart')
   ]);
 
-  const tcMap={};
-  tcEntries.forEach(e=>{if(e.clientId)tcMap[e.clientId]=e;});
+  // Deduplicate
+  const tcByClient = {};
+  const toDelete = [];
+  for (const e of tcEntriesRaw) {
+    if (!e.clientId) continue;
+    const existing = tcByClient[e.clientId];
+    if (!existing) {
+      tcByClient[e.clientId] = e;
+    } else {
+      const eTs = existing.updatedAt?.seconds || existing.createdAt?.seconds || 0;
+      const nTs = e.updatedAt?.seconds || e.createdAt?.seconds || 0;
+      if ((e.sessionTime && !existing.sessionTime) || nTs > eTs) {
+        toDelete.push(existing.id);
+        tcByClient[e.clientId] = e;
+      } else {
+        toDelete.push(e.id);
+      }
+    }
+  }
+  if (toDelete.length > 0) {
+    await Promise.all(toDelete.map(id => fsDel('timechart', id).catch(() => {})));
+  }
+  const tcEntries = Object.values(tcByClient);
 
-  const today=getTodayStr();
-  const todaySessionsMap={};
-  sessions.filter(s=>s.date===today).forEach(s=>{if(s.clientId)todaySessionsMap[s.clientId]=s.status;});
+  const tcMap = {};
+  tcEntries.forEach(e => { if (e.clientId) tcMap[e.clientId] = e; });
 
-  const rows=clients.map(c=>{
-    const tc=tcMap[c.id]||{};
-    const liveStatus=todaySessionsMap[c.id]||tc.todayStatus||'not-started';
-    const startDate=c.startDate||tc.startDate||'';
-    const dayNum=startDate?Math.max(Math.floor((new Date()-new Date(startDate))/(1000*60*60*24))+1,1):0;
-    return{client:c,tc,liveStatus,startDate,dayNum};
+  const today = getTodayStr();
+  const todaySessionsMap = {};
+  sessions.filter(s => s.date === today).forEach(s => { if (s.clientId) todaySessionsMap[s.clientId] = s.status; });
+
+  // Today's day of week abbreviation (matches what we store)
+  const DOW_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const todayDow = DOW_ABBR[new Date().getDay()];
+
+  const rows = clients.map(c => {
+    const tc = tcMap[c.id] || {};
+    const liveStatus = todaySessionsMap[c.id] || tc.todayStatus || 'not-started';
+    const startDate = c.startDate || tc.startDate || '';
+    const dayNum = startDate ? Math.max(Math.floor((new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1, 1) : 0;
+    // Is today a scheduled day for this entry?
+    const days = tc.sessionDays || [];
+    const scheduledToday = days.length === 0 || days.includes(todayDow);
+    return { client: c, tc, liveStatus, startDate, dayNum, scheduledToday };
   });
 
-  const onairN=rows.filter(r=>r.liveStatus==='onair').length;
-  const completedN=rows.filter(r=>r.liveStatus==='completed').length;
-  const missedN=rows.filter(r=>r.liveStatus==='missed').length;
-  const pendingN=rows.filter(r=>r.liveStatus==='not-started').length;
-  const withEntry=rows.filter(r=>r.tc&&r.tc.id).length;
-  const totalN=rows.length||1;
+  // Sort: by session time (clients with time first), then name
+  rows.sort((a, b) => {
+    const tA = a.tc.sessionTime || a.client.sessionTime || '';
+    const tB = b.tc.sessionTime || b.client.sessionTime || '';
+    if (tA && tB) return tA.localeCompare(tB);
+    if (tA && !tB) return -1;
+    if (!tA && tB) return 1;
+    return (a.client.name || '').localeCompare(b.client.name || '');
+  });
 
-  // store globally
-  window._tcRows=rows;
-  window._tcMap=tcMap;
-  window._tcClients=clients;
-  window._tcEntries=tcEntries;
-  window._tcView='grid';
-  window._tcFilter='all';
+  const onairN = rows.filter(r => r.liveStatus === 'onair').length;
+  const completedN = rows.filter(r => r.liveStatus === 'completed').length;
+  const missedN = rows.filter(r => r.liveStatus === 'missed').length;
+  const pendingN = rows.filter(r => r.liveStatus === 'not-started').length;
+  const withEntry = rows.filter(r => r.tc && r.tc.id).length;
+  const scheduledTodayN = rows.filter(r => r.scheduledToday && r.tc && r.tc.id).length;
+  const totalN = rows.length || 1;
+  const dupCount = tcEntriesRaw.length - tcEntries.length;
 
-  function planColor(p){
-    return{Silver:'var(--muted)',Gold:'var(--yellow)',Platinum:'var(--purple)','Platinum Plus':'var(--purple)','Corporate Fitness':'var(--blue)',Couple:'var(--pink)'}[p]||'var(--muted)';
+  window._tcRows = rows;
+  window._tcMap = tcMap;
+  window._tcClients = clients;
+  window._tcEntries = tcEntries;
+  window._tcView = 'grid';
+  window._tcFilter = 'all';
+  window._todayDow = todayDow;
+
+  function planColor(p) {
+    return { Silver: 'var(--muted)', Gold: 'var(--yellow)', Platinum: 'var(--purple)', 'Platinum Plus': 'var(--purple)', 'Corporate Fitness': 'var(--blue)', Couple: 'var(--pink)' }[p] || 'var(--muted)';
   }
-  function planEmoji(p){
-    return{Silver:'🥈',Gold:'🥇',Platinum:'💎','Platinum Plus':'💎+','Corporate Fitness':'🏢',Couple:'👫'}[p]||'•';
+  function planEmoji(p) {
+    return { Silver: '🥈', Gold: '🥇', Platinum: '💎', 'Platinum Plus': '💎+', 'Corporate Fitness': '🏢', Couple: '👫' }[p] || '•';
   }
-  window._tcPlanColor=planColor;
-  window._tcPlanEmoji=planEmoji;
-  const canDelete=CR==='admin'||CR==='coordinatorhead';
-  window._tcCanDelete=canDelete;
+  window._tcPlanColor = planColor;
+  window._tcPlanEmoji = planEmoji;
+  window._tcCanDelete = CR === 'admin' || CR === 'coordinatorhead';
 
-  const progTotal=Math.round((completedN+onairN)/totalN*100);
+  const progTotal = Math.round((completedN + onairN) / totalN * 100);
 
-  $('page').innerHTML=`
+  $('page').innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div>
         <div style="font-weight:700;font-size:16px">📋 Client Time Chart</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Persistent daily session tracker — ${clients.length} active clients</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">
+          Persistent daily session tracker — ${clients.length} active clients · Sorted by session time
+          · <strong style="color:var(--green)">${scheduledTodayN}</strong> scheduled for <strong>${todayDow}</strong>
+          ${dupCount > 0 ? ` <span style="color:var(--yellow)">· Removed ${dupCount} duplicate(s)</span>` : ''}
+        </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        ${CR==='admin'?`<button class="btn btn-g btn-sm" onclick="exportTcPDF()">📥 Export PDF</button>`:''}
+        ${CR === 'admin' ? `<button class="btn btn-g btn-sm" onclick="exportTcPDF()">📥 Export PDF</button>` : ''}
         <button class="btn btn-g btn-sm" onclick="doTcDailyReset().then(()=>timechart())">⟳ Reset Day</button>
         <button class="btn btn-p btn-sm" onclick="openAddTcEntry()">+ Add Entry</button>
       </div>
     </div>
 
-    <!-- KPI -->
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px">
-      <div class="tc-stat" style="--ac:var(--green)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">On Air</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);line-height:1">${onairN}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Active now</div>
-      </div>
-      <div class="tc-stat" style="--ac:var(--accent)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Completed</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1">${completedN}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Done today</div>
-      </div>
-      <div class="tc-stat" style="--ac:var(--red)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Missed</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);line-height:1">${missedN}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Today</div>
-      </div>
-      <div class="tc-stat" style="--ac:var(--yellow)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pending</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--yellow);line-height:1">${pendingN}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Not started</div>
-      </div>
-      <div class="tc-stat" style="--ac:var(--blue)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Entries</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);line-height:1">${withEntry}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">of ${clients.length} clients</div>
-      </div>
+      <div class="tc-stat" style="--ac:var(--green)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">On Air</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);line-height:1">${onairN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Active now</div></div>
+      <div class="tc-stat" style="--ac:var(--accent)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Completed</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1">${completedN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Done today</div></div>
+      <div class="tc-stat" style="--ac:var(--red)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Missed</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);line-height:1">${missedN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Today</div></div>
+      <div class="tc-stat" style="--ac:var(--yellow)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pending</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--yellow);line-height:1">${pendingN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not started</div></div>
+      <div class="tc-stat" style="--ac:var(--blue)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Entries</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);line-height:1">${withEntry}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">of ${clients.length} clients</div></div>
     </div>
 
-    <!-- Progress bar -->
     <div class="card" style="margin-bottom:16px;padding:13px 16px">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;font-weight:700">
-        <span>Today's Progress</span>
+        <span>Today's Progress (${todayDow})</span>
         <span style="color:var(--accent)">${progTotal}% active</span>
       </div>
       <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border2)">
-        <div style="width:${Math.round(completedN/totalN*100)}%;background:var(--accent)" title="Completed"></div>
-        <div style="width:${Math.round(onairN/totalN*100)}%;background:var(--green)" title="On Air"></div>
-        <div style="width:${Math.round(missedN/totalN*100)}%;background:var(--red)" title="Missed"></div>
+        <div style="width:${Math.round(completedN / totalN * 100)}%;background:var(--accent)" title="Completed"></div>
+        <div style="width:${Math.round(onairN / totalN * 100)}%;background:var(--green)" title="On Air"></div>
+        <div style="width:${Math.round(missedN / totalN * 100)}%;background:var(--red)" title="Missed"></div>
       </div>
       <div style="display:flex;gap:14px;margin-top:7px;flex-wrap:wrap">
-        ${[['var(--accent)','Completed',completedN],['var(--green)','On Air',onairN],['var(--red)','Missed',missedN],['var(--yellow)','Pending',pendingN]].map(([c,l,v])=>
-          `<div style="display:flex;align-items:center;gap:4px;font-size:11px"><div style="width:8px;height:8px;border-radius:2px;background:${c}"></div><span style="color:var(--muted)">${l}: <strong style="color:var(--text)">${v}</strong></span></div>`
-        ).join('')}
+        ${[['var(--accent)', 'Completed', completedN], ['var(--green)', 'On Air', onairN], ['var(--red)', 'Missed', missedN], ['var(--yellow)', 'Pending', pendingN]].map(([c, l, v]) => `<div style="display:flex;align-items:center;gap:4px;font-size:11px"><div style="width:8px;height:8px;border-radius:2px;background:${c}"></div><span style="color:var(--muted)">${l}: <strong style="color:var(--text)">${v}</strong></span></div>`).join('')}
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px"><div style="width:8px;height:8px;border-radius:2px;background:var(--green);box-shadow:0 0 0 2px rgba(0,230,118,.3)"></div><span style="color:var(--muted)">Scheduled today (${todayDow}): <strong style="color:var(--green)">${scheduledTodayN}</strong></span></div>
       </div>
     </div>
 
-    <!-- Toolbar -->
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       <input class="fi" id="tc-search" placeholder="🔍 Search client or trainer…" style="max-width:240px;margin:0;padding:8px 11px;font-size:12px" oninput="tcRender()">
       <div style="display:flex;gap:5px;flex-wrap:wrap;flex:1">
         <button class="tc-ftab active" id="tcf-all"          onclick="tcSetFilter('all')">All (${rows.length})</button>
+        <button class="tc-ftab"        id="tcf-today"        onclick="tcSetFilter('today')">📅 Today (${scheduledTodayN})</button>
         <button class="tc-ftab"        id="tcf-onair"        onclick="tcSetFilter('onair')">🟢 On Air (${onairN})</button>
         <button class="tc-ftab"        id="tcf-completed"    onclick="tcSetFilter('completed')">✅ Done (${completedN})</button>
         <button class="tc-ftab"        id="tcf-missed"       onclick="tcSetFilter('missed')">❌ Missed (${missedN})</button>
@@ -2291,325 +2448,286 @@ async function timechart(){
       </div>
     </div>
 
-    <!-- Content -->
     <div id="tc-content"></div>
   `;
-
   tcRender();
 }
 
-// ── FILTER / VIEW TOGGLE ──────────────────────────────────────
-function tcSetFilter(f){
-  window._tcFilter=f;
-  document.querySelectorAll('.tc-ftab').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('tcf-'+f);
-  if(btn)btn.classList.add('active');
+function tcSetFilter(f) {
+  window._tcFilter = f;
+  document.querySelectorAll('.tc-ftab').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tcf-' + f);
+  if (btn) btn.classList.add('active');
   tcRender();
 }
-function tcSetView(v){
-  window._tcView=v;
-  document.querySelectorAll('.tc-view-btn').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('tcv-'+v);
-  if(btn)btn.classList.add('active');
+function tcSetView(v) {
+  window._tcView = v;
+  document.querySelectorAll('.tc-view-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('tcv-' + v);
+  if (btn) btn.classList.add('active');
   tcRender();
 }
 
-// ── RENDER ────────────────────────────────────────────────────
-function tcRender(){
-  const search=($('tc-search')?.value||'').toLowerCase().trim();
-  const filter=window._tcFilter||'all';
-  let rows=window._tcRows||[];
+function tcRender() {
+  const search = ($('tc-search')?.value || '').toLowerCase().trim();
+  const filter = window._tcFilter || 'all';
+  const todayDow = window._todayDow || DOW_ABBR_GLOBAL();
+  let rows = window._tcRows || [];
 
-  if(search){
-    rows=rows.filter(r=>
-      (r.client.name||'').toLowerCase().includes(search)||
-      (r.tc.trainerName||r.client.trainerName||'').toLowerCase().includes(search)||
-      (r.client.plan||'').toLowerCase().includes(search)
+  if (search) {
+    rows = rows.filter(r =>
+      (r.client.name || '').toLowerCase().includes(search) ||
+      (r.tc.trainerName || r.client.trainerName || '').toLowerCase().includes(search) ||
+      (r.client.plan || '').toLowerCase().includes(search)
     );
   }
-  if(filter==='no-entry')rows=rows.filter(r=>!r.tc||!r.tc.id);
-  else if(filter!=='all')rows=rows.filter(r=>r.liveStatus===filter);
 
-  const el=document.getElementById('tc-content');
-  if(!el)return;
+  if (filter === 'no-entry') rows = rows.filter(r => !r.tc || !r.tc.id);
+  else if (filter === 'today') rows = rows.filter(r => r.scheduledToday && r.tc && r.tc.id);
+  else if (filter !== 'all') rows = rows.filter(r => r.liveStatus === filter);
 
-  if(!rows.length){
-    el.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:44px;margin-bottom:12px">📋</div><div style="font-size:14px;font-weight:600;color:var(--text)">No clients match this filter</div><div style="font-size:13px;margin-top:6px">Try a different tab or search term.</div></div>`;
+  const el = document.getElementById('tc-content');
+  if (!el) return;
+  if (!rows.length) {
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:44px;margin-bottom:12px">📋</div><div style="font-size:14px;font-weight:600;color:var(--text)">No clients match this filter</div><div style="font-size:13px;margin-top:6px">Try a different tab or search term.</div></div>`;
     return;
   }
-  el.innerHTML = window._tcView==='list' ? tcListHTML(rows) : tcGridHTML(rows);
+  el.innerHTML = window._tcView === 'list' ? tcListHTML(rows) : tcGridHTML(rows);
 }
 
-// ── STATUS HELPERS ────────────────────────────────────────────
-const TC_S_COLOR={'onair':'var(--green)','completed':'var(--accent)','missed':'var(--red)','not-started':'var(--muted)'};
-const TC_S_ICON ={'onair':'🟢','completed':'✅','missed':'❌','not-started':'⏳'};
-const TC_S_LABEL={'onair':'On Air','completed':'Completed','missed':'Missed','not-started':'Pending'};
+// Helper to get today's DOW abbreviation anywhere
+function DOW_ABBR_GLOBAL() {
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date().getDay()];
+}
 
-// ── GRID HTML ─────────────────────────────────────────────────
-function tcGridHTML(rows){
-  const canDelete=window._tcCanDelete;
-  const planColor=window._tcPlanColor||(()=>'var(--muted)');
-  const planEmoji=window._tcPlanEmoji||(()=>'•');
+// Render day pills (for card display)
+function renderDayPills(sessionDays, todayDow) {
+  const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  if (!sessionDays || sessionDays.length === 0) {
+    return `<span style="font-size:10px;color:var(--muted)">Every day</span>`;
+  }
+  return ALL_DAYS.map(d => {
+    const isActive = sessionDays.includes(d);
+    const isToday = d === todayDow;
+    const classes = `day-pill ${isActive ? 'active-day' : ''} ${isActive && isToday ? 'today-day' : ''}`;
+    return `<div class="${classes}" title="${d}${isActive ? ' (scheduled)' : ''}">${d.slice(0, 2)}</div>`;
+  }).join('');
+}
 
-  return`<div class="tc-grid">${rows.map(({client:c,tc,liveStatus,startDate,dayNum})=>{
-    const pc=planColor(c.plan);
-    const sc=TC_S_COLOR[liveStatus]||'var(--muted)';
-    const ini=(c.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    const trainerName=tc.trainerName||c.trainerName||'—';
-    const isPlatinum=c.plan==='Platinum'||c.plan==='Platinum Plus';
-    const tcId=tc.id||'';
-    const cId=c.id;
+const TC_S_COLOR = { onair: 'var(--green)', completed: 'var(--accent)', missed: 'var(--red)', 'not-started': 'var(--muted)' };
+const TC_S_ICON  = { onair: '🟢', completed: '✅', missed: '❌', 'not-started': '⏳' };
+const TC_S_LABEL = { onair: 'On Air', completed: 'Completed', missed: 'Missed', 'not-started': 'Pending' };
 
-    // action bar buttons based on current status
-    let actionBtns='';
-    if(liveStatus==='not-started'){
-      actionBtns=`
-        <button class="tc-qbtn qb-start" onclick="tcQuickStatus('${tcId}','onair','${cId}')">▶ Start</button>
-        <button class="tc-qbtn qb-miss"  onclick="tcQuickStatus('${tcId}','missed','${cId}')">✗ Miss</button>`;
-    }else if(liveStatus==='onair'){
-      actionBtns=`
-        <button class="tc-qbtn qb-done"  onclick="tcQuickStatus('${tcId}','completed','${cId}')">✅ Done</button>
-        <button class="tc-qbtn qb-miss"  onclick="tcQuickStatus('${tcId}','missed','${cId}')">✗ Miss</button>`;
-    }else{
-      actionBtns=`
-        <button class="tc-qbtn qb-reset" onclick="tcQuickStatus('${tcId}','not-started','${cId}')">↩ Reset</button>
-        <span style="font-size:10px;font-weight:700;color:${sc};flex:1;text-align:right;padding-right:4px">${TC_S_ICON[liveStatus]} ${TC_S_LABEL[liveStatus]}</span>`;
+function tcGridHTML(rows) {
+  const canDelete = window._tcCanDelete;
+  const planColor = window._tcPlanColor || (() => 'var(--muted)');
+  const planEmoji = window._tcPlanEmoji || (() => '•');
+  const todayDow  = window._todayDow || DOW_ABBR_GLOBAL();
+
+  return `<div class="tc-grid">${rows.map(({ client: c, tc, liveStatus, startDate, dayNum, scheduledToday }) => {
+    const pc = planColor(c.plan);
+    const sc = TC_S_COLOR[liveStatus] || 'var(--muted)';
+    const ini = (c.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    const trainerName = tc.trainerName || c.trainerName || '—';
+    const isPlatinum = c.plan === 'Platinum' || c.plan === 'Platinum Plus';
+    const tcId = tc.id || '';
+    const cId = c.id;
+    const sessionTime = tc.sessionTime || c.sessionTime || '';
+    const sessionDays = tc.sessionDays || [];
+
+    // Not scheduled today — dim card
+    const notTodayStyle = (!scheduledToday && tc.id) ? 'opacity:.55;' : '';
+
+    let actionBtns = '';
+    if (!scheduledToday && tc.id) {
+      actionBtns = `<span style="font-size:10px;color:var(--muted);flex:1;padding:2px 4px">Not scheduled ${todayDow}</span>`;
+    } else if (liveStatus === 'not-started') {
+      actionBtns = `<button class="tc-qbtn qb-start" onclick="tcQuickStatus('${tcId}','onair','${cId}')">▶ Start</button><button class="tc-qbtn qb-miss" onclick="tcQuickStatus('${tcId}','missed','${cId}')">✗ Miss</button>`;
+    } else if (liveStatus === 'onair') {
+      actionBtns = `<button class="tc-qbtn qb-done" onclick="tcQuickStatus('${tcId}','completed','${cId}')">✅ Done</button><button class="tc-qbtn qb-miss" onclick="tcQuickStatus('${tcId}','missed','${cId}')">✗ Miss</button>`;
+    } else {
+      actionBtns = `<button class="tc-qbtn qb-reset" onclick="tcQuickStatus('${tcId}','not-started','${cId}')">↩ Reset</button><span style="font-size:10px;font-weight:700;color:${sc};flex:1;text-align:right;padding-right:4px">${TC_S_ICON[liveStatus]} ${TC_S_LABEL[liveStatus]}</span>`;
     }
 
-    return`<div class="tc-card s-${liveStatus}" id="tcc-${c.id}">
-      <div class="tc-ribbon" style="background:${sc}"></div>
+    return `<div class="tc-card s-${liveStatus}" id="tcc-${c.id}" style="${notTodayStyle}">
+      <div class="tc-ribbon" style="background:${scheduledToday ? sc : 'var(--border2)'}"></div>
       <div class="tc-card-header">
         <div class="tc-avatar" style="background:${pc}20;color:${pc}">${ini}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name||'—'}</div>
+          <div style="font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name || '—'}</div>
           <div style="margin-top:4px;display:flex;gap:5px;align-items:center;flex-wrap:wrap">
-            <span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;background:${pc}20;color:${pc}">${planEmoji(c.plan)} ${c.plan||'—'}</span>
-            ${c.plan==='Couple'&&c.partnerName?`<span style="font-size:10px;color:var(--pink)">👫 +${c.partnerName}</span>`:''}
+            <span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;background:${pc}20;color:${pc}">${planEmoji(c.plan)} ${c.plan || '—'}</span>
+            ${c.plan === 'Couple' && c.partnerName ? `<span style="font-size:10px;color:var(--pink)">👫 +${c.partnerName}</span>` : ''}
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:10px;font-weight:700;color:${sc};white-space:nowrap">${TC_S_ICON[liveStatus]} ${TC_S_LABEL[liveStatus]}</div>
-          ${dayNum?`<div style="margin-top:3px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;background:var(--purple-dim);color:var(--purple)">Day ${dayNum}</div>`:''}
+          <div style="font-size:10px;font-weight:700;color:${scheduledToday ? sc : 'var(--muted2)'};white-space:nowrap">
+            ${scheduledToday ? TC_S_ICON[liveStatus] + ' ' + TC_S_LABEL[liveStatus] : '🚫 Off today'}
+          </div>
+          ${dayNum ? `<div style="margin-top:3px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;background:var(--purple-dim);color:var(--purple)">Day ${dayNum}</div>` : ''}
         </div>
       </div>
       <div class="tc-card-body">
-        <div class="tc-info-row">
-          <span style="font-size:13px">🕐</span>
-          <span class="tc-info-lbl">Time</span>
-          <span class="tc-info-val" style="color:var(--accent);font-family:'JetBrains Mono',monospace">${tc.sessionTime?to12h(tc.sessionTime):'<em style="color:var(--muted2);font-style:normal">Not set</em>'}</span>
+        <div class="tc-info-row"><span style="font-size:13px">🕐</span><span class="tc-info-lbl">Time</span><span class="tc-info-val" style="color:var(--accent);font-family:'JetBrains Mono',monospace">${sessionTime ? to12h(sessionTime) : '<em style="color:var(--muted2);font-style:normal">Not set</em>'}</span></div>
+        <div class="tc-info-row"><span style="font-size:13px">🧑‍🏫</span><span class="tc-info-lbl">Trainer</span><span class="tc-info-val">${trainerName}</span></div>
+        <div class="tc-info-row"><span style="font-size:13px">🏋️</span><span class="tc-info-lbl">Type</span><span class="tc-info-val">${tc.sessionType || c.goal || '—'}</span></div>
+        ${startDate ? `<div class="tc-info-row"><span style="font-size:13px">📅</span><span class="tc-info-lbl">Start</span><span class="tc-info-val">${startDate}</span></div>` : ''}
+        <!-- Session Days Row -->
+        <div class="tc-info-row" style="align-items:flex-start">
+          <span style="font-size:13px">📆</span>
+          <span class="tc-info-lbl">Days</span>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;flex:1">${renderDayPills(sessionDays, todayDow)}</div>
         </div>
-        <div class="tc-info-row">
-          <span style="font-size:13px">🧑‍🏫</span>
-          <span class="tc-info-lbl">Trainer</span>
-          <span class="tc-info-val">${trainerName}</span>
-        </div>
-        <div class="tc-info-row">
-          <span style="font-size:13px">🏋️</span>
-          <span class="tc-info-lbl">Type</span>
-          <span class="tc-info-val">${tc.sessionType||c.goal||'—'}</span>
-        </div>
-        ${startDate?`<div class="tc-info-row">
-          <span style="font-size:13px">📅</span>
-          <span class="tc-info-lbl">Start</span>
-          <span class="tc-info-val">${startDate}</span>
-        </div>`:''}
-        ${tc.remarks?`<div style="margin-top:6px;padding:5px 9px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--muted)">📝 ${tc.remarks}</div>`:''}
-        ${isPlatinum?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--purple-dim);color:var(--purple)">💎 Platinum Fixed</span></div>`:''}
-        ${!tc.id?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--red-dim);color:var(--red)">⚠️ No TC Entry</span></div>`:''}
+        ${tc.remarks ? `<div style="margin-top:6px;padding:5px 9px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--muted)">📝 ${tc.remarks}</div>` : ''}
+        ${isPlatinum ? `<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--purple-dim);color:var(--purple)">💎 Platinum Fixed</span></div>` : ''}
+        ${!tc.id ? `<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--red-dim);color:var(--red)">⚠️ No TC Entry</span></div>` : ''}
       </div>
       <div class="tc-action-bar">${actionBtns}</div>
       <div class="tc-card-footer">
         <button class="btn btn-g btn-sm" style="flex:1" onclick="openEditTcEntry('${cId}')">✏ Edit</button>
         <button class="btn btn-bl btn-sm" style="flex:1" onclick="tcViewDetail('${cId}')">👁 Detail</button>
-        ${canDelete&&tcId?`<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}')">🗑</button>`:''}
+        ${canDelete && tcId ? `<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}',event)">🗑</button>` : ''}
       </div>
     </div>`;
   }).join('')}</div>`;
 }
 
-// ── LIST HTML ─────────────────────────────────────────────────
-function tcListHTML(rows){
-  const canDelete=window._tcCanDelete;
-  const planColor=window._tcPlanColor||(()=>'var(--muted)');
-  return`<div class="tc-list-wrap">
-    <div class="tc-list-row tc-list-head">
-      <div>Client</div><div></div><div>Time</div><div>Trainer</div><div>Type</div><div>Day</div><div>Today</div><div>Remarks</div><div>Actions</div>
-    </div>
-    ${rows.map(({client:c,tc,liveStatus,dayNum})=>{
-      const pc=planColor(c.plan);
-      const sc=TC_S_COLOR[liveStatus]||'var(--muted)';
-      const ini=(c.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-      const tcId=tc.id||'';
-      const cId=c.id;
-      return`<div class="tc-list-row" style="border-left:3px solid ${sc}">
+function tcListHTML(rows) {
+  const canDelete = window._tcCanDelete;
+  const planColor = window._tcPlanColor || (() => 'var(--muted)');
+  const todayDow  = window._todayDow || DOW_ABBR_GLOBAL();
+
+  return `<div class="tc-list-wrap">
+    <div class="tc-list-row tc-list-head"><div>Client</div><div></div><div>Time</div><div>Trainer</div><div>Type</div><div>Day#</div><div>Today</div><div>Remarks</div><div>Actions</div></div>
+    ${rows.map(({ client: c, tc, liveStatus, dayNum, scheduledToday }) => {
+      const pc = planColor(c.plan);
+      const sc = TC_S_COLOR[liveStatus] || 'var(--muted)';
+      const ini = (c.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      const tcId = tc.id || '';
+      const cId = c.id;
+      const sessionTime = tc.sessionTime || c.sessionTime || '';
+      const sessionDays = tc.sessionDays || [];
+      return `<div class="tc-list-row" style="border-left:3px solid ${scheduledToday ? sc : 'var(--border2)'};opacity:${(!scheduledToday && tc.id) ? '.6' : '1'}">
         <div style="display:flex;align-items:center;gap:7px;min-width:0">
           <div style="width:26px;height:26px;border-radius:50%;background:${pc}20;color:${pc};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0">${ini}</div>
-          <div style="min-width:0">
-            <div style="font-weight:600;font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${c.name||'—'}</div>
-            ${c.plan==='Couple'&&c.partnerName?`<div style="font-size:10px;color:var(--pink)">+${c.partnerName}</div>`:''}
+          <div style="min-width:0"><div style="font-weight:600;font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${c.name || '—'}</div>
+            <div style="display:flex;gap:2px;margin-top:2px">${sessionDays.length > 0 ? sessionDays.map(d => `<span style="font-size:9px;font-weight:700;padding:0 3px;border-radius:3px;background:${d === todayDow ? 'var(--accent)' : 'var(--border2)'};color:${d === todayDow ? '#000' : 'var(--muted)'}">${d.slice(0,2)}</span>`).join('') : '<span style="font-size:9px;color:var(--muted)">All days</span>'}</div>
           </div>
         </div>
-        <div><span style="font-size:10px;font-weight:700;color:${pc}">${c.plan?c.plan.substring(0,3).toUpperCase():'—'}</span></div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:700">${tc.sessionTime?to12h(tc.sessionTime):'—'}</div>
-        <div style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${tc.trainerName||c.trainerName||'—'}</div>
-        <div style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${tc.sessionType||c.goal||'—'}</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple)">${dayNum||'—'}</div>
-        <div style="font-size:11px;font-weight:700;color:${sc}">${TC_S_ICON[liveStatus]} ${TC_S_LABEL[liveStatus]}</div>
-        <div style="font-size:10px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis" title="${tc.remarks||''}">${tc.remarks||'—'}</div>
-        <div>
-          <div style="display:flex;gap:4px;flex-wrap:nowrap">
-            <button class="btn btn-g btn-sm" onclick="openEditTcEntry('${cId}')">Edit</button>
-            <button class="btn btn-g btn-sm" onclick="openTcStatus('${cId}','${(c.name||'').replace(/'/g,"\\'")}')">Status</button>
-            ${canDelete&&tcId?`<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}')">Del</button>`:''}
-          </div>
-        </div>
+        <div><span style="font-size:10px;font-weight:700;color:${pc}">${c.plan ? c.plan.substring(0, 3).toUpperCase() : '—'}</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:700">${sessionTime ? to12h(sessionTime) : '—'}</div>
+        <div style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${tc.trainerName || c.trainerName || '—'}</div>
+        <div style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${tc.sessionType || c.goal || '—'}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple)">${dayNum || '—'}</div>
+        <div style="font-size:11px;font-weight:700;color:${scheduledToday ? sc : 'var(--muted2)'}">${scheduledToday ? TC_S_ICON[liveStatus] + ' ' + TC_S_LABEL[liveStatus] : '🚫 Off'}</div>
+        <div style="font-size:10px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis" title="${tc.remarks || ''}">${tc.remarks || '—'}</div>
+        <div><div style="display:flex;gap:4px;flex-wrap:nowrap">
+          <button class="btn btn-g btn-sm" onclick="openEditTcEntry('${cId}')">Edit</button>
+          <button class="btn btn-g btn-sm" onclick="openTcStatus('${cId}','${(c.name || '').replace(/'/g, "\\'")}')">Status</button>
+          ${canDelete && tcId ? `<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}',event)">Del</button>` : ''}
+        </div></div>
       </div>`;
     }).join('')}
   </div>`;
 }
 
-// ── QUICK STATUS (card buttons — no page reload) ──────────────
-async function tcQuickStatus(tcId,status,clientId){
-  const today=getTodayStr();
-  try{
-    if(tcId){
-      await fsUpdate('timechart',tcId,{todayStatus:status,lastStatusUpdate:today});
-    }else{
-      // no entry yet — create
-      const c=(window._tcClients||[]).find(x=>x.id===clientId)||{};
-      const ref=await fsAdd('timechart',{
-        clientId,
-        clientName:c.name||'',
-        trainerName:c.trainerName||'',
-        trainerId:c.trainerId||'',
-        sessionTime:c.sessionTime||'',
-        sessionType:c.sessionType||c.goal||'',
-        todayStatus:status,
-        lastStatusUpdate:today
-      });
-      // patch map
-      if(!window._tcMap)window._tcMap={};
-      window._tcMap[clientId]={id:ref.id,clientId,todayStatus:status,lastStatusUpdate:today};
-    }
-    // patch rows in memory
-    if(window._tcRows){
-      const row=window._tcRows.find(r=>r.client.id===clientId||(tcId&&r.tc&&r.tc.id===tcId));
-      if(row){
-        row.liveStatus=status;
-        if(row.tc)row.tc.todayStatus=status;
-        if(tcId&&row.tc)row.tc.id=tcId;
-      }
-    }
-    toast(`Status → ${TC_S_LABEL[status]||status}`,'success');
-    tcRender();
-  }catch(e){
-    toast('Error: '+e.message,'error');
-  }
-}
-
-// ── CLIENT DETAIL MODAL ───────────────────────────────────────
-async function tcViewDetail(clientId){
-  const c=(window._tcClients||[]).find(x=>x.id===clientId);
-  if(!c){toast('Client not found','error');return;}
-  const tc=(window._tcMap||{})[clientId]||{};
-  const planColor=window._tcPlanColor||(()=>'var(--muted)');
-  const pc=planColor(c.plan);
-  const ini=(c.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  const startDate=c.startDate||tc.startDate||'';
-  const dayNum=startDate?Math.max(Math.floor((new Date()-new Date(startDate))/(1000*60*60*24))+1,1):0;
-  const sc=TC_S_COLOR[tc.todayStatus||'not-started']||'var(--yellow)';
-
-  // load recent sessions
-  let recentSessions=[];
-  try{recentSessions=await fsGetAll('sessions',fn().where('clientId','==',clientId));}catch(e){}
-  recentSessions.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const completedC=recentSessions.filter(s=>s.status==='completed').length;
-  const missedC=recentSessions.filter(s=>s.status==='missed').length;
-
-  openM2(`${(c.name||'').toUpperCase()} — TIME CHART`,`
-    <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:14px">
-      <div style="width:48px;height:48px;border-radius:50%;background:${pc}20;color:${pc};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0">${ini}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:15px">${c.name||'—'}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:${pc}20;color:${pc}">${c.plan||'—'}</span>
-          ${c.plan==='Platinum'||c.plan==='Platinum Plus'?`<span class="badge b-p" style="font-size:9px">💎 Fixed</span>`:''}
-          ${c.plan==='Couple'?`<span class="badge b-pk" style="font-size:9px">👫 Couple</span>`:''}
+// ── DAY SELECTOR WIDGET HTML ──────────────────────────────────
+function buildDaySelectorHTML(selectedDays = [], widgetId = 'tc-days') {
+  const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return `
+    <div class="fg">
+      <label class="fl">Session Days *</label>
+      <div style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-bottom:4px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+          <button type="button" class="btn btn-g btn-sm" onclick="tcDaysSelectAll('${widgetId}',true)">All Days</button>
+          <button type="button" class="btn btn-g btn-sm" onclick="tcDaysSelectAll('${widgetId}',false)">Clear</button>
+          <button type="button" class="btn btn-g btn-sm" onclick="tcDaysPreset('${widgetId}','weekdays')">Mon–Fri</button>
+          <button type="button" class="btn btn-g btn-sm" onclick="tcDaysPreset('${widgetId}','mon-sat')">Mon–Sat</button>
+          <button type="button" class="btn btn-g btn-sm" onclick="tcDaysPreset('${widgetId}','alt')">Alt Days</button>
+        </div>
+        <div id="${widgetId}-pills" style="display:flex;gap:6px;flex-wrap:wrap">
+          ${ALL_DAYS.map(d => `
+            <button type="button"
+              id="${widgetId}-${d}"
+              class="day-btn-sel ${selectedDays.includes(d) ? 'selected' : ''}"
+              onclick="tcToggleDay('${widgetId}','${d}')">
+              ${d}
+            </button>`).join('')}
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">
+          <span id="${widgetId}-summary">${selectedDays.length === 0 ? 'Every day (no restriction)' : selectedDays.join(', ')}</span>
         </div>
       </div>
-      <div style="text-align:right">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--purple)">${dayNum}</div>
-        <div style="font-size:10px;color:var(--muted)">Day of Programme</div>
-      </div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-      <div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.2);border-radius:9px;padding:11px;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)">${recentSessions.length}</div>
-        <div style="font-size:10px;font-weight:700;color:var(--accent)">SESSIONS</div>
-      </div>
-      <div style="background:var(--green-dim);border:1px solid rgba(0,230,118,.2);border-radius:9px;padding:11px;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green)">${completedC}</div>
-        <div style="font-size:10px;font-weight:700;color:var(--green)">COMPLETED</div>
-      </div>
-      <div style="background:var(--red-dim);border:1px solid rgba(255,68,68,.2);border-radius:9px;padding:11px;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--red)">${missedC}</div>
-        <div style="font-size:10px;font-weight:700;color:var(--red)">MISSED</div>
-      </div>
-    </div>
-
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:13px">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:9px">📋 Schedule</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
-        <div><span style="color:var(--muted)">Time:</span> <strong style="color:var(--accent)">${tc.sessionTime?to12h(tc.sessionTime):'Not set'}</strong></div>
-        <div><span style="color:var(--muted)">Type:</span> <strong>${tc.sessionType||c.goal||'—'}</strong></div>
-        <div><span style="color:var(--muted)">Trainer:</span> <strong>${tc.trainerName||c.trainerName||'—'}</strong></div>
-        <div><span style="color:var(--muted)">Start Date:</span> <strong>${startDate||'—'}</strong></div>
-        ${c.preferredDays?`<div><span style="color:var(--muted)">Days:</span> <strong>${c.preferredDays}</strong></div>`:''}
-      </div>
-      ${tc.remarks?`<div style="margin-top:9px;padding:7px 10px;background:var(--surface);border-radius:7px;font-size:11px;color:var(--muted)">📝 ${tc.remarks}</div>`:''}
-    </div>
-
-    <div style="background:${sc}15;border:1px solid ${sc}30;border-radius:10px;padding:11px 14px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">Today's Status</div>
-        <div style="font-weight:700;font-size:14px;color:${sc};margin-top:3px">${TC_S_ICON[tc.todayStatus||'not-started']} ${TC_S_LABEL[tc.todayStatus||'not-started']}</div>
-      </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">
-        <button class="btn btn-gr btn-sm" onclick="tcQuickStatus('${tc.id||''}','onair','${clientId}');closeM2()">▶ Start</button>
-        <button class="btn btn-p btn-sm" onclick="tcQuickStatus('${tc.id||''}','completed','${clientId}');closeM2()">✅ Done</button>
-        <button class="btn btn-d btn-sm" onclick="tcQuickStatus('${tc.id||''}','missed','${clientId}');closeM2()">✗ Miss</button>
-      </div>
-    </div>
-
-    ${recentSessions.length>0?`
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:9px 13px;border-bottom:1px solid var(--border)">Recent Sessions</div>
-      ${recentSessions.slice(0,5).map(s=>{
-        const s2c=TC_S_COLOR[s.status]||'var(--muted)';
-        return`<div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid rgba(128,128,128,.06)">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);min-width:68px">${to12h(s.time)}</div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:600">${s.date||'—'}</div><div style="font-size:11px;color:var(--muted)">${s.type||'—'}</div></div>
-          ${statusBadge(s.status)}
-          ${s.meetLink?`<a href="${s.meetLink}" target="_blank" style="color:var(--accent);font-size:11px">🔗</a>`:''}
-        </div>`;
-      }).join('')}
-    </div>`:''}
-
-    <div class="mo-foot">
-      <button class="btn btn-g" onclick="closeM2();openEditTcEntry('${clientId}')">✏ Edit</button>
-      <button class="btn btn-g" onclick="closeM2()">Close</button>
-    </div>
-  `);
+      <input type="hidden" id="${widgetId}-val" value='${JSON.stringify(selectedDays)}'>
+    </div>`;
 }
 
-// ── ADD ENTRY MODAL ───────────────────────────────────────────
-async function openAddTcEntry(){
-  const clients=window._tcClients||await fsGetAll('clients',fn().where('active','==',true));
-  openM1('ADD TIME CHART ENTRY',`
+function tcToggleDay(widgetId, day) {
+  const hiddenEl = document.getElementById(widgetId + '-val');
+  if (!hiddenEl) return;
+  let days = [];
+  try { days = JSON.parse(hiddenEl.value || '[]'); } catch (e) { days = []; }
+  if (days.includes(day)) {
+    days = days.filter(d => d !== day);
+  } else {
+    days.push(day);
+  }
+  hiddenEl.value = JSON.stringify(days);
+  // update buttons
+  const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  ALL_DAYS.forEach(d => {
+    const btn = document.getElementById(`${widgetId}-${d}`);
+    if (btn) btn.classList.toggle('selected', days.includes(d));
+  });
+  // update summary
+  const sumEl = document.getElementById(widgetId + '-summary');
+  if (sumEl) sumEl.textContent = days.length === 0 ? 'Every day (no restriction)' : days.join(', ');
+}
+
+function tcDaysSelectAll(widgetId, selectAll) {
+  const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const days = selectAll ? [...ALL_DAYS] : [];
+  const hiddenEl = document.getElementById(widgetId + '-val');
+  if (hiddenEl) hiddenEl.value = JSON.stringify(days);
+  ALL_DAYS.forEach(d => {
+    const btn = document.getElementById(`${widgetId}-${d}`);
+    if (btn) btn.classList.toggle('selected', selectAll);
+  });
+  const sumEl = document.getElementById(widgetId + '-summary');
+  if (sumEl) sumEl.textContent = days.length === 0 ? 'Every day (no restriction)' : days.join(', ');
+}
+
+function tcDaysPreset(widgetId, preset) {
+  const presets = {
+    weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    'mon-sat': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    alt: ['Mon', 'Wed', 'Fri']
+  };
+  const days = presets[preset] || [];
+  const hiddenEl = document.getElementById(widgetId + '-val');
+  if (hiddenEl) hiddenEl.value = JSON.stringify(days);
+  const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  ALL_DAYS.forEach(d => {
+    const btn = document.getElementById(`${widgetId}-${d}`);
+    if (btn) btn.classList.toggle('selected', days.includes(d));
+  });
+  const sumEl = document.getElementById(widgetId + '-summary');
+  if (sumEl) sumEl.textContent = days.length === 0 ? 'Every day (no restriction)' : days.join(', ');
+}
+
+function getTcDays(widgetId) {
+  const hiddenEl = document.getElementById(widgetId + '-val');
+  if (!hiddenEl) return [];
+  try { return JSON.parse(hiddenEl.value || '[]'); } catch (e) { return []; }
+}
+
+// ── ADD TC ENTRY ──────────────────────────────────────────────
+async function openAddTcEntry() {
+  const clients = window._tcClients || await fsGetAll('clients', fn().where('active', '==', true));
+  openM1('ADD TIME CHART ENTRY', `
     <div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.3);border-radius:10px;padding:11px 14px;margin-bottom:14px">
       <div style="font-weight:700;color:var(--accent);margin-bottom:2px">📋 New Time Chart Entry</div>
-      <div style="font-size:12px;color:var(--muted)">Assign a fixed daily session time to a client.</div>
+      <div style="font-size:12px;color:var(--muted)">Assign a fixed session time and days to a client.</div>
     </div>
     <div class="fg"><label class="fl">Client *</label>
       <input class="fi" id="tc-client-inp" placeholder="Type client name…" autocomplete="off">
@@ -2617,8 +2735,11 @@ async function openAddTcEntry(){
     </div>
     <div class="fr">
       <div class="fg"><label class="fl">Session Time *</label><input class="fi" id="tc-time" type="time"></div>
-      <div class="fg"><label class="fl">Session Type</label><select class="fs" id="tc-stype">${SESSION_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Session Type</label>
+        <select class="fs" id="tc-stype">${SESSION_TYPES.map(t => `<option>${t}</option>`).join('')}</select>
+      </div>
     </div>
+    ${buildDaySelectorHTML([], 'tc-days')}
     <div class="fg"><label class="fl">Remarks</label>
       <textarea class="fta" id="tc-remarks" placeholder="e.g. Home gym · Prefer mornings…" style="min-height:55px"></textarea>
     </div>
@@ -2626,29 +2747,34 @@ async function openAddTcEntry(){
       <button class="btn btn-g" onclick="closeM1()">Cancel</button>
       <button class="btn btn-p" onclick="saveTcEntry('')">Add Entry</button>
     </div>`);
-  attachClientAC('tc-client-inp','tc-client-id',clients);
+  attachClientAC('tc-client-inp', 'tc-client-id', clients);
 }
 
-// ── EDIT ENTRY MODAL ──────────────────────────────────────────
-async function openEditTcEntry(clientId){
-  const clients=window._tcClients||await fsGetAll('clients',fn().where('active','==',true));
-  const c=clients.find(x=>x.id===clientId)||{};
-  const tc=(window._tcMap||{})[clientId]||{};
-  const tcId=tc.id||'';
-  openM1('EDIT TIME CHART ENTRY',`
+// ── EDIT TC ENTRY ─────────────────────────────────────────────
+async function openEditTcEntry(clientId) {
+  const clients = window._tcClients || await fsGetAll('clients', fn().where('active', '==', true));
+  const c = clients.find(x => x.id === clientId) || {};
+  const tc = (window._tcMap || {})[clientId] || {};
+  const tcId = tc.id || '';
+  const existingDays = tc.sessionDays || [];
+
+  openM1('EDIT TIME CHART ENTRY', `
     <div style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:14px">
-      <div style="width:34px;height:34px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">${(c.name||'?')[0].toUpperCase()}</div>
-      <div>
-        <div style="font-weight:700;font-size:13px">${c.name||'Client'}</div>
-        <div style="font-size:11px;color:var(--muted)">${c.plan||'—'} · ${c.trainerName||'No trainer'}</div>
-      </div>
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">${(c.name || '?')[0].toUpperCase()}</div>
+      <div><div style="font-weight:700;font-size:13px">${c.name || 'Client'}</div>
+      <div style="font-size:11px;color:var(--muted)">${c.plan || '—'} · ${c.trainerName || 'No trainer'}</div></div>
     </div>
     <div class="fr">
-      <div class="fg"><label class="fl">Session Time *</label><input class="fi" id="tc-time" type="time" value="${tc.sessionTime||c.sessionTime||''}"></div>
-      <div class="fg"><label class="fl">Session Type</label><select class="fs" id="tc-stype">${SESSION_TYPES.map(t=>`<option ${(tc.sessionType||c.sessionType||c.goal)===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Session Time *</label>
+        <input class="fi" id="tc-time" type="time" value="${tc.sessionTime || c.sessionTime || ''}">
+      </div>
+      <div class="fg"><label class="fl">Session Type</label>
+        <select class="fs" id="tc-stype">${SESSION_TYPES.map(t => `<option ${(tc.sessionType || c.sessionType || c.goal) === t ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      </div>
     </div>
+    ${buildDaySelectorHTML(existingDays, 'tc-days')}
     <div class="fg"><label class="fl">Remarks</label>
-      <textarea class="fta" id="tc-remarks" style="min-height:55px">${tc.remarks||c.sessionRemarks||''}</textarea>
+      <textarea class="fta" id="tc-remarks" style="min-height:55px">${tc.remarks || c.sessionRemarks || ''}</textarea>
     </div>
     <div class="mo-foot">
       <button class="btn btn-g" onclick="closeM1()">Cancel</button>
@@ -2656,216 +2782,279 @@ async function openEditTcEntry(clientId){
     </div>`);
 }
 
-// ── SAVE ENTRY ────────────────────────────────────────────────
-async function saveTcEntry(existingId='',fixedClientId=''){
-  let clientId=fixedClientId||document.getElementById('tc-client-id')?.value||'';
-  let clientName='';
-  if(!fixedClientId){
-    clientName=document.getElementById('tc-client-inp')?.value||'';
-  }else{
-    const c=(window._tcClients||[]).find(x=>x.id===fixedClientId);
-    clientName=c?.name||'';
-  }
-  if(!clientId&&!clientName){toast('Select a client','error');return;}
-  const sessionTime=document.getElementById('tc-time')?.value||'';
-  const sessionType=document.getElementById('tc-stype')?.value||'';
-  const remarks=document.getElementById('tc-remarks')?.value||'';
-  const client=(window._tcClients||[]).find(x=>x.id===clientId)||{};
-  const data={
-    clientId,
-    clientName:clientName||client?.name||'',
-    trainerName:client?.trainerName||'',
-    trainerId:client?.trainerId||'',
-    sessionTime,sessionType,remarks
+// ── SAVE TC ENTRY ─────────────────────────────────────────────
+async function saveTcEntry(existingId = '', fixedClientId = '') {
+  let clientId = fixedClientId || document.getElementById('tc-client-id')?.value || '';
+  let clientName = '';
+  if (!fixedClientId) { clientName = document.getElementById('tc-client-inp')?.value || ''; }
+  else { const c = (window._tcClients || []).find(x => x.id === fixedClientId); clientName = c?.name || ''; }
+  if (!clientId && !clientName) { toast('Select a client', 'error'); return; }
+
+  const sessionTime  = document.getElementById('tc-time')?.value || '';
+  const sessionType  = document.getElementById('tc-stype')?.value || '';
+  const remarks      = document.getElementById('tc-remarks')?.value || '';
+  const sessionDays  = getTcDays('tc-days'); // ← NEW
+
+  const client = (window._tcClients || []).find(x => x.id === clientId) || {};
+  const data = {
+    clientId, clientName: clientName || client?.name || '',
+    trainerName: client?.trainerName || '',
+    trainerId: client?.trainerId || '',
+    sessionTime, sessionType, remarks,
+    sessionDays // ← NEW
   };
-  try{
-    if(existingId){
-      await fsUpdate('timechart',existingId,data);
-      toast('Entry updated!','success');
-    }else{
-      const existing=(window._tcMap||{})[clientId];
-      if(existing&&existing.id){
-        await fsUpdate('timechart',existing.id,data);
-      }else{
-        await fsAdd('timechart',data);
-      }
-      toast('Entry saved!','success');
+
+  try {
+    if (existingId) {
+      await fsUpdate('timechart', existingId, data);
+      toast('Entry updated!', 'success');
+    } else {
+      const existing = (window._tcMap || {})[clientId];
+      if (existing && existing.id) { await fsUpdate('timechart', existing.id, data); }
+      else { await fsAdd('timechart', data); }
+      toast('Entry saved!', 'success');
     }
     closeM1();
     timechart();
-  }catch(e){toast('Error: '+e.message,'error');}
+  } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
-// ── DELETE ENTRY ──────────────────────────────────────────────
-async function delTcEntry(tcId,clientId){
-  if(!confirm('Delete this time chart entry permanently?'))return;
-  try{
-    await fsDel('timechart',tcId);
-    toast('Deleted','success');
-    timechart();
-  }catch(e){toast('Error: '+e.message,'error');}
+// ── QUICK STATUS (unchanged) ──────────────────────────────────
+async function tcQuickStatus(tcId, status, clientId) {
+  const today = getTodayStr();
+  try {
+    if (tcId) {
+      await fsUpdate('timechart', tcId, { todayStatus: status, lastStatusUpdate: today });
+    } else {
+      const c = (window._tcClients || []).find(x => x.id === clientId) || {};
+      const ref = await fsAdd('timechart', {
+        clientId, clientName: c.name || '',
+        trainerName: c.trainerName || '', trainerId: c.trainerId || '',
+        sessionTime: c.sessionTime || '', sessionType: c.sessionType || c.goal || '',
+        sessionDays: [], // default empty = every day
+        todayStatus: status, lastStatusUpdate: today
+      });
+      if (!window._tcMap) window._tcMap = {};
+      window._tcMap[clientId] = { id: ref.id, clientId, todayStatus: status, lastStatusUpdate: today, sessionDays: [] };
+    }
+    if (window._tcRows) {
+      const row = window._tcRows.find(r => r.client.id === clientId || (tcId && r.tc && r.tc.id === tcId));
+      if (row) { row.liveStatus = status; if (row.tc) row.tc.todayStatus = status; if (tcId && row.tc) row.tc.id = tcId; }
+    }
+    toast(`Status → ${TC_S_LABEL[status] || status}`, 'success');
+    tcRender();
+  } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
-// ── STATUS MODAL (list view) ───────────────────────────────────
-async function openTcStatus(clientId,clientName){
-  const tc=(window._tcMap||{})[clientId]||{};
-  const current=tc.todayStatus||'not-started';
-  openM1(`STATUS: ${clientName.toUpperCase()}`,`
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:14px">
-      <div style="font-weight:700;font-size:13px;margin-bottom:4px">${clientName}</div>
-      <div style="font-size:12px;color:var(--muted)">Current: ${statusBadge(current)}</div>
+// ── VIEW DETAIL (updated to show days) ───────────────────────
+async function tcViewDetail(clientId) {
+  const c = (window._tcClients || []).find(x => x.id === clientId);
+  if (!c) { toast('Client not found', 'error'); return; }
+  const tc = (window._tcMap || {})[clientId] || {};
+  const planColor = window._tcPlanColor || (() => 'var(--muted)');
+  const pc = planColor(c.plan);
+  const ini = (c.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const startDate = c.startDate || tc.startDate || '';
+  const dayNum = startDate ? Math.max(Math.floor((new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1, 1) : 0;
+  const sc = TC_S_COLOR[tc.todayStatus || 'not-started'] || 'var(--yellow)';
+  const sessionTime = tc.sessionTime || c.sessionTime || '';
+  const sessionDays = tc.sessionDays || [];
+  const todayDow = window._todayDow || DOW_ABBR_GLOBAL();
+  const scheduledToday = sessionDays.length === 0 || sessionDays.includes(todayDow);
+
+  let recentSessions = [];
+  try { recentSessions = await fsGetAll('sessions', fn().where('clientId', '==', clientId)); } catch (e) {}
+  recentSessions.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const completedC = recentSessions.filter(s => s.status === 'completed').length;
+  const missedC    = recentSessions.filter(s => s.status === 'missed').length;
+
+  openM2(`${(c.name || '').toUpperCase()} — TIME CHART`, `
+    <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:14px">
+      <div style="width:48px;height:48px;border-radius:50%;background:${pc}20;color:${pc};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0">${ini}</div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">${c.name || '—'}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:${pc}20;color:${pc}">${c.plan || '—'}</span></div></div>
+      <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--purple)">${dayNum}</div><div style="font-size:10px;color:var(--muted)">Day of Programme</div></div>
     </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.2);border-radius:9px;padding:11px;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)">${recentSessions.length}</div><div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px">Sessions</div></div>
+      <div style="background:var(--green-dim);border:1px solid rgba(0,230,118,.2);border-radius:9px;padding:11px;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green)">${completedC}</div><div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Completed</div></div>
+      <div style="background:var(--red-dim);border:1px solid rgba(255,68,68,.2);border-radius:9px;padding:11px;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--red)">${missedC}</div><div style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px">Missed</div></div>
+    </div>
+
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:13px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:9px">📋 Schedule</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;margin-bottom:10px">
+        <div><span style="color:var(--muted)">Time:</span> <strong style="color:var(--accent)">${sessionTime ? to12h(sessionTime) : 'Not set'}</strong></div>
+        <div><span style="color:var(--muted)">Type:</span> <strong>${tc.sessionType || c.goal || '—'}</strong></div>
+        <div><span style="color:var(--muted)">Trainer:</span> <strong>${tc.trainerName || c.trainerName || '—'}</strong></div>
+        <div><span style="color:var(--muted)">Start Date:</span> <strong>${startDate || '—'}</strong></div>
+      </div>
+      <!-- Days display -->
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Session Days</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">${renderDayPills(sessionDays, todayDow)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">
+          ${sessionDays.length === 0 ? '📅 Runs every day' : `📅 ${sessionDays.join(', ')} · ${scheduledToday ? `<strong style="color:var(--green)">✅ Scheduled today (${todayDow})</strong>` : `<strong style="color:var(--muted2)">🚫 Not scheduled today (${todayDow})</strong>`}`}
+        </div>
+      </div>
+      ${tc.remarks ? `<div style="margin-top:6px;padding:7px 10px;background:var(--surface);border-radius:7px;font-size:11px;color:var(--muted)">📝 ${tc.remarks}</div>` : ''}
+    </div>
+
+    <div style="background:${sc}15;border:1px solid ${sc}30;border-radius:10px;padding:11px 14px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div><div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">Today's Status</div>
+        <div style="font-weight:700;font-size:14px;color:${sc};margin-top:3px">${TC_S_ICON[tc.todayStatus || 'not-started']} ${TC_S_LABEL[tc.todayStatus || 'not-started']}</div>
+        ${!scheduledToday ? `<div style="font-size:11px;color:var(--muted2);margin-top:2px">🚫 Not in schedule for ${todayDow}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-gr btn-sm" onclick="tcQuickStatus('${tc.id || ''}','onair','${clientId}');closeM2()">▶ Start</button>
+        <button class="btn btn-p btn-sm" onclick="tcQuickStatus('${tc.id || ''}','completed','${clientId}');closeM2()">✅ Done</button>
+        <button class="btn btn-d btn-sm" onclick="tcQuickStatus('${tc.id || ''}','missed','${clientId}');closeM2()">✗ Miss</button>
+      </div>
+    </div>
+
+    ${recentSessions.length > 0 ? `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:9px 13px;border-bottom:1px solid var(--border)">Recent Sessions</div>
+      ${recentSessions.slice(0, 5).map(s => `<div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid rgba(128,128,128,.06)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);min-width:68px">${to12h(s.time)}</div>
+        <div style="flex:1"><div style="font-size:12px;font-weight:600">${s.date || '—'}</div><div style="font-size:11px;color:var(--muted)">${s.type || '—'}</div></div>
+        ${statusBadge(s.status)}
+        ${s.meetLink ? `<a href="${s.meetLink}" target="_blank" style="color:var(--accent);font-size:11px">🔗</a>` : ''}
+      </div>`).join('')}
+    </div>` : ''}
+
+    <div class="mo-foot">
+      <button class="btn btn-g" onclick="closeM2();openEditTcEntry('${clientId}')">✏ Edit</button>
+      <button class="btn btn-g" onclick="closeM2()">Close</button>
+    </div>`);
+}
+
+// ── STATUS MODAL (unchanged) ──────────────────────────────────
+async function openTcStatus(clientId, clientName) {
+  const tc = (window._tcMap || {})[clientId] || {}; const current = tc.todayStatus || 'not-started';
+  openM1(`STATUS: ${clientName.toUpperCase()}`, `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">${clientName}</div><div style="font-size:12px;color:var(--muted)">Current: ${statusBadge(current)}</div></div>
     <div class="fg"><label class="fl">Set Today's Status</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        ${[
-          ['not-started','⏳','Pending','var(--yellow)','var(--yellow-dim)'],
-          ['onair','🟢','On Air','var(--green)','var(--green-dim)'],
-          ['completed','✅','Completed','var(--accent)','var(--accent-dim)'],
-          ['missed','❌','Missed','var(--red)','var(--red-dim)']
-        ].map(([val,icon,label])=>`
-          <label id="tcs-opt-${val}" onclick="selectTcStatusCard('${val}')"
-            style="display:flex;align-items:center;gap:9px;padding:11px 13px;border:2px solid var(--border2);border-radius:9px;cursor:pointer;background:var(--bg);transition:all .15s">
-            <span style="font-size:18px">${icon}</span>
-            <span style="font-weight:700;font-size:12px">${label}</span>
-          </label>`).join('')}
+        ${[['not-started', '⏳', 'Pending'], ['onair', '🟢', 'On Air'], ['completed', '✅', 'Completed'], ['missed', '❌', 'Missed']].map(([val, icon, label]) => `<label id="tcs-opt-${val}" onclick="selectTcStatusCard('${val}')" style="display:flex;align-items:center;gap:9px;padding:11px 13px;border:2px solid var(--border2);border-radius:9px;cursor:pointer;background:var(--bg);transition:all .15s"><span style="font-size:18px">${icon}</span><span style="font-weight:700;font-size:12px">${label}</span></label>`).join('')}
       </div>
       <input type="hidden" id="tcs-val" value="${current}">
     </div>
-    <div class="mo-foot">
-      <button class="btn btn-g" onclick="closeM1()">Cancel</button>
-      <button class="btn btn-p" onclick="saveTcStatusFromModal('${tc.id||''}','${clientId}')">Update</button>
-    </div>`);
-  setTimeout(()=>selectTcStatusCard(current),30);
+    <div class="mo-foot"><button class="btn btn-g" onclick="closeM1()">Cancel</button><button class="btn btn-p" onclick="saveTcStatusFromModal('${tc.id || ''}','${clientId}')">Update</button></div>`);
+  setTimeout(() => selectTcStatusCard(current), 30);
 }
 
-function selectTcStatusCard(val){
-  const cols={
-    'not-started':['var(--yellow)','var(--yellow-dim)'],
-    'onair':['var(--green)','var(--green-dim)'],
-    'completed':['var(--accent)','var(--accent-dim)'],
-    'missed':['var(--red)','var(--red-dim)']
-  };
-  ['not-started','onair','completed','missed'].forEach(v=>{
-    const el=document.getElementById('tcs-opt-'+v);
-    if(!el)return;
-    if(v===val){
-      const[c,bg]=cols[v]||['var(--accent)','var(--accent-dim)'];
-      el.style.borderColor=c;el.style.background=bg;
-    }else{
-      el.style.borderColor='var(--border2)';el.style.background='var(--bg)';
-    }
+function selectTcStatusCard(val) {
+  const cols = { 'not-started': ['var(--yellow)', 'var(--yellow-dim)'], 'onair': ['var(--green)', 'var(--green-dim)'], 'completed': ['var(--accent)', 'var(--accent-dim)'], 'missed': ['var(--red)', 'var(--red-dim)'] };
+  ['not-started', 'onair', 'completed', 'missed'].forEach(v => {
+    const el = document.getElementById('tcs-opt-' + v); if (!el) return;
+    if (v === val) { const [c, bg] = cols[v] || ['var(--accent)', 'var(--accent-dim)']; el.style.borderColor = c; el.style.background = bg; }
+    else { el.style.borderColor = 'var(--border2)'; el.style.background = 'var(--bg)'; }
   });
-  const h=document.getElementById('tcs-val');
-  if(h)h.value=val;
+  const h = document.getElementById('tcs-val'); if (h) h.value = val;
 }
 
-async function saveTcStatusFromModal(tcId,clientId){
-  const status=document.getElementById('tcs-val')?.value||'not-started';
-  await tcQuickStatus(tcId,status,clientId);
+async function saveTcStatusFromModal(tcId, clientId) {
+  const status = document.getElementById('tcs-val')?.value || 'not-started';
+  await tcQuickStatus(tcId, status, clientId);
   closeM1();
 }
 
-// ── PDF EXPORT ────────────────────────────────────────────────
-async function exportTcPDF(){
-  toast('Generating Time Chart PDF…','info');
-  const rows=window._tcRows||[];
-  try{
-    const{jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-    const pw=doc.internal.pageSize.getWidth();
-    const ph=doc.internal.pageSize.getHeight();
-
-    function pageBase(){
-      doc.setFillColor(11,11,11);doc.rect(0,0,pw,ph,'F');
-      doc.setFillColor(212,255,0);doc.rect(0,0,5,ph,'F');
-      doc.setFillColor(22,28,40);doc.rect(5,0,pw-5,16,'F');
-      doc.setTextColor(212,255,0);doc.setFontSize(8);doc.setFont('helvetica','bold');
-      doc.text('GYM AT YOUR HOME™',10,11);
-      doc.setTextColor(160,168,185);doc.setFontSize(6.5);doc.setFont('helvetica','normal');
-      doc.text(`Time Chart — ${getTodayStr()}`,pw-6,11,{align:'right'});
-    }
-
-    pageBase();
-    // Cover content
-    doc.setTextColor(212,255,0);doc.setFontSize(22);doc.setFont('helvetica','bold');
-    doc.text('CLIENT TIME CHART',pw/2,42,{align:'center'});
-    doc.setTextColor(200,200,210);doc.setFontSize(10);doc.setFont('helvetica','normal');
-    doc.text(`${getTodayStr()}  ·  ${rows.length} Active Clients`,pw/2,52,{align:'center'});
-
-    const onairN=rows.filter(r=>r.liveStatus==='onair').length;
-    const completedN=rows.filter(r=>r.liveStatus==='completed').length;
-    const missedN=rows.filter(r=>r.liveStatus==='missed').length;
-    const pendingN=rows.filter(r=>r.liveStatus==='not-started').length;
-
-    [[onairN,'On Air',[0,200,110]],[completedN,'Completed',[212,255,0]],[missedN,'Missed',[255,75,75]],[pendingN,'Pending',[255,190,0]]].forEach(([v,l,c],i)=>{
-      const bx=20+i*70,bw=64;
-      doc.setFillColor(...c,25);doc.roundedRect(bx,62,bw,20,2,2,'F');
-      doc.setFillColor(...c);doc.roundedRect(bx,62,bw,2,1,1,'F');
-      doc.setTextColor(...c);doc.setFontSize(18);doc.setFont('helvetica','bold');
-      doc.text(String(v),bx+bw/2,76,{align:'center'});
-      doc.setFontSize(7);doc.setFont('helvetica','normal');
-      doc.text(l,bx+bw/2,81,{align:'center'});
-    });
-
-    // Table page
-    doc.addPage();pageBase();
-    let y=22;
-    const headers=['CLIENT','PLAN','TIME','TRAINER','TYPE','DAY','STATUS','REMARKS'];
-    const cw=[40,24,26,34,28,20,24,52];
-    doc.setFillColor(30,38,55);doc.rect(5,y,pw-10,9,'F');
-    doc.setTextColor(212,255,0);doc.setFontSize(7);doc.setFont('helvetica','bold');
-    let cx=8;headers.forEach((h,i)=>{doc.text(h,cx,y+6);cx+=cw[i];});
-    y+=10;
-
-    rows.forEach((r,idx)=>{
-      if(y>ph-14){
-        doc.addPage();pageBase();y=22;
-        doc.setFillColor(30,38,55);doc.rect(5,y,pw-10,9,'F');
-        doc.setTextColor(212,255,0);doc.setFontSize(7);doc.setFont('helvetica','bold');
-        cx=8;headers.forEach((h,i)=>{doc.text(h,cx,y+6);cx+=cw[i];});y+=10;
-      }
-      const{client:c,tc,liveStatus,dayNum}=r;
-      if(idx%2===0){doc.setFillColor(18,24,36);doc.rect(5,y,pw-10,8,'F');}
-      const sc={onair:[0,200,110],completed:[212,255,0],missed:[255,75,75],'not-started':[255,190,0]}[liveStatus]||[136,136,136];
-      const planCols={Silver:[136,136,136],Gold:[255,187,0],Platinum:[170,102,255],'Platinum Plus':[170,102,255],'Corporate Fitness':[77,159,255],Couple:[255,105,180]};
-      const pc2=planCols[c.plan]||[136,136,136];
-      cx=8;
-      doc.setTextColor(220,225,235);doc.setFontSize(7.5);doc.setFont('helvetica','bold');
-      doc.text((c.name||'—').substring(0,20),cx,y+5.5);cx+=cw[0];
-      doc.setTextColor(...pc2);doc.setFont('helvetica','normal');doc.setFontSize(6.5);
-      doc.text((c.plan||'—').substring(0,8),cx,y+5.5);cx+=cw[1];
-      doc.setTextColor(212,255,0);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
-      doc.text(tc.sessionTime?to12h(tc.sessionTime):'—',cx,y+5.5);cx+=cw[2];
-      doc.setTextColor(220,225,235);doc.setFont('helvetica','normal');doc.setFontSize(7);
-      doc.text((tc.trainerName||c.trainerName||'—').substring(0,14),cx,y+5.5);cx+=cw[3];
-      doc.text((tc.sessionType||c.goal||'—').substring(0,12),cx,y+5.5);cx+=cw[4];
-      doc.setTextColor(170,102,255);doc.setFont('helvetica','bold');
-      doc.text(dayNum?String(dayNum):'—',cx,y+5.5);cx+=cw[5];
-      doc.setFillColor(...sc,35);doc.roundedRect(cx,y+1.5,cw[6]-2,5.5,1,1,'F');
-      doc.setTextColor(...sc);doc.setFont('helvetica','bold');doc.setFontSize(6);
-      const sl={onair:'ON AIR',completed:'DONE',missed:'MISSED','not-started':'PENDING'}[liveStatus]||'—';
-      doc.text(sl,cx+(cw[6]-2)/2,y+5.5,{align:'center'});cx+=cw[6];
-      doc.setTextColor(160,168,185);doc.setFont('helvetica','normal');doc.setFontSize(6.5);
-      doc.text((tc.remarks||'—').substring(0,22),cx,y+5.5);
-      y+=8;
-    });
-
-    const total=doc.internal.getNumberOfPages();
-    for(let p=1;p<=total;p++){
-      doc.setPage(p);
-      doc.setFillColor(16,20,30);doc.rect(0,ph-10,pw,10,'F');
-      doc.setTextColor(90,100,118);doc.setFontSize(6);doc.setFont('helvetica','normal');
-      doc.text('Gym At Your Home™ — Client Time Chart — Confidential',6,ph-4);
-      doc.setTextColor(212,255,0);doc.text(`${p}/${total}`,pw-6,ph-4,{align:'right'});
-    }
-    doc.save(`GYH_TimeChart_${getTodayStr()}.pdf`);
-    toast('✅ PDF exported!','success');
-  }catch(e){
-    toast('Export error: '+e.message,'error');
-    console.error('[TC PDF]',e);
-  }
+// ── DELETE TC ENTRY (unchanged) ───────────────────────────────
+async function delTcEntry(tcId, clientId, event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+  if (!tcId) { toast('No Time Chart entry to delete', 'warn'); return; }
+  if (!confirm('Delete this Time Chart entry permanently?')) return;
+  try {
+    await fsDel('timechart', tcId);
+    toast('Deleted', 'success');
+    if (window._tcMap && clientId) delete window._tcMap[clientId];
+    if (window._tcRows) { window._tcRows = window._tcRows.filter(r => r.client.id !== clientId); }
+    tcRender();
+  } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
+// ── EXPORT PDF (unchanged, + days column) ────────────────────
+async function exportTcPDF() {
+  toast('Generating Time Chart PDF…', 'info');
+  const rows = window._tcRows || [];
+  const todayDow = window._todayDow || DOW_ABBR_GLOBAL();
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pw = doc.internal.pageSize.getWidth(); const ph = doc.internal.pageSize.getHeight();
+    function pageBase() {
+      doc.setFillColor(11, 11, 11); doc.rect(0, 0, pw, ph, 'F');
+      doc.setFillColor(212, 255, 0); doc.rect(0, 0, 5, ph, 'F');
+      doc.setFillColor(22, 28, 40); doc.rect(5, 0, pw - 5, 16, 'F');
+      doc.setTextColor(212, 255, 0); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+      doc.text('GYM AT YOUR HOME™', 10, 11);
+      doc.setTextColor(160, 168, 185); doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+      doc.text(`Time Chart — ${getTodayStr()} (${todayDow}) — Sorted by Session Time`, pw - 6, 11, { align: 'right' });
+    }
+    pageBase();
+    doc.setTextColor(212, 255, 0); doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+    doc.text('CLIENT TIME CHART', pw / 2, 42, { align: 'center' });
+    doc.setTextColor(200, 200, 210); doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.text(`${getTodayStr()} (${todayDow})  ·  ${rows.length} Active Clients  ·  Ordered by Session Time`, pw / 2, 52, { align: 'center' });
+    const onairN = rows.filter(r => r.liveStatus === 'onair').length;
+    const completedN = rows.filter(r => r.liveStatus === 'completed').length;
+    const missedN = rows.filter(r => r.liveStatus === 'missed').length;
+    const pendingN = rows.filter(r => r.liveStatus === 'not-started').length;
+    const scheduledN = rows.filter(r => r.scheduledToday && r.tc && r.tc.id).length;
+    [[onairN, 'On Air', [0, 200, 110]], [completedN, 'Completed', [212, 255, 0]], [missedN, 'Missed', [255, 75, 75]], [pendingN, 'Pending', [255, 190, 0]], [scheduledN, `Sched. ${todayDow}`, [77, 159, 255]]].forEach(([v, l, c], i) => {
+      const bx = 16 + i * 56, bw = 52;
+      doc.setFillColor(...c, 25); doc.roundedRect(bx, 62, bw, 20, 2, 2, 'F');
+      doc.setFillColor(...c); doc.roundedRect(bx, 62, bw, 2, 1, 1, 'F');
+      doc.setTextColor(...c); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+      doc.text(String(v), bx + bw / 2, 76, { align: 'center' });
+      doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+      doc.text(l, bx + bw / 2, 81, { align: 'center' });
+    });
+    doc.addPage(); pageBase();
+    let y = 22;
+    const headers = ['CLIENT', 'PLAN', 'TIME', 'TRAINER', 'TYPE', 'DAY#', 'DAYS', 'STATUS', 'REMARKS'];
+    const cw = [38, 22, 24, 32, 26, 14, 36, 22, 42];
+    doc.setFillColor(30, 38, 55); doc.rect(5, y, pw - 10, 9, 'F');
+    doc.setTextColor(212, 255, 0); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+    let cx = 8; headers.forEach((h, i) => { doc.text(h, cx, y + 6); cx += cw[i]; }); y += 10;
+    rows.forEach((r, idx) => {
+      if (y > ph - 14) { doc.addPage(); pageBase(); y = 22; doc.setFillColor(30, 38, 55); doc.rect(5, y, pw - 10, 9, 'F'); doc.setTextColor(212, 255, 0); doc.setFontSize(7); doc.setFont('helvetica', 'bold'); cx = 8; headers.forEach((h, i) => { doc.text(h, cx, y + 6); cx += cw[i]; }); y += 10; }
+      const { client: c, tc, liveStatus, dayNum, scheduledToday } = r;
+      if (idx % 2 === 0) { doc.setFillColor(18, 24, 36); doc.rect(5, y, pw - 10, 8, 'F'); }
+      const sc = { onair: [0, 200, 110], completed: [212, 255, 0], missed: [255, 75, 75], 'not-started': [255, 190, 0] }[liveStatus] || [136, 136, 136];
+      const planCols = { Silver: [136, 136, 136], Gold: [255, 187, 0], Platinum: [170, 102, 255], 'Platinum Plus': [170, 102, 255], 'Corporate Fitness': [77, 159, 255], Couple: [255, 105, 180] };
+      const pc2 = planCols[c.plan] || [136, 136, 136];
+      const sessionTime = tc.sessionTime || c.sessionTime || '';
+      const daysStr = (tc.sessionDays || []).length > 0 ? (tc.sessionDays || []).join(',') : 'All';
+      cx = 8;
+      doc.setTextColor(220, 225, 235); doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.text((c.name || '—').substring(0, 18), cx, y + 5.5); cx += cw[0];
+      doc.setTextColor(...pc2); doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.text((c.plan || '—').substring(0, 7), cx, y + 5.5); cx += cw[1];
+      doc.setTextColor(212, 255, 0); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.text(sessionTime ? to12h(sessionTime) : '—', cx, y + 5.5); cx += cw[2];
+      doc.setTextColor(220, 225, 235); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.text((tc.trainerName || c.trainerName || '—').substring(0, 14), cx, y + 5.5); cx += cw[3];
+      doc.text((tc.sessionType || c.goal || '—').substring(0, 11), cx, y + 5.5); cx += cw[4];
+      doc.setTextColor(170, 102, 255); doc.setFont('helvetica', 'bold'); doc.text(dayNum ? String(dayNum) : '—', cx, y + 5.5); cx += cw[5];
+      doc.setTextColor(scheduledToday ? 77 : 100, scheduledToday ? 159 : 110, scheduledToday ? 255 : 130);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.text(daysStr.substring(0, 18), cx, y + 5.5); cx += cw[6];
+      doc.setFillColor(...sc, 35); doc.roundedRect(cx, y + 1.5, cw[7] - 2, 5.5, 1, 1, 'F');
+      doc.setTextColor(...sc); doc.setFont('helvetica', 'bold'); doc.setFontSize(6);
+      const sl = { onair: 'ON AIR', completed: 'DONE', missed: 'MISSED', 'not-started': 'PENDING' }[liveStatus] || '—';
+      doc.text(sl, cx + (cw[7] - 2) / 2, y + 5.5, { align: 'center' }); cx += cw[7];
+      doc.setTextColor(160, 168, 185); doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5);
+      doc.text((tc.remarks || '—').substring(0, 20), cx, y + 5.5);
+      y += 8;
+    });
+    const total = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= total; p++) {
+      doc.setPage(p); doc.setFillColor(16, 20, 30); doc.rect(0, ph - 10, pw, 10, 'F');
+      doc.setTextColor(90, 100, 118); doc.setFontSize(6); doc.setFont('helvetica', 'normal');
+      doc.text('Gym At Your Home™ — Client Time Chart — Confidential', 6, ph - 4);
+      doc.setTextColor(212, 255, 0); doc.text(`${p}/${total}`, pw - 6, ph - 4, { align: 'right' });
+    }
+    doc.save(`GYH_TimeChart_${getTodayStr()}.pdf`);
+    toast('✅ PDF exported!', 'success');
+  } catch (e) { toast('Export error: ' + e.message, 'error'); console.error('[TC PDF]', e); }
+}
 // ══════════════════════════════════════════════════════════════
 // PROFESSIONAL IT-GRADE PDF EXPORT
 // Find:   async function exportPDF(){
@@ -7877,6 +8066,20 @@ async function saveAddClientToBatch(batchId){
   try{const b=await fsGet('batches',batchId);const enrolled=b?.enrolledClients||[];if(enrolled.includes(clientId)){toast('Already enrolled','info');return}if(enrolled.length>=(b?.maxCapacity||10)){toast('At max capacity','error');return}await fn().updateDoc(fn().doc(db(),'batches',batchId),{enrolledClients:[...enrolled,clientId]});closeM1();toast('Client added!','success');batches()}catch(e){toast('Error: '+e.message,'error')}
 }
 async function delBatch(id){if(!confirm('Delete?'))return;try{await fsDel('batches',id);toast('Deleted','success');batches()}catch(e){toast('Error','error')}}
+
+// ── BADGE HELPERS ─────────────────────────────────────────────
+function statusBadge(s){
+  const map={onair:`<span class="badge b-g"><span class="dot dot-g"></span>On Air</span>`,'not-started':`<span class="badge b-y"><span class="dot dot-y"></span>Pending</span>`,missed:`<span class="badge b-r"><span class="dot dot-r"></span>Missed</span>`,completed:`<span class="badge b-gray">✓ Done</span>`,present:`<span class="badge b-g">✅ Present</span>`,absent:`<span class="badge b-r">❌ Absent</span>`,late:`<span class="badge b-y">⏰ Late</span>`};
+  return map[s]||`<span class="badge b-gray">${s||'—'}</span>`;
+}
+function planBadge(p){
+  if(!p)return`<span class="badge b-gray">—</span>`;
+  if(p==='Gold')return`<span class="badge b-y">🥇 Gold</span>`;
+  if(p==='Platinum')return`<span class="badge b-p">💎 Platinum</span>`;
+  if(p==='Platinum Plus')return`<span class="badge b-p">💎+ Plat+</span>`;
+  if(p==='Corporate Fitness')return`<span class="badge b-b">🏢 Corporate</span>`;
+  return`<span class="badge b-gray">🥈 Silver</span>`;
+}
 
 // ── FIREBASE INIT ─────────────────────────────────────────────
 document.addEventListener('fbReady',()=>{
