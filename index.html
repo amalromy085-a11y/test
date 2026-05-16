@@ -63,8 +63,15 @@ body.light-theme{
   --orange:#cc5500;--orange-dim:rgba(204,85,0,0.12);
   --pink:#cc3377;--pink-dim:rgba(204,51,119,0.12);
 }
+body.light-theme{background-image:linear-gradient(rgba(240,240,235,0.88),rgba(245,245,240,0.93)),url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80&auto=format&fit=crop') !important;background-size:cover !important;background-position:center !important;background-attachment:fixed !important}
+body.light-theme .lc{background:rgba(255,255,255,0.90) !important;backdrop-filter:blur(22px);border:1px solid rgba(90,158,0,0.22) !important}
+body.light-theme .sidebar{background:rgba(248,248,244,0.90) !important;border-right:1px solid rgba(90,158,0,0.10) !important}
+body.light-theme .topbar{background:rgba(255,255,255,0.87) !important}
+body.light-theme .card{background:rgba(255,255,255,0.82) !important}
+body.light-theme .mb{background:rgba(255,255,255,0.97) !important;border:1px solid rgba(90,158,0,0.15) !important}
+body.light-theme .fi,body.light-theme .fs,body.light-theme .fta{background:rgba(255,255,255,0.80) !important;border:1px solid rgba(0,0,0,0.12) !important}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .25s,color .25s}
+body{font-family:'DM Sans',sans-serif;background-color:var(--bg);background-image:linear-gradient(rgba(0,0,0,0.82),rgba(0,0,0,0.92)),url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80&auto=format&fit=crop');background-size:cover;background-position:center center;background-attachment:fixed;background-repeat:no-repeat;color:var(--text);min-height:100vh;overflow-x:hidden;transition:background .25s,color .25s}
 #loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loader.out{opacity:0;pointer-events:none}
 .ld-logo{width:80px;height:80px;object-fit:contain;margin-bottom:20px;animation:ldpulse 1.4s ease-in-out infinite}
@@ -73,10 +80,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ld-fill{height:100%;background:var(--accent);animation:ldfill 1.6s ease forwards}
 @keyframes ldpulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes ldfill{from{width:0}to{width:100%}}
-#login-page{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;
-  background:radial-gradient(ellipse 70% 50% at 80% 10%,rgba(212,255,0,.06) 0,transparent 60%),
-             radial-gradient(ellipse 50% 70% at 5% 90%,rgba(77,159,255,.05) 0,transparent 60%),var(--bg)}
-.lc{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:44px 40px;width:100%;max-width:420px;box-shadow:0 32px 80px rgba(0,0,0,.3)}
+#login-page{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse 70% 50% at 80% 10%,rgba(212,255,0,.07) 0,transparent 60%),radial-gradient(ellipse 50% 70% at 5% 90%,rgba(77,159,255,.06) 0,transparent 60%),linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.88)),url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80&auto=format&fit=crop');background-size:cover;background-position:center;background-attachment:fixed}
+.lc{background:rgba(11,11,11,0.82);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);border:1px solid rgba(212,255,0,0.18);border-radius:16px;padding:44px 40px;width:100%;max-width:420px;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(212,255,0,0.06),inset 0 1px 0 rgba(255,255,255,0.05)}
 .lc-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
 .lc-logo img{width:48px;height:48px;object-fit:contain;border-radius:10px}
 .lc-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;line-height:1.1}
@@ -85,7 +90,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .lc p{color:var(--muted);font-size:13px;margin-bottom:28px}
 .fg{margin-bottom:14px}
 .fg label{display:block;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fi,.fs,.fta{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.fi,.fs,.fta{width:100%;padding:11px 14px;background:rgba(8,8,8,0.75);border:1px solid rgba(255,255,255,0.10);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
 .fi:focus,.fs:focus,.fta:focus{border-color:var(--accent)}
 .fs option{background:var(--surface)}
 .fta{resize:vertical;min-height:76px}
@@ -111,7 +116,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .btn-pk{background:var(--pink);color:#fff}
 #app{display:none;min-height:100vh}
 .layout{display:flex;min-height:100vh}
-.sidebar{width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .28s;overflow:hidden}
+.sidebar{width:var(--sw);height:100vh;background:rgba(8,8,8,0.91);backdrop-filter:blur(24px) saturate(1.2);-webkit-backdrop-filter:blur(24px) saturate(1.2);border-right:1px solid rgba(212,255,0,0.09);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .28s;overflow:hidden}
 .sb-head{padding:18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .sb-logo{width:36px;height:36px;object-fit:contain;border-radius:8px;flex-shrink:0}
 .sb-brand{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.8px;line-height:1.2}
@@ -135,8 +140,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ni.active{background:var(--accent-dim);color:var(--accent);border-left-color:var(--accent)}
 .ni-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0}
 .sb-foot{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
-.main{margin-left:var(--sw);flex:1;min-height:100vh;background:var(--bg)}
-.topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;position:sticky;top:0;z-index:50;gap:14px}
+.main{margin-left:var(--sw);flex:1;min-height:100vh;background:transparent}
+.topbar{height:60px;background:rgba(8,8,8,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(212,255,0,0.08);display:flex;align-items:center;padding:0 22px;position:sticky;top:0;z-index:50;gap:14px}
 .tb-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;flex:1}
 .tb-date{font-size:12px;color:var(--muted)}
 .notif-btn,.theme-btn{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:7px 9px;cursor:pointer;color:var(--text);font-size:14px;transition:border-color .2s;position:relative}
@@ -144,11 +149,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .ndot{position:absolute;top:5px;right:5px;width:6px;height:6px;background:var(--red);border-radius:50%}
 .mob-menu{display:none;background:transparent;border:1px solid var(--border2);color:var(--text);padding:7px 10px;border-radius:7px;cursor:pointer;font-size:17px}
 .page{padding:22px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:18px}
+.card{background:rgba(18,18,18,0.80);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px;margin-bottom:18px}
 .card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
 .card-title{font-size:13px;font-weight:700;letter-spacing:.3px}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.sc{background:rgba(15,15,15,0.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.055);border-radius:12px;padding:18px;position:relative;overflow:hidden}
 .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
 .sc-a::before{background:var(--accent)}.sc-g::before{background:var(--green)}.sc-r::before{background:var(--red)}.sc-b::before{background:var(--blue)}.sc-p::before{background:var(--purple)}.sc-y::before{background:var(--yellow)}.sc-o::before{background:var(--orange)}
 .sc-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
@@ -167,9 +172,9 @@ tbody tr:last-child td{border-bottom:none}
 .dot{width:5px;height:5px;border-radius:50%;display:inline-block}
 .dot-g{background:var(--green);animation:blink 1.4s infinite}.dot-y{background:var(--yellow)}.dot-r{background:var(--red)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:20px}
-.mo.open{display:flex}
-.mb{background:var(--card);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:26px;animation:moslide .2s ease}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+mo.open{display:flex}
+.mb{background:rgba(14,14,14,0.95);backdrop-filter:blur(28px) saturate(1.3);-webkit-backdrop-filter:blur(28px) saturate(1.3);border:1px solid rgba(212,255,0,0.13);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:26px;animation:moslide .2s ease;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
 .mb-lg{max-width:760px}.mb-xl{max-width:960px}
 @keyframes moslide{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
 .mo-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
@@ -192,15 +197,15 @@ tbody tr:last-child td{border-bottom:none}
 .chart-box{position:relative;height:210px}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
-.chat-layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 104px);gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card)}
-.chat-sidebar{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;background:var(--surface)}
+.chat-layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 104px);gap:0;border:1px solid rgba(212,255,0,0.10);border-radius:12px;overflow:hidden;background:rgba(12,12,12,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.chat-sidebar{border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;overflow:hidden;background:rgba(8,8,8,0.90)}
 .chat-search{padding:10px 12px;border-bottom:1px solid var(--border)}
 .chat-list{flex:1;overflow-y:auto}
 .chat-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(128,128,128,.05);transition:background .15s;display:flex;align-items:center;gap:10px;position:relative}
 .chat-item:hover{background:rgba(128,128,128,.06)}
 .chat-item.active{background:var(--accent-dim);border-left:2px solid var(--accent)}
 .chat-item-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-main{display:flex;flex-direction:column;background:var(--bg)}
+.chat-main{display:flex;flex-direction:column;background:rgba(5,5,5,0.75)}
 .chat-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--surface)}
 .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
 .msg{max-width:68%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;word-break:break-word;white-space:pre-wrap}
@@ -1294,6 +1299,54 @@ async function viewTrainerRatings(trainerId,trainerName){
 }
 async function delRating(id){if(!confirm('Delete?'))return;try{await fsDel('trainerratings',id);toast('Deleted','success');trainerratings()}catch(e){toast('Error','error')}}
 
+// ══════════════════════════════════════════════════════════════
+// SESSIONS — FULL UPDATED BLOCK WITH ALL 8 EXTRA FEATURES
+// Find:   async function sessions(){
+// Select until closing } of async function delSession(id)
+// Replace entirely with this block
+// ══════════════════════════════════════════════════════════════
+
+// ── INJECT STYLES ─────────────────────────────────────────────
+(function injectSessionDetailStyles(){
+  if(document.getElementById('sd-styles'))return;
+  const s=document.createElement('style');s.id='sd-styles';
+  s.textContent=`
+.sd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.sd-box{background:var(--card);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:860px;margin:auto;animation:moslide .22s ease;box-shadow:0 40px 100px rgba(0,0,0,.7)}
+.sd-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sd-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px;flex-wrap:wrap;gap:0;background:var(--surface)}
+.sd-tab{padding:11px 16px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;color:var(--muted);white-space:nowrap;letter-spacing:.3px}
+.sd-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(212,255,0,.03)}
+.sd-tab:hover{color:var(--text)}
+.sd-body{padding:22px}
+.sd-panel{display:none}.sd-panel.active{display:block}
+.ex-header{display:grid;grid-template-columns:1fr 68px 80px 80px 68px 34px;gap:7px;padding:6px 10px;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.ex-row{display:grid;grid-template-columns:1fr 68px 80px 80px 68px 34px;gap:7px;align-items:center;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:9px;margin-bottom:6px;transition:border-color .15s}
+.ex-row:hover{border-color:var(--border2)}
+.ex-inp{width:100%;padding:6px 8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;text-align:center;transition:border-color .15s}
+.ex-inp:focus{border-color:var(--accent)}
+.ex-inp.name-inp{text-align:left}
+.ex-del-btn{background:var(--red-dim);border:1px solid rgba(255,68,68,.2);border-radius:6px;padding:5px 8px;color:var(--red);cursor:pointer;font-size:13px;transition:all .15s;line-height:1}
+.ex-del-btn:hover{background:var(--red);color:#fff}
+.chk-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-radius:0}
+.chk-item:first-child{border-radius:9px 9px 0 0}
+.chk-item:last-child{border-bottom:none;border-radius:0 0 9px 9px}
+.chk-item:hover{background:rgba(128,128,128,.04)}
+.chk-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.star-pick{display:flex;gap:6px;justify-content:center;margin:8px 0}
+.star-pick button{font-size:30px;background:none;border:none;cursor:pointer;transition:transform .15s,filter .15s;filter:grayscale(1);color:var(--muted2);line-height:1;padding:2px}
+.star-pick button.lit{filter:none;color:var(--accent);transform:scale(1.12)}
+.mini-star-pick{display:flex;gap:4px}
+.mini-star-pick button{font-size:20px;background:none;border:none;cursor:pointer;filter:grayscale(1);color:var(--muted2);transition:filter .1s,transform .1s;line-height:1}
+.mini-star-pick button.lit{filter:none;color:var(--yellow);transform:scale(1.1)}
+.qr-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+.rec-day-btn{padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;min-width:42px}
+.rec-day-btn.sel{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+  `;
+  document.head.appendChild(s);
+})();
+
+// ── SESSIONS LIST ─────────────────────────────────────────────
 async function sessions(){
   $('page').innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto"></div></div>`;
   let coordClientIds=null;
@@ -1303,127 +1356,31 @@ async function sessions(){
     coordClientIds=myClients.map(c=>c.id);
   }
 
-  // Load TC entries once for merging into tabs
-  let allTcEntries=[];
-  let allClients=[];
-  try{
-    if(CR==='trainer'){
-      allTcEntries=await fsGetAll('timechart',fn().where('trainerId','==',auth().currentUser.uid));
-    } else if(CR==='client'){
-      // clients don't see TC sessions in the sessions panel
-    } else {
-      allTcEntries=await fsGetAll('timechart');
-    }
-    if(CR!=='client') allClients=await fsGetAll('clients',fn().where('active','==',true));
-  }catch(e){}
-
   async function loadSTab(tab){
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     const tabEl=document.querySelector(`.tab[data-stab="${tab}"]`);
     if(tabEl)tabEl.classList.add('active');
     $('sess-list').innerHTML=`<div style="padding:30px;text-align:center;color:var(--muted)"><div class="spin" style="width:22px;height:22px;margin:0 auto"></div></div>`;
-
     let q=[];
     if(CR==='trainer')q=[fn().where('trainerId','==',auth().currentUser.uid)];
     if(CR==='client')q=[fn().where('clientId','==',auth().currentUser.uid)];
     let data=await fsGetAll('sessions',...q);
     if(CR==='coordinator'&&coordClientIds)data=data.filter(s=>coordClientIds.includes(s.clientId));
-
     const today=new Date();today.setHours(0,0,0,0);
-    const todayStr=getTodayStr();
-
-    // Build TC-based virtual sessions (for non-client roles)
-    // These are "fixed" daily sessions from the Time Chart
-    let tcSessions=[];
-    if(CR!=='client'){
-      // For each TC entry, create a virtual session row representing today's fixed slot
-      // We also need historical TC sessions — but TC only tracks today's status,
-      // so we generate a virtual entry for "past" based on any day TC was last updated.
-      // For "today" and "upcoming" we show TC entries. For "past" we also show them
-      // if their lastStatusUpdate date is in the past.
-      const processedClientIds=new Set();
-      for(const tc of allTcEntries){
-        if(!tc.clientId)continue;
-        if(processedClientIds.has(tc.clientId))continue;
-        processedClientIds.add(tc.clientId);
-        const client=allClients.find(c=>c.id===tc.clientId)||{};
-        if(coordClientIds&&!coordClientIds.includes(tc.clientId))continue;
-        const virtualSess={
-          id:`tc_${tc.id}`,
-          _isTc:true,_tcId:tc.id,
-          clientId:tc.clientId,
-          clientName:tc.clientName||client.name||'—',
-          trainerId:tc.trainerId||client.trainerId||'',
-          trainerName:tc.trainerName||client.trainerName||'—',
-          time:tc.sessionTime||'',
-          date:todayStr,
-          type:tc.sessionType||client.goal||'General Fitness',
-          status:tc.todayStatus||'not-started',
-          meetLink:'',
-          _tcEntry:tc,
-          _isFixed:true,
-        };
-        tcSessions.push(virtualSess);
-      }
-    }
-
-    // Apply date filters to real sessions
-    if(tab==='today'){
-      data=data.filter(s=>{const d=s.date?new Date(s.date):null;if(!d)return false;d.setHours(0,0,0,0);return d.getTime()===today.getTime();});
-    } else if(tab==='upcoming'){
-      data=data.filter(s=>{const d=s.date?new Date(s.date):null;if(!d)return false;d.setHours(0,0,0,0);return d.getTime()>today.getTime();});
-    } else if(tab==='past'){
-      data=data.filter(s=>{const d=s.date?new Date(s.date):null;if(!d)return false;d.setHours(0,0,0,0);return d.getTime()<today.getTime();});
-    }
-
-    // For TC sessions, decide which tab they belong to:
-    // today → show if date is today (always, since TC is daily)
-    // past → show if lastStatusUpdate < today (they had a session recorded in the past)
-    // upcoming → TC sessions are daily so we don't add them to "upcoming" (no future date known)
-    // all → show today's TC sessions
-    let tcToShow=[];
-    if(tab==='today'||tab==='all'){
-      // Show TC entries that don't already have a real session today for the same client
-      const realClientIds=new Set(data.map(s=>s.clientId).filter(Boolean));
-      tcToShow=tcSessions.filter(tc=>!realClientIds.has(tc.clientId));
-    } else if(tab==='past'){
-      // Show TC sessions where lastStatusUpdate is a past date (they were actually tracked)
-      const realClientIds=new Set(data.map(s=>s.clientId).filter(Boolean));
-      tcToShow=tcSessions
-        .filter(tc=>{
-          const lastUpd=tc._tcEntry?.lastStatusUpdate||'';
-          if(!lastUpd)return false;
-          return lastUpd<todayStr&&!realClientIds.has(tc.clientId);
-        })
-        .map(tc=>({
-          ...tc,
-          date:tc._tcEntry?.lastStatusUpdate||todayStr,
-          status:tc._tcEntry?.todayStatus||'completed',
-        }));
-    }
-    // upcoming: TC sessions don't have future dates, skip
-
-    // Merge real + TC
-    const combined=[...data,...tcToShow];
-
-    // Apply filters from filter bar
+    if(tab==='today')data=data.filter(s=>{const d=s.date?new Date(s.date):null;if(!d)return false;d.setHours(0,0,0,0);return d.getTime()===today.getTime();});
+    else if(tab==='upcoming')data=data.filter(s=>{const d=s.date?new Date(s.date):null;if(!d)return false;d.setHours(0,0,0,0);return d.getTime()>today.getTime();});
+    else if(tab==='past')data=data.filter(s=>{const d=s.date?new Date(s.date):null;if(!d)return false;d.setHours(0,0,0,0);return d.getTime()<today.getTime();});
+    data.sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.time||'').localeCompare(b.time||''));
+    // Date & status filter
     const fromDate=$('sess-date-from')?.value;
     const toDate=$('sess-date-to')?.value;
     const statusF=$('sess-status-filter')?.value||'';
     const searchV=($('sess-search')?.value||'').toLowerCase().trim();
-    let filtered=combined;
-    if(fromDate)filtered=filtered.filter(s=>(s.date||'')>=fromDate);
-    if(toDate)filtered=filtered.filter(s=>(s.date||'')<=toDate);
-    if(statusF)filtered=filtered.filter(s=>s.status===statusF);
-    if(searchV)filtered=filtered.filter(s=>
-      (s.clientName||'').toLowerCase().includes(searchV)||
-      (s.trainerName||'').toLowerCase().includes(searchV)||
-      (s.type||'').toLowerCase().includes(searchV)
-    );
-
-    filtered.sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.time||'').localeCompare(b.time||''));
-
-    $('sess-list').innerHTML=renderSessionsTable(filtered,tab);
+    if(fromDate)data=data.filter(s=>(s.date||'')>=fromDate);
+    if(toDate)data=data.filter(s=>(s.date||'')<=toDate);
+    if(statusF)data=data.filter(s=>s.status===statusF);
+    if(searchV)data=data.filter(s=>(s.clientName||'').toLowerCase().includes(searchV)||(s.trainerName||'').toLowerCase().includes(searchV)||(s.type||'').toLowerCase().includes(searchV));
+    $('sess-list').innerHTML=renderSessionsTable(data,tab);
   }
 
   window._sTab=loadSTab;
@@ -1466,41 +1423,35 @@ function renderSessionsTable(data,tab){
     return emptyState('📅',msgs[tab]||'No sessions',CR!=='client'?'Use the Schedule button to add sessions.':'Your coordinator will schedule sessions.',CR!=='client'&&tab!=='past'?'+ Schedule':'',CR!=='client'&&tab!=='past'?'openAddSession()':'');
   }
   return`<table><thead><tr>
-    <th>Date</th><th>Time</th><th>Client</th><th>Trainer</th><th>Type</th><th>Status</th><th>Source</th><th>Meet Link</th><th>Actions</th>
+    <th>Date</th><th>Time</th><th>Client</th><th>Trainer</th><th>Type</th><th>Status</th><th>Meet Link</th><th>Actions</th>
   </tr></thead><tbody>
-  ${data.map(s=>{
-    const isTc=!!s._isTc;
-    const sourceBadge=isTc
-      ?`<span class="tc-dash-badge" style="font-size:10px">📋 Fixed</span>`
-      :`<span class="badge b-gray" style="font-size:10px">📅 Scheduled</span>`;
-    return`<tr>
-      <td style="font-size:12px">${s.date||'—'}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)">${to12h(s.time)}</td>
-      <td><strong>${s.clientName||'—'}</strong></td>
-      <td style="font-size:12px">${s.trainerName||'—'}</td>
-      <td style="font-size:12px">${s.type||'—'}</td>
-      <td>${statusBadge(s.status)}</td>
-      <td>${sourceBadge}</td>
-      <td>${s.meetLink?`<a href="${s.meetLink}" target="_blank" style="color:var(--accent);font-size:12px">Join 🔗</a>`:'—'}</td>
-      <td><div class="td-actions">
-        ${!isTc?`<button class="btn btn-bl btn-sm" onclick="openSessionDetail('${s.id}')">📋 Detail</button>`:''}
-        ${!isTc&&CR!=='client'&&s.status==='not-started'?`<button class="btn btn-gr btn-sm" onclick="markSessionStatus('${s.id}','onair',true)">▶ Start</button>`:''}
-        ${isTc&&s.status==='not-started'?`<button class="btn btn-gr btn-sm" onclick="tcQuickStatus('${s._tcId}','onair','${s.clientId}')">▶ Start</button>`:''}
-        ${!isTc&&(CR==='coordinator'||CR==='coordinatorhead')&&s.status==='onair'?`<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed')">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed')">✗ Miss</button>`:''}
-        ${isTc&&s.status==='onair'?`<button class="btn btn-p btn-sm" onclick="tcQuickStatus('${s._tcId}','completed','${s.clientId}')">✓ Done</button><button class="btn btn-d btn-sm" onclick="tcQuickStatus('${s._tcId}','missed','${s.clientId}')">✗ Miss</button>`:''}
-        ${!isTc&&CR==='admin'&&s.status==='onair'?`<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed',true)">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed')">✗ Miss</button>`:''}
-        ${!isTc&&CR==='trainer'&&(s.status==='onair'||s.status==='not-started')?`<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed',true)">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed',true)">✗ Miss</button>`:''}
-        ${!isTc&&(CR==='admin'||CR==='coordinator'||CR==='coordinatorhead')?`<button class="btn btn-g btn-sm" onclick="openEditSession('${s.id}')">Edit</button><button class="btn btn-d btn-sm" onclick="delSession('${s.id}')">Del</button>`:''}
-        ${!isTc&&(CR==='coordinator'||CR==='coordinatorhead')&&s.status==='completed'?`<button class="btn btn-yw btn-sm" onclick="openRateTrainer('${s.trainerId||''}','${(s.trainerName||'').replace(/'/g,"\\'")}')">⭐ Rate</button>`:''}
-      </div></td>
-    </tr>`;
-  }).join('')}
+  ${data.map(s=>`<tr>
+    <td style="font-size:12px">${s.date||'—'}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)">${to12h(s.time)}</td>
+    <td><strong>${s.clientName||'—'}</strong></td>
+    <td style="font-size:12px">${s.trainerName||'—'}</td>
+    <td style="font-size:12px">${s.type||'—'}</td>
+    <td>${statusBadge(s.status)}</td>
+    <td>${s.meetLink?`<a href="${s.meetLink}" target="_blank" style="color:var(--accent);font-size:12px">Join 🔗</a>`:'—'}</td>
+    <td><div class="td-actions">
+      <button class="btn btn-bl btn-sm" onclick="openSessionDetail('${s.id}')">📋 Detail</button>
+      ${CR!=='client'&&s.status==='not-started'?`<button class="btn btn-gr btn-sm" onclick="markSessionStatus('${s.id}','onair',true)">▶ Start</button>`:''}
+      ${(CR==='coordinator'||CR==='coordinatorhead')&&s.status==='onair'?`<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed')">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed')">✗ Miss</button>`:''}
+      ${CR==='admin'&&s.status==='onair'?`<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed',true)">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed')">✗ Miss</button>`:''}
+      ${CR==='trainer'&&(s.status==='onair'||s.status==='not-started')?`<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed',true)">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed',true)">✗ Miss</button>`:''}
+      ${CR==='admin'||CR==='coordinator'||CR==='coordinatorhead'?`<button class="btn btn-g btn-sm" onclick="openEditSession('${s.id}')">Edit</button><button class="btn btn-d btn-sm" onclick="delSession('${s.id}')">Del</button>`:''}
+      ${(CR==='coordinator'||CR==='coordinatorhead')&&s.status==='completed'?`<button class="btn btn-yw btn-sm" onclick="openRateTrainer('${s.trainerId||''}','${(s.trainerName||'').replace(/'/g,"\\'")}')">⭐ Rate</button>`:''}
+    </div></td>
+  </tr>`).join('')}
   </tbody></table>`;
 }
 
 // ── SESSION DETAIL MODAL ───────────────────────────────────────
 async function openSessionDetail(sessionId){
+  // Remove any existing overlay
   document.getElementById('sd-overlay')?.remove();
+
+  // Show loading overlay
   const overlay=document.createElement('div');
   overlay.className='sd-overlay';overlay.id='sd-overlay';
   overlay.innerHTML=`<div class="sd-box" style="padding:40px;text-align:center"><div class="spin" style="width:28px;height:28px;margin:0 auto 12px"></div><div style="color:var(--muted);font-size:13px">Loading session…</div></div>`;
@@ -1524,6 +1475,7 @@ async function openSessionDetail(sessionId){
 
   overlay.innerHTML=`
   <div class="sd-box">
+    <!-- Header -->
     <div class="sd-header">
       <div style="flex:1;min-width:0">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px">${sess.clientName||'—'} — ${sess.type||'Session'}</div>
@@ -1535,6 +1487,8 @@ async function openSessionDetail(sessionId){
       ${sess.meetLink?`<a href="${sess.meetLink}" target="_blank" class="btn btn-p btn-sm">Join 🔗</a>`:''}
       <button onclick="document.getElementById('sd-overlay').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1">✕</button>
     </div>
+
+    <!-- Tabs -->
     <div class="sd-tabs">
       <div class="sd-tab active" onclick="sdTab(this,'sdp-workout')">💪 Workout</div>
       <div class="sd-tab" onclick="sdTab(this,'sdp-stats')">📊 Stats</div>
@@ -1544,7 +1498,10 @@ async function openSessionDetail(sessionId){
       <div class="sd-tab" onclick="sdTab(this,'sdp-recurring')">🔄 Recurring</div>
       <div class="sd-tab" onclick="sdTab(this,'sdp-qr')">📱 QR Attend</div>
     </div>
+
     <div class="sd-body">
+
+      <!-- ① WORKOUT BUILDER ───────────────────────────────── -->
       <div id="sdp-workout" class="sd-panel active">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="font-weight:700;font-size:14px">💪 Exercise Plan</div>
@@ -1554,51 +1511,58 @@ async function openSessionDetail(sessionId){
           </div>`:''}
         </div>
         <div class="fg"><label class="fl">Warm Up</label>
-          <textarea class="fta" id="wb-warmup" style="min-height:48px" placeholder="e.g. 5 min treadmill" ${!canEdit?'disabled':''}>${workout?.warmup||''}</textarea>
+          <textarea class="fta" id="wb-warmup" style="min-height:48px" placeholder="e.g. 5 min treadmill, dynamic stretches" ${!canEdit?'disabled':''}>${workout?.warmup||''}</textarea>
         </div>
         <div class="ex-header"><div>Exercise Name</div><div>Sets</div><div>Reps</div><div>Weight</div><div>Rest(s)</div><div></div></div>
         <div id="ex-rows">
           ${(workout?.exercises?.length?workout.exercises:[{name:'',sets:'',reps:'',weight:'',rest:''}]).map((e,i)=>buildExRow(e,i,canEdit)).join('')}
         </div>
         <div class="fg" style="margin-top:8px"><label class="fl">Cool Down</label>
-          <textarea class="fta" id="wb-cooldown" style="min-height:48px" ${!canEdit?'disabled':''}>${workout?.cooldown||''}</textarea>
+          <textarea class="fta" id="wb-cooldown" style="min-height:48px" placeholder="e.g. Stretching, foam rolling" ${!canEdit?'disabled':''}>${workout?.cooldown||''}</textarea>
         </div>
         <div class="fg"><label class="fl">Workout Notes</label>
-          <textarea class="fta" id="wb-notes" style="min-height:60px" ${!canEdit?'disabled':''}>${workout?.notes||''}</textarea>
+          <textarea class="fta" id="wb-notes" style="min-height:60px" placeholder="Special instructions, tips…" ${!canEdit?'disabled':''}>${workout?.notes||''}</textarea>
         </div>
-        ${sess.mediaLink||canEdit?`<div class="fg" style="margin-bottom:0"><label class="fl">🎬 Media Link</label>
-          <input class="fi" id="wb-media" value="${sess.mediaLink||''}" placeholder="https://youtube.com/…" ${!canEdit?'disabled':''}></div>`:''}
+        ${sess.mediaLink||canEdit?`<div class="fg" style="margin-bottom:0"><label class="fl">🎬 Media Link (YouTube / Drive)</label>
+          <input class="fi" id="wb-media" value="${sess.mediaLink||''}" placeholder="https://youtube.com/… or Google Drive link" ${!canEdit?'disabled':''}></div>`:''}
       </div>
+
+      <!-- ② BODY STATS ──────────────────────────────────────── -->
       <div id="sdp-stats" class="sd-panel">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="font-weight:700;font-size:14px">📊 Session Body Stats</div>
           ${canEdit||isTrainer?`<button class="btn btn-p btn-sm" onclick="openAddStats('${sessionId}','${(sess.clientName||'').replace(/'/g,"\\'")}','${sess.clientId||''}')">+ Log Stats</button>`:''}
         </div>
-        ${stats.length===0?`<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:8px">📊</div><div>No stats logged yet</div></div>`
-        :`<div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Weight(kg)</th><th>Sets</th><th>Reps</th><th>Max Wt</th><th>Calories</th><th>Duration</th><th>HR</th><th>Notes</th><th></th></tr></thead><tbody>
-          ${stats.map(st=>`<tr>
-            <td style="font-size:12px">${st.date||'—'}</td>
-            <td style="font-weight:600">${st.weight||'—'}</td>
-            <td>${st.totalSets||'—'}</td><td>${st.totalReps||'—'}</td>
-            <td style="color:var(--accent)">${st.maxWeight?st.maxWeight+'kg':'—'}</td>
-            <td>${st.calories||'—'}</td>
-            <td>${st.duration?st.duration+'min':'—'}</td>
-            <td>${st.heartRate?st.heartRate+'bpm':'—'}</td>
-            <td style="font-size:11px;max-width:110px">${st.notes||'—'}</td>
-            <td>${canEdit||isTrainer?`<button class="btn btn-d btn-sm" onclick="delStat('${st.id}','${sessionId}')">Del</button>`:'—'}</td>
-          </tr>`).join('')}
-          </tbody></table></div>`}
+        ${stats.length===0
+          ?`<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:8px">📊</div><div>No stats logged yet</div></div>`
+          :`<div style="overflow-x:auto"><table><thead><tr>
+              <th>Date</th><th>Weight(kg)</th><th>Sets</th><th>Reps</th><th>Max Wt</th><th>Calories</th><th>Duration</th><th>HR</th><th>Notes</th><th></th>
+            </tr></thead><tbody>
+            ${stats.map(st=>`<tr>
+              <td style="font-size:12px">${st.date||'—'}</td>
+              <td style="font-weight:600">${st.weight||'—'}</td>
+              <td>${st.totalSets||'—'}</td><td>${st.totalReps||'—'}</td>
+              <td style="color:var(--accent)">${st.maxWeight?st.maxWeight+'kg':'—'}</td>
+              <td>${st.calories||'—'}</td>
+              <td>${st.duration?st.duration+'min':'—'}</td>
+              <td>${st.heartRate?st.heartRate+'bpm':'—'}</td>
+              <td style="font-size:11px;max-width:110px">${st.notes||'—'}</td>
+              <td>${canEdit||isTrainer?`<button class="btn btn-d btn-sm" onclick="delStat('${st.id}','${sessionId}')">Del</button>`:'—'}</td>
+            </tr>`).join('')}
+            </tbody></table></div>`}
       </div>
+
+      <!-- ③ NOTES & MEDIA ───────────────────────────────────── -->
       <div id="sdp-notes" class="sd-panel">
         <div style="font-weight:700;font-size:14px;margin-bottom:14px">📝 Session Notes</div>
         <div class="fg"><label class="fl">Trainer Private Notes</label>
-          <textarea class="fta" id="sn-trainer" style="min-height:90px" ${!canEdit&&!isTrainer?'disabled':''}>${sess.trainerNotes||''}</textarea>
+          <textarea class="fta" id="sn-trainer" style="min-height:90px" placeholder="Observations, client progress, things to focus on next time…" ${!canEdit&&!isTrainer?'disabled':''}>${sess.trainerNotes||''}</textarea>
         </div>
-        <div class="fg"><label class="fl">General Notes</label>
+        <div class="fg"><label class="fl">General Notes (Visible to Coordinator)</label>
           <textarea class="fta" id="sn-general" style="min-height:70px" ${!canEdit&&!isTrainer?'disabled':''}>${sess.notes||''}</textarea>
         </div>
         <div class="fg" style="margin-bottom:0"><label class="fl">🎬 Media / Video Link</label>
-          <input class="fi" id="sn-media" value="${sess.mediaLink||''}" placeholder="https://youtube.com/…" ${!canEdit&&!isTrainer?'disabled':''}>
+          <input class="fi" id="sn-media" value="${sess.mediaLink||''}" placeholder="https://youtube.com/ or Google Drive link" ${!canEdit&&!isTrainer?'disabled':''}>
         </div>
         ${canEdit||isTrainer?`<div style="margin-top:14px;display:flex;justify-content:flex-end"><button class="btn btn-p" onclick="saveNotes('${sessionId}')">💾 Save Notes</button></div>`:''}
         ${sess.mediaLink?`<div style="margin-top:14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px">
@@ -1607,34 +1571,64 @@ async function openSessionDetail(sessionId){
           <a href="${sess.mediaLink}" target="_blank" class="btn btn-p btn-sm">Open ↗</a>
         </div>`:''}
       </div>
+
+      <!-- ④ CHECKLIST ───────────────────────────────────────── -->
       <div id="sdp-checklist" class="sd-panel">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="font-weight:700;font-size:14px">✅ Pre-Session Checklist</div>
           ${canEdit||isTrainer?`<button class="btn btn-p btn-sm" onclick="saveChecklist('${sessionId}')">💾 Save</button>`:''}
         </div>
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-          ${[{id:'equip',icon:'🏋️',label:'Equipment ready & sanitized'},{id:'space',icon:'📐',label:'Training space cleared & set up'},{id:'water',icon:'💧',label:'Water & towel prepared for client'},{id:'plan',icon:'📋',label:'Workout plan reviewed & ready'},{id:'health',icon:'❤️',label:'Client health check done'},{id:'warmup',icon:'🔥',label:'Warm-up routine planned'},{id:'timer',icon:'⏱️',label:'Timer / stopwatch ready'},{id:'music',icon:'🎵',label:'Music & environment set'}]
-          .map(item=>`<label class="chk-item">
+          ${[
+            {id:'equip',icon:'🏋️',label:'Equipment ready & sanitized'},
+            {id:'space',icon:'📐',label:'Training space cleared & set up'},
+            {id:'water',icon:'💧',label:'Water & towel prepared for client'},
+            {id:'plan', icon:'📋',label:'Workout plan reviewed & ready'},
+            {id:'health',icon:'❤️',label:'Client health check done'},
+            {id:'warmup',icon:'🔥',label:'Warm-up routine planned'},
+            {id:'timer',icon:'⏱️',label:'Timer / stopwatch ready'},
+            {id:'music', icon:'🎵',label:'Music & environment set'},
+          ].map(item=>`<label class="chk-item">
             <input type="checkbox" id="chk-${item.id}" ${checklist&&checklist[item.id]?'checked':''} ${!canEdit&&!isTrainer?'disabled':''} style="accent-color:var(--accent)">
             <span style="font-size:20px">${item.icon}</span>
             <span style="font-size:13px;font-weight:500;flex:1">${item.label}</span>
             <span class="badge ${checklist&&checklist[item.id]?'b-g':'b-gray'}" style="font-size:10px">${checklist&&checklist[item.id]?'✓ Done':'Pending'}</span>
           </label>`).join('')}
         </div>
+        <div style="margin-top:12px;background:var(--accent-dim);border:1px solid rgba(212,255,0,.15);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent)">
+          ⚡ ${checklist?[...document.querySelectorAll('[id^=chk-]:checked')].length:Object.values(checklist||{}).filter(Boolean).length} / 8 items confirmed before session
+        </div>
       </div>
+
+      <!-- ⑤ CLIENT FEEDBACK ────────────────────────────────── -->
       <div id="sdp-feedback" class="sd-panel">
         <div style="font-weight:700;font-size:14px;margin-bottom:14px">💬 Session Feedback</div>
-        ${feedback?buildFeedbackView(feedback):(isClient&&sess.status==='completed')?buildFeedbackForm(sessionId,sess.trainerName||'',sess.clientName||'',sess.date||'')
-        :`<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">💬</div><div style="font-size:14px;font-weight:600">No feedback yet</div><div style="font-size:12px;margin-top:6px">${sess.status!=='completed'?'Feedback available after session is completed':'Client has not submitted feedback yet'}</div></div>`}
+        ${feedback
+          ?buildFeedbackView(feedback)
+          :(isClient&&sess.status==='completed')
+            ?buildFeedbackForm(sessionId,sess.trainerName||'',sess.clientName||'',sess.date||'')
+            :`<div style="text-align:center;padding:30px;color:var(--muted)">
+                <div style="font-size:36px;margin-bottom:10px">💬</div>
+                <div style="font-size:14px;font-weight:600">No feedback yet</div>
+                <div style="font-size:12px;margin-top:6px">${sess.status!=='completed'?'Feedback available after session is completed':'Client has not submitted feedback yet'}</div>
+              </div>`}
       </div>
+
+      <!-- ⑥ RECURRING ──────────────────────────────────────── -->
       <div id="sdp-recurring" class="sd-panel">
         <div style="font-weight:700;font-size:14px;margin-bottom:14px">🔄 Recurring Sessions</div>
-        ${canEdit?buildRecurringForm(sess):`<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🔄</div><div>Recurring setup available for trainers, coordinators and admin.</div></div>`}
+        ${canEdit
+          ?buildRecurringForm(sess)
+          :`<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🔄</div><div>Recurring setup is available for trainers, coordinators and admin.</div></div>`}
       </div>
+
+      <!-- ⑦ QR ATTENDANCE ──────────────────────────────────── -->
       <div id="sdp-qr" class="sd-panel">
         <div style="font-weight:700;font-size:14px;margin-bottom:14px">📱 QR Code Attendance</div>
         <div class="qr-box">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Client scans this QR code to mark themselves <strong>Present</strong> for this session.</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+            Client scans this QR code to mark themselves <strong>Present</strong> for this session.
+          </div>
           <div id="qr-render" style="display:inline-block;background:#fff;padding:16px;border-radius:12px;margin-bottom:16px"></div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Session ID: <code style="color:var(--accent);font-size:11px">${sessionId}</code></div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
@@ -1648,10 +1642,14 @@ async function openSessionDetail(sessionId){
           </div>`:''}
         </div>
       </div>
-    </div>
-  </div>`;
 
+    </div><!-- end sd-body -->
+  </div><!-- end sd-box -->`;
+
+  // Generate QR after render
   setTimeout(()=>renderQR(sessionId),150);
+
+  // Load QR check-ins if admin
   if(canEdit)loadQRCheckins(sessionId);
 }
 
@@ -1663,6 +1661,7 @@ function sdTab(tabEl,panelId){
   const panel=document.getElementById(panelId);if(panel)panel.classList.add('active');
 }
 
+// ── WORKOUT BUILDER ────────────────────────────────────────────
 let _exRowIdx=0;
 function buildExRow(e={},idx,canEdit=true){
   _exRowIdx=Math.max(_exRowIdx,idx+1);
@@ -1676,26 +1675,48 @@ function buildExRow(e={},idx,canEdit=true){
     ${canEdit?`<button class="ex-del-btn" onclick="document.getElementById('exrow-${idx}').remove()">✕</button>`:'<div></div>'}
   </div>`;
 }
-function addExRow(){const c=document.getElementById('ex-rows');if(!c)return;c.insertAdjacentHTML('beforeend',buildExRow({},_exRowIdx++,true));}
+
+function addExRow(){
+  const container=document.getElementById('ex-rows');if(!container)return;
+  container.insertAdjacentHTML('beforeend',buildExRow({},_exRowIdx++,true));
+}
 
 async function saveWorkout(sessionId){
   const rows=[...document.querySelectorAll('#ex-rows .ex-row')];
-  const exercises=rows.map(row=>({name:row.querySelector('[data-f=name]')?.value.trim()||'',sets:row.querySelector('[data-f=sets]')?.value||'',reps:row.querySelector('[data-f=reps]')?.value||'',weight:row.querySelector('[data-f=weight]')?.value||'',rest:row.querySelector('[data-f=rest]')?.value||''})).filter(e=>e.name);
+  const exercises=rows.map(row=>({
+    name:row.querySelector('[data-f=name]')?.value.trim()||'',
+    sets:row.querySelector('[data-f=sets]')?.value||'',
+    reps:row.querySelector('[data-f=reps]')?.value||'',
+    weight:row.querySelector('[data-f=weight]')?.value||'',
+    rest:row.querySelector('[data-f=rest]')?.value||''
+  })).filter(e=>e.name);
   const mediaLink=document.getElementById('wb-media')?.value.trim()||'';
   try{
-    await fn().setDoc(fn().doc(db(),'sessionworkouts',sessionId),{sessionId,exercises,warmup:document.getElementById('wb-warmup')?.value||'',cooldown:document.getElementById('wb-cooldown')?.value||'',notes:document.getElementById('wb-notes')?.value||'',savedBy:CU.name||'',updatedAt:fn().serverTimestamp()});
+    await fn().setDoc(fn().doc(db(),'sessionworkouts',sessionId),{
+      sessionId,exercises,
+      warmup:document.getElementById('wb-warmup')?.value||'',
+      cooldown:document.getElementById('wb-cooldown')?.value||'',
+      notes:document.getElementById('wb-notes')?.value||'',
+      savedBy:CU.name||'',updatedAt:fn().serverTimestamp()
+    });
     if(mediaLink)await fsUpdate('sessions',sessionId,{mediaLink});
     toast('💪 Workout plan saved!','success');
   }catch(e){toast('Error: '+e.message,'error');}
 }
 
+// ── SESSION NOTES ──────────────────────────────────────────────
 async function saveNotes(sessionId){
   try{
-    await fsUpdate('sessions',sessionId,{trainerNotes:document.getElementById('sn-trainer')?.value||'',notes:document.getElementById('sn-general')?.value||'',mediaLink:document.getElementById('sn-media')?.value.trim()||''});
+    await fsUpdate('sessions',sessionId,{
+      trainerNotes:document.getElementById('sn-trainer')?.value||'',
+      notes:document.getElementById('sn-general')?.value||'',
+      mediaLink:document.getElementById('sn-media')?.value.trim()||''
+    });
     toast('📝 Notes saved!','success');
   }catch(e){toast('Error: '+e.message,'error');}
 }
 
+// ── BODY STATS ─────────────────────────────────────────────────
 function openAddStats(sessionId,clientName,clientId){
   openM1(`📊 LOG STATS — ${clientName.toUpperCase()}`,`
     <div class="fr">
@@ -1723,10 +1744,27 @@ function openAddStats(sessionId,clientName,clientId){
 
 async function saveStat(sessionId,clientName,clientId){
   try{
-    await fsAdd('sessionstats',{sessionId,clientId,clientName,date:document.getElementById('st-date')?.value||getTodayStr(),weight:document.getElementById('st-weight')?.value||'',totalSets:document.getElementById('st-sets')?.value||'',totalReps:document.getElementById('st-reps')?.value||'',maxWeight:document.getElementById('st-maxw')?.value||'',calories:document.getElementById('st-cal')?.value||'',duration:document.getElementById('st-dur')?.value||'',heartRate:document.getElementById('st-hr')?.value||'',notes:document.getElementById('st-notes')?.value||'',loggedBy:CU.name||''});
+    await fsAdd('sessionstats',{
+      sessionId,clientId,clientName,
+      date:document.getElementById('st-date')?.value||getTodayStr(),
+      weight:document.getElementById('st-weight')?.value||'',
+      totalSets:document.getElementById('st-sets')?.value||'',
+      totalReps:document.getElementById('st-reps')?.value||'',
+      maxWeight:document.getElementById('st-maxw')?.value||'',
+      calories:document.getElementById('st-cal')?.value||'',
+      duration:document.getElementById('st-dur')?.value||'',
+      heartRate:document.getElementById('st-hr')?.value||'',
+      notes:document.getElementById('st-notes')?.value||'',
+      loggedBy:CU.name||''
+    });
     closeM1();toast('📊 Stats logged!','success');
-    document.getElementById('sd-overlay')?.remove();
-    openSessionDetail(sessionId);
+    // refresh stats panel
+    const panel=document.getElementById('sdp-stats');
+    if(panel){const stats=await fsGetAll('sessionstats',fn().where('sessionId','==',sessionId));
+      // simple reload
+      document.getElementById('sd-overlay')?.remove();
+      openSessionDetail(sessionId);
+    }
   }catch(e){toast('Error: '+e.message,'error');}
 }
 
@@ -1736,6 +1774,7 @@ async function delStat(id,sessionId){
   catch(e){toast('Error','error');}
 }
 
+// ── PRE-SESSION CHECKLIST ──────────────────────────────────────
 async function saveChecklist(sessionId){
   const ids=['equip','space','water','plan','health','warmup','timer','music'];
   const data={sessionId};
@@ -1743,38 +1782,73 @@ async function saveChecklist(sessionId){
   try{
     await fn().setDoc(fn().doc(db(),'sessionchecklist',sessionId),{...data,savedBy:CU.name||'',updatedAt:fn().serverTimestamp()});
     toast('✅ Checklist saved!','success');
-    ids.forEach(id=>{const chk=document.getElementById('chk-'+id);const badge=chk?.closest('.chk-item')?.querySelector('.badge');if(badge){badge.className=`badge ${chk.checked?'b-g':'b-gray'}`;badge.textContent=chk.checked?'✓ Done':'Pending';}});
+    // update badges
+    ids.forEach(id=>{
+      const chk=document.getElementById('chk-'+id);
+      const badge=chk?.closest('.chk-item')?.querySelector('.badge');
+      if(badge){badge.className=`badge ${chk.checked?'b-g':'b-gray'}`;badge.textContent=chk.checked?'✓ Done':'Pending';}
+    });
   }catch(e){toast('Error: '+e.message,'error');}
 }
 
+// ── CLIENT FEEDBACK ────────────────────────────────────────────
 function buildFeedbackView(fb){
   const col=['','#ff4444','#ff7700','var(--yellow)','#88cc00','var(--accent)'][fb.rating||0]||'var(--muted)';
   return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px">
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
-      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:${col};line-height:1">${fb.rating||'—'}</div><div style="font-size:20px;color:${col}">${'★'.repeat(fb.rating||0)}${'☆'.repeat(5-(fb.rating||0))}</div></div>
-      <div><div style="font-weight:700;font-size:14px">${fb.clientName||'Client'} rated this session</div><div style="font-size:12px;color:var(--muted);margin-top:3px">${fb.date||'—'}</div></div>
+      <div style="text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:${col};line-height:1">${fb.rating||'—'}</div>
+        <div style="font-size:20px;color:${col}">${'★'.repeat(fb.rating||0)}${'☆'.repeat(5-(fb.rating||0))}</div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:14px">${fb.clientName||'Client'} rated this session</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">${fb.date||'—'}</div>
+      </div>
     </div>
     ${fb.comment?`<div style="background:var(--surface);border-radius:8px;padding:12px;font-size:13px;font-style:italic;margin-bottom:12px">"${fb.comment}"</div>`:''}
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
       ${[['⚡ Energy',fb.energy],['💪 Difficulty',fb.difficulty],['🧑‍🏫 Trainer Help',fb.trainerHelp]].map(([label,val])=>
-        `<div style="background:var(--surface);border-radius:8px;padding:10px;text-align:center"><div style="font-size:10px;color:var(--muted);margin-bottom:4px">${label}</div><div style="font-size:15px;color:var(--yellow)">${val?'★'.repeat(val)+'☆'.repeat(5-val):'—'}</div></div>`).join('')}
+        `<div style="background:var(--surface);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${label}</div>
+          <div style="font-size:15px;color:var(--yellow)">${val?'★'.repeat(val)+'☆'.repeat(5-val):'—'}</div>
+        </div>`).join('')}
     </div>
   </div>`;
 }
 
 function buildFeedbackForm(sessionId,trainerName,clientName,date){
   return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px">
-    <div style="text-align:center;margin-bottom:18px"><div style="font-size:14px;font-weight:700;margin-bottom:4px">How was your session with ${trainerName}?</div><div style="font-size:12px;color:var(--muted)">${date}</div></div>
-    <div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;text-align:center">Overall Rating *</div>
-      <div class="star-pick" id="fb-overall">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbRate('fb-overall',${n},this)">${n}★</button>`).join('')}</div>
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">How was your session with ${trainerName}?</div>
+      <div style="font-size:12px;color:var(--muted)">${date}</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;text-align:center">Overall Rating *</div>
+      <div class="star-pick" id="fb-overall">
+        ${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbRate('fb-overall',${n},this)">${n}★</button>`).join('')}
+      </div>
       <input type="hidden" id="fb-rating" value="0">
     </div>
     <div class="fr" style="margin-bottom:14px">
-      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">⚡ Energy Level</div><div class="mini-star-pick" id="fb-energy">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbMiniRate('fb-energy',${n},this)">★</button>`).join('')}</div><input type="hidden" id="fb-energy-val" value="0"></div>
-      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">💪 Difficulty</div><div class="mini-star-pick" id="fb-diff">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbMiniRate('fb-diff',${n},this)">★</button>`).join('')}</div><input type="hidden" id="fb-diff-val" value="0"></div>
-      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">🧑‍🏫 Trainer Help</div><div class="mini-star-pick" id="fb-help">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbMiniRate('fb-help',${n},this)">★</button>`).join('')}</div><input type="hidden" id="fb-help-val" value="0"></div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">⚡ Energy Level</div>
+        <div class="mini-star-pick" id="fb-energy">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbMiniRate('fb-energy',${n},this)">★</button>`).join('')}</div>
+        <input type="hidden" id="fb-energy-val" value="0">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">💪 Difficulty</div>
+        <div class="mini-star-pick" id="fb-diff">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbMiniRate('fb-diff',${n},this)">★</button>`).join('')}</div>
+        <input type="hidden" id="fb-diff-val" value="0">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">🧑‍🏫 Trainer Help</div>
+        <div class="mini-star-pick" id="fb-help">${[1,2,3,4,5].map(n=>`<button data-v="${n}" onclick="fbMiniRate('fb-help',${n},this)">★</button>`).join('')}</div>
+        <input type="hidden" id="fb-help-val" value="0">
+      </div>
     </div>
-    <div class="fg" style="margin-bottom:14px"><label class="fl">Comments (optional)</label><textarea class="fta" id="fb-comment" style="min-height:80px"></textarea></div>
+    <div class="fg" style="margin-bottom:14px"><label class="fl">Comments (optional)</label>
+      <textarea class="fta" id="fb-comment" placeholder="How was the session? Any suggestions for the trainer?" style="min-height:80px"></textarea>
+    </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button class="btn btn-g" onclick="document.getElementById('sd-overlay').remove()">Skip</button>
       <button class="btn btn-p" onclick="submitFeedback('${sessionId}','${trainerName.replace(/'/g,"\\'")}','${clientName.replace(/'/g,"\\'")}','${date}')">⭐ Submit Feedback</button>
@@ -1782,47 +1856,101 @@ function buildFeedbackForm(sessionId,trainerName,clientName,date){
   </div>`;
 }
 
-function fbRate(containerId,n,btn){document.getElementById(containerId)?.querySelectorAll('button').forEach((b,i)=>{b.classList.toggle('lit',i<n);});document.getElementById('fb-rating').value=n;}
-function fbMiniRate(containerId,n,btn){document.getElementById(containerId)?.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('lit',i<n));const map={'fb-energy':'fb-energy-val','fb-diff':'fb-diff-val','fb-help':'fb-help-val'};const hid=document.getElementById(map[containerId]);if(hid)hid.value=n;}
+function fbRate(containerId,n,btn){
+  document.getElementById(containerId)?.querySelectorAll('button').forEach((b,i)=>{
+    b.classList.toggle('lit',i<n);
+  });
+  document.getElementById('fb-rating').value=n;
+}
+
+function fbMiniRate(containerId,n,btn){
+  document.getElementById(containerId)?.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('lit',i<n));
+  const hiddenId=containerId.replace('fb-','fb-').replace('-','_');
+  const map={'fb-energy':'fb-energy-val','fb-diff':'fb-diff-val','fb-help':'fb-help-val'};
+  const hid=document.getElementById(map[containerId]);if(hid)hid.value=n;
+}
 
 async function submitFeedback(sessionId,trainerName,clientName,date){
   const rating=Number(document.getElementById('fb-rating')?.value||0);
   if(!rating){toast('Please select an overall rating','error');return;}
   try{
-    await fn().setDoc(fn().doc(db(),'sessionfeedback',sessionId),{sessionId,trainerName,clientName,date,rating,energy:Number(document.getElementById('fb-energy-val')?.value)||null,difficulty:Number(document.getElementById('fb-diff-val')?.value)||null,trainerHelp:Number(document.getElementById('fb-help-val')?.value)||null,comment:document.getElementById('fb-comment')?.value||'',submittedBy:auth().currentUser.uid,submittedByName:CU.name||''},{merge:true});
+    await fn().setDoc(fn().doc(db(),'sessionfeedback',sessionId),{
+      sessionId,trainerName,clientName,date,rating,
+      energy:Number(document.getElementById('fb-energy-val')?.value)||null,
+      difficulty:Number(document.getElementById('fb-diff-val')?.value)||null,
+      trainerHelp:Number(document.getElementById('fb-help-val')?.value)||null,
+      comment:document.getElementById('fb-comment')?.value||'',
+      submittedBy:auth().currentUser.uid,submittedByName:CU.name||''
+    },{merge:true});
     document.getElementById('sd-overlay')?.remove();
     toast('🎉 Feedback submitted! Thank you!','success');
   }catch(e){toast('Error: '+e.message,'error');}
 }
 
+// ── RECURRING SESSIONS ─────────────────────────────────────────
 function buildRecurringForm(sess){
   return`<div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.15);border-radius:10px;padding:14px;margin-bottom:16px">
     <div style="font-weight:700;color:var(--accent);margin-bottom:4px">🔄 Auto-Schedule Repeating Sessions</div>
     <div style="font-size:12px;color:var(--muted)">Automatically create multiple sessions for this client on a recurring schedule.</div>
   </div>
   <div class="fr">
-    <div class="fg"><label class="fl">Frequency</label><select class="fs" id="rec-freq" onchange="toggleRecCustom()"><option value="daily">Every Day</option><option value="alternate">Every Other Day</option><option value="weekly" selected>Every Week (same day)</option><option value="custom">Custom Days of Week</option></select></div>
-    <div class="fg"><label class="fl">Number of Sessions</label><input class="fi" id="rec-count" type="number" value="12" min="1" max="60"></div>
+    <div class="fg">
+      <label class="fl">Frequency</label>
+      <select class="fs" id="rec-freq" onchange="toggleRecCustom()">
+        <option value="daily">Every Day</option>
+        <option value="alternate">Every Other Day</option>
+        <option value="weekly" selected>Every Week (same day)</option>
+        <option value="custom">Custom Days of Week</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label class="fl">Number of Sessions</label>
+      <input class="fi" id="rec-count" type="number" value="12" min="1" max="60">
+    </div>
   </div>
-  <div class="fg"><label class="fl">Starting From</label><input class="fi" id="rec-start" type="date" value="${sess.date||getTodayStr()}"></div>
-  <div id="rec-custom-wrap" style="display:none;margin-bottom:14px"><label class="fl" style="margin-bottom:8px">Select Days</label><div style="display:flex;gap:7px;flex-wrap:wrap">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<button class="rec-day-btn" data-day="${d}" onclick="this.classList.toggle('sel')">${d}</button>`).join('')}</div></div>
-  <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:14px;font-size:12px"><div style="color:var(--muted);margin-bottom:4px">Session details that will be copied:</div><div>👤 <strong>${sess.clientName||'—'}</strong> &nbsp;·&nbsp; 🧑‍🏫 ${sess.trainerName||'—'} &nbsp;·&nbsp; 🕐 ${to12h(sess.time)} &nbsp;·&nbsp; 📋 ${sess.type||'Session'}</div></div>
-  <div style="display:flex;justify-content:flex-end"><button class="btn btn-p" onclick="createRecurring('${sess.id}','${sess.clientId||''}','${(sess.clientName||'').replace(/'/g,"\\'")}','${sess.trainerId||''}','${(sess.trainerName||'').replace(/'/g,"\\'")}','${sess.time||''}','${(sess.type||'').replace(/'/g,"\\'")}')">🔄 Create Sessions</button></div>`;
+  <div class="fg"><label class="fl">Starting From</label>
+    <input class="fi" id="rec-start" type="date" value="${sess.date||getTodayStr()}">
+  </div>
+  <div id="rec-custom-wrap" style="display:none;margin-bottom:14px">
+    <label class="fl" style="margin-bottom:8px">Select Days</label>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`
+        <button class="rec-day-btn" data-day="${d}" onclick="this.classList.toggle('sel')">${d}</button>`).join('')}
+    </div>
+  </div>
+  <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:14px;font-size:12px">
+    <div style="color:var(--muted);margin-bottom:4px">Session details that will be copied:</div>
+    <div>👤 <strong>${sess.clientName||'—'}</strong> &nbsp;·&nbsp; 🧑‍🏫 ${sess.trainerName||'—'} &nbsp;·&nbsp; 🕐 ${to12h(sess.time)} &nbsp;·&nbsp; 📋 ${sess.type||'Session'}</div>
+  </div>
+  <div style="display:flex;justify-content:flex-end">
+    <button class="btn btn-p" onclick="createRecurring('${sess.id}','${(sess.clientId||'')}','${(sess.clientName||'').replace(/'/g,"\\'")}','${(sess.trainerId||'')}','${(sess.trainerName||'').replace(/'/g,"\\'")}','${sess.time||''}','${(sess.type||'').replace(/'/g,"\\'")}')">🔄 Create Sessions</button>
+  </div>`;
 }
-function toggleRecCustom(){const v=document.getElementById('rec-freq')?.value;const wrap=document.getElementById('rec-custom-wrap');if(wrap)wrap.style.display=v==='custom'?'flex':'none';}
+
+function toggleRecCustom(){
+  const v=document.getElementById('rec-freq')?.value;
+  const wrap=document.getElementById('rec-custom-wrap');
+  if(wrap)wrap.style.display=v==='custom'?'flex':'none';
+}
 
 async function createRecurring(sessionId,clientId,clientName,trainerId,trainerName,time,type){
   const freq=document.getElementById('rec-freq')?.value||'weekly';
   const count=Math.min(Number(document.getElementById('rec-count')?.value||12),60);
   const startDate=document.getElementById('rec-start')?.value;
   if(!startDate){toast('Set a start date','error');return;}
+
   const dayMap={Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:0};
-  const selectedDays=freq==='custom'?[...document.querySelectorAll('.rec-day-btn.sel')].map(b=>dayMap[b.dataset.day]):[];
+  const selectedDays=freq==='custom'
+    ?[...document.querySelectorAll('.rec-day-btn.sel')].map(b=>dayMap[b.dataset.day])
+    :[];
   if(freq==='custom'&&!selectedDays.length){toast('Select at least one day','error');return;}
+
   const dates=[];let cur=new Date(startDate);let attempts=0;
   while(dates.length<count&&attempts<600){
     attempts++;
-    const d=cur.toISOString().split('T')[0];const dow=cur.getDay();let inc=false;
+    const d=cur.toISOString().split('T')[0];
+    const dow=cur.getDay();
+    let inc=false;
     if(freq==='daily')inc=true;
     else if(freq==='alternate'){inc=dates.length===0||(new Date(d)-new Date(dates[dates.length-1]))/(86400000)>=2;}
     else if(freq==='weekly'){inc=(new Date(d)-new Date(startDate))%(7*86400000)===0;}
@@ -1830,41 +1958,113 @@ async function createRecurring(sessionId,clientId,clientName,trainerId,trainerNa
     if(inc)dates.push(d);
     cur=new Date(cur.getTime()+86400000);
   }
-  if(!dates.length){toast('Could not generate dates','error');return;}
+  if(!dates.length){toast('Could not generate dates — check frequency settings','error');return;}
+
   const btn=document.querySelector('#sdp-recurring .btn-p');
   if(btn){btn.textContent=`Creating ${dates.length} sessions…`;btn.disabled=true;}
   try{
-    await Promise.all(dates.map(date=>fsAdd('sessions',{clientId,clientName,trainerId,trainerName,date,time,type,status:'not-started',meetLink:'',notes:'[Recurring]',recurringFrom:sessionId})));
+    await Promise.all(dates.map(date=>fsAdd('sessions',{
+      clientId,clientName,trainerId,trainerName,date,time,type,
+      status:'not-started',meetLink:'',notes:'[Recurring]',recurringFrom:sessionId
+    })));
     document.getElementById('sd-overlay')?.remove();
     toast(`✅ ${dates.length} recurring sessions created!`,'success');
     sessions();
-  }catch(e){toast('Error: '+e.message,'error');if(btn){btn.textContent='🔄 Create Sessions';btn.disabled=false;}}
+  }catch(e){
+    toast('Error: '+e.message,'error');
+    if(btn){btn.textContent='🔄 Create Sessions';btn.disabled=false;}
+  }
 }
 
+// ── QR CODE ATTENDANCE ─────────────────────────────────────────
 function renderQR(sessionId){
   const container=document.getElementById('qr-render');if(!container)return;
+  // Build check-in URL — points to the app with a special parameter
   const baseUrl=window.location.href.split('?')[0];
   const qrUrl=`${baseUrl}?qr_checkin=${sessionId}`;
+  // Use QR Server API (free, no library needed)
   const img=document.createElement('img');
   img.src=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}&bgcolor=ffffff&color=000000&margin=10&format=png`;
   img.alt='QR Code';img.style.cssText='width:200px;height:200px;display:block;border-radius:8px';
-  img.onerror=()=>{container.innerHTML=`<div style="width:200px;height:200px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:20px">QR requires internet</div>`;};
+  img.onerror=()=>{container.innerHTML=`<div style="width:200px;height:200px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:20px">QR requires internet connection</div>`;};
   container.innerHTML='';container.appendChild(img);
+  // Store URL for download
   window._lastQRUrl=qrUrl;window._lastQRImg=img.src;
 }
-function downloadQR(sessionId){const imgUrl=window._lastQRImg;if(!imgUrl){toast('QR not ready yet','error');return;}const a=document.createElement('a');a.href=imgUrl;a.download=`session_qr_${sessionId}.png`;a.click();toast('QR downloaded!','success');}
-function copyQRLink(sessionId){const url=window._lastQRUrl||`${window.location.href.split('?')[0]}?qr_checkin=${sessionId}`;navigator.clipboard?.writeText(url).then(()=>toast('Link copied!','success')).catch(()=>{prompt('Copy this link:',url);});}
-function shareQRWA(sessionId,clientName,date,time){const url=window._lastQRUrl||`${window.location.href.split('?')[0]}?qr_checkin=${sessionId}`;const msg=`📱 *Session QR Check-in*\n\nHi ${clientName}! Please scan the QR code or click the link below to mark your attendance.\n\n📅 ${date} at ${time}\n\n🔗 ${url}\n\n_Gym At Your Home™_`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');}
+
+function downloadQR(sessionId){
+  const imgUrl=window._lastQRImg;
+  if(!imgUrl){toast('QR not ready yet','error');return;}
+  const a=document.createElement('a');a.href=imgUrl;a.download=`session_qr_${sessionId}.png`;a.click();
+  toast('QR downloaded!','success');
+}
+
+function copyQRLink(sessionId){
+  const url=window._lastQRUrl||`${window.location.href.split('?')[0]}?qr_checkin=${sessionId}`;
+  navigator.clipboard?.writeText(url).then(()=>toast('Link copied!','success')).catch(()=>{
+    prompt('Copy this link:',url);
+  });
+}
+
+function shareQRWA(sessionId,clientName,date,time){
+  const url=window._lastQRUrl||`${window.location.href.split('?')[0]}?qr_checkin=${sessionId}`;
+  const msg=`📱 *Session QR Check-in*\n\nHi ${clientName}! Please scan the QR code or click the link below to mark your attendance for today's session.\n\n📅 ${date} at ${time}\n\n🔗 ${url}\n\n_Gym At Your Home™_`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
 
 async function loadQRCheckins(sessionId){
   const el=document.getElementById('qr-checkins');if(!el)return;
   try{
     const checkins=await fsGetAll('qrcheckins',fn().where('sessionId','==',sessionId));
     if(!checkins.length){el.innerHTML='<div style="color:var(--muted);font-size:12px">No QR check-ins yet</div>';return;}
-    el.innerHTML=checkins.map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge b-g" style="font-size:10px">✓ Checked In</span><span style="font-size:12px;font-weight:600">${c.clientName||'—'}</span><span style="font-size:11px;color:var(--muted);margin-left:auto">${fmtFullTime(c.checkedInAt)}</span></div>`).join('');
+    el.innerHTML=checkins.map(c=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span class="badge b-g" style="font-size:10px">✓ Checked In</span>
+      <span style="font-size:12px;font-weight:600">${c.clientName||'—'}</span>
+      <span style="font-size:11px;color:var(--muted);margin-left:auto">${fmtFullTime(c.checkedInAt)}</span>
+    </div>`).join('');
   }catch(e){el.innerHTML='<div style="color:var(--muted);font-size:12px">Could not load check-ins</div>';}
 }
 
+// Handle QR check-in on page load (client scans QR)
+(function handleQRCheckin(){
+  const params=new URLSearchParams(window.location.search);
+  const sessionId=params.get('qr_checkin');
+  if(!sessionId)return;
+  // Remove param from URL
+  window.history.replaceState({},'',window.location.pathname);
+  // Wait for auth
+  document.addEventListener('fbReady',()=>{
+    fn().onAuthStateChanged(window.FB.auth,async user=>{
+      if(!user)return;
+      const uDoc=await fsGet('users',user.uid)||await fsGet('clients',user.uid);
+      if(!uDoc)return;
+      // Check session exists
+      const sess=await fsGet('sessions',sessionId);
+      if(!sess){toast('Session not found','error');return;}
+      // Already checked in?
+      const existing=await fsGetAll('qrcheckins',fn().where('sessionId','==',sessionId),fn().where('clientId','==',user.uid));
+      if(existing.length){toast('✅ Already checked in for this session!','info');return;}
+      // Save check-in
+      await fsAdd('qrcheckins',{
+        sessionId,clientId:user.uid,
+        clientName:uDoc.name||uDoc.email||'',
+        checkedInAt:fn().serverTimestamp(),
+        sessionDate:sess.date||'',sessionTime:sess.time||''
+      });
+      // Mark attendance
+      await fsAdd('attendance',{
+        clientId:user.uid,clientName:uDoc.name||uDoc.email||'',
+        trainerId:sess.trainerId||'',trainerName:sess.trainerName||'',
+        date:sess.date||getTodayStr(),status:'present',
+        sessionType:sess.type||'',reason:'QR Check-in',
+        markedBy:user.uid
+      });
+      toast('✅ Attendance marked via QR!','success');
+    });
+  });
+})();
+
+// ── SCHEDULE / EDIT SESSION (unchanged) ───────────────────────
 function openAddSession(){loadSessionForm().then(html=>{openM2('SCHEDULE SESSION',html);initSessionFormAC()});}
 async function openEditSession(id){const s=await fsGet('sessions',id);if(!s){toast('Not found','error');return;}loadSessionForm(s).then(html=>{openM2('EDIT SESSION',html);initSessionFormAC(s)});}
 async function initSessionFormAC(s={}){
@@ -1907,40 +2107,69 @@ async function delSession(id){
   if(!confirm('Delete this session?'))return;
   try{await fsDel('sessions',id);toast('Deleted','success');sessions();}
   catch(e){toast('Error: '+e.message,'error');}
+}// ══════════════════════════════════════════════════════════════
+// TIME CHART
+// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// TIME CHART — Full Replacement (Fixed)
+// Replace everything from async function timechart()
+// down to async function saveTcStatus(clientId)
+// ══════════════════════════════════════════════════════════════
+
+function injectTcStyles(){
+  if(document.getElementById('tc-styles'))return;
+  const s=document.createElement('style');s.id='tc-styles';
+  s.textContent=`
+.tc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:18px}
+.tc-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.tc-card:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.18)}
+.tc-card.s-onair{border-color:var(--green)!important}
+.tc-card.s-completed{border-color:var(--accent)!important}
+.tc-card.s-missed{border-color:var(--red)!important}
+.tc-ribbon{height:3px;width:100%}
+.tc-card-header{padding:13px 15px 10px;display:flex;align-items:flex-start;gap:10px;border-bottom:1px solid var(--border)}
+.tc-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0}
+.tc-card-body{padding:11px 15px}
+.tc-info-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px}
+.tc-info-lbl{color:var(--muted);min-width:52px;font-size:11px}
+.tc-info-val{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-action-bar{display:flex;gap:5px;padding:9px 14px;background:rgba(128,128,128,.04);border-top:1px solid var(--border);flex-wrap:wrap}
+.tc-qbtn{flex:1;min-width:56px;padding:6px 4px;border-radius:7px;border:none;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.3px;text-align:center}
+.tc-qbtn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.tc-qbtn.qb-start{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.tc-qbtn.qb-done{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(212,255,0,.3)}
+.tc-qbtn.qb-miss{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,68,68,.3)}
+.tc-qbtn.qb-reset{background:rgba(128,128,128,.1);color:var(--muted);border:1px solid var(--border2)}
+.tc-card-footer{display:flex;gap:6px;padding:8px 14px 12px}
+.tc-list-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.tc-list-row{display:grid;grid-template-columns:180px 26px 90px 100px 100px 58px 80px 110px 150px;gap:6px;align-items:center;padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.06);font-size:12px;transition:background .15s}
+.tc-list-row:hover{background:rgba(128,128,128,.04)}
+.tc-list-row:last-child{border-bottom:none}
+.tc-list-head{background:rgba(128,128,128,.07);font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)!important;padding-top:8px;padding-bottom:8px}
+.tc-view-toggle{display:flex;gap:3px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:3px}
+.tc-view-btn{padding:5px 12px;border-radius:6px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;color:var(--muted)}
+.tc-view-btn.active{background:var(--accent);color:#000}
+.tc-ftab{padding:6px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--bg);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tc-ftab.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.tc-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.tc-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--accent))}
+@media(max-width:768px){
+  .tc-grid{grid-template-columns:1fr}
+  .tc-list-row{grid-template-columns:1fr 1fr;gap:4px}
 }
+  `;
+  document.head.appendChild(s);
+}
+
 async function timechart(){
   $('page').innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto 10px"></div>Loading…</div>`;
   injectTcStyles();
 
-  const[clients,sessions,tcEntriesRaw]=await Promise.all([
+  const[clients,sessions,tcEntries]=await Promise.all([
     fsGetAll('clients',fn().where('active','==',true)),
     fsGetAll('sessions'),
     fsGetAll('timechart')
   ]);
-
-  // ── DEDUPLICATE TC ENTRIES ───────────────────────────────────
-  // Keep only one entry per clientId — prefer the most recently updated one
-  const tcByClient={};
-  for(const e of tcEntriesRaw){
-    if(!e.clientId)continue;
-    const existing=tcByClient[e.clientId];
-    if(!existing){
-      tcByClient[e.clientId]=e;
-    } else {
-      // keep the one with a sessionTime, or the newer one
-      const existingTs=existing.updatedAt?.seconds||existing.createdAt?.seconds||0;
-      const newTs=e.updatedAt?.seconds||e.createdAt?.seconds||0;
-      if((e.sessionTime&&!existing.sessionTime)||newTs>existingTs){
-        // delete the older duplicate from Firestore silently
-        fsDel('timechart',existing.id).catch(()=>{});
-        tcByClient[e.clientId]=e;
-      } else {
-        // delete the newer duplicate that is worse
-        fsDel('timechart',e.id).catch(()=>{});
-      }
-    }
-  }
-  const tcEntries=Object.values(tcByClient);
 
   const tcMap={};
   tcEntries.forEach(e=>{if(e.clientId)tcMap[e.clientId]=e;});
@@ -1949,27 +2178,12 @@ async function timechart(){
   const todaySessionsMap={};
   sessions.filter(s=>s.date===today).forEach(s=>{if(s.clientId)todaySessionsMap[s.clientId]=s.status;});
 
-  // ── BUILD ROWS ───────────────────────────────────────────────
-  // Only include clients that have a TC entry OR include all active clients
-  // (all active clients shown, ordered by their session time)
   const rows=clients.map(c=>{
     const tc=tcMap[c.id]||{};
     const liveStatus=todaySessionsMap[c.id]||tc.todayStatus||'not-started';
     const startDate=c.startDate||tc.startDate||'';
     const dayNum=startDate?Math.max(Math.floor((new Date()-new Date(startDate))/(1000*60*60*24))+1,1):0;
     return{client:c,tc,liveStatus,startDate,dayNum};
-  });
-
-  // ── SORT BY SESSION TIME ─────────────────────────────────────
-  // Clients WITH a session time come first (sorted by time), then clients without (sorted by name)
-  rows.sort((a,b)=>{
-    const tA=a.tc.sessionTime||a.client.sessionTime||'';
-    const tB=b.tc.sessionTime||b.client.sessionTime||'';
-    if(tA&&tB) return tA.localeCompare(tB);
-    if(tA&&!tB) return -1; // A has time, B doesn't → A first
-    if(!tA&&tB) return 1;  // B has time, A doesn't → B first
-    // Neither has time → sort by name
-    return (a.client.name||'').localeCompare(b.client.name||'');
   });
 
   const onairN=rows.filter(r=>r.liveStatus==='onair').length;
@@ -1979,6 +2193,7 @@ async function timechart(){
   const withEntry=rows.filter(r=>r.tc&&r.tc.id).length;
   const totalN=rows.length||1;
 
+  // store globally
   window._tcRows=rows;
   window._tcMap=tcMap;
   window._tcClients=clients;
@@ -2003,10 +2218,7 @@ async function timechart(){
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div>
         <div style="font-weight:700;font-size:16px">📋 Client Time Chart</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">
-          Persistent daily session tracker — ${clients.length} active clients
-          ${tcEntriesRaw.length>tcEntries.length?`<span style="color:var(--yellow);margin-left:8px">⚠️ Removed ${tcEntriesRaw.length-tcEntries.length} duplicate(s)</span>`:''}
-        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Persistent daily session tracker — ${clients.length} active clients</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         ${CR==='admin'?`<button class="btn btn-g btn-sm" onclick="exportTcPDF()">📥 Export PDF</button>`:''}
@@ -2017,11 +2229,31 @@ async function timechart(){
 
     <!-- KPI -->
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px">
-      <div class="tc-stat" style="--ac:var(--green)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">On Air</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);line-height:1">${onairN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Active now</div></div>
-      <div class="tc-stat" style="--ac:var(--accent)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Completed</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1">${completedN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Done today</div></div>
-      <div class="tc-stat" style="--ac:var(--red)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Missed</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);line-height:1">${missedN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Today</div></div>
-      <div class="tc-stat" style="--ac:var(--yellow)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pending</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--yellow);line-height:1">${pendingN}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not started</div></div>
-      <div class="tc-stat" style="--ac:var(--blue)"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Entries</div><div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);line-height:1">${withEntry}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">of ${clients.length} clients</div></div>
+      <div class="tc-stat" style="--ac:var(--green)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">On Air</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--green);line-height:1">${onairN}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Active now</div>
+      </div>
+      <div class="tc-stat" style="--ac:var(--accent)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Completed</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1">${completedN}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Done today</div>
+      </div>
+      <div class="tc-stat" style="--ac:var(--red)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Missed</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--red);line-height:1">${missedN}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Today</div>
+      </div>
+      <div class="tc-stat" style="--ac:var(--yellow)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pending</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--yellow);line-height:1">${pendingN}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Not started</div>
+      </div>
+      <div class="tc-stat" style="--ac:var(--blue)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Entries</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue);line-height:1">${withEntry}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">of ${clients.length} clients</div>
+      </div>
     </div>
 
     <!-- Progress bar -->
@@ -2046,12 +2278,12 @@ async function timechart(){
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">
       <input class="fi" id="tc-search" placeholder="🔍 Search client or trainer…" style="max-width:240px;margin:0;padding:8px 11px;font-size:12px" oninput="tcRender()">
       <div style="display:flex;gap:5px;flex-wrap:wrap;flex:1">
-        <button class="tc-ftab active" id="tcf-all"         onclick="tcSetFilter('all')">All (${rows.length})</button>
-        <button class="tc-ftab"       id="tcf-onair"        onclick="tcSetFilter('onair')">🟢 On Air (${onairN})</button>
-        <button class="tc-ftab"       id="tcf-completed"    onclick="tcSetFilter('completed')">✅ Done (${completedN})</button>
-        <button class="tc-ftab"       id="tcf-missed"       onclick="tcSetFilter('missed')">❌ Missed (${missedN})</button>
-        <button class="tc-ftab"       id="tcf-not-started"  onclick="tcSetFilter('not-started')">⏳ Pending (${pendingN})</button>
-        <button class="tc-ftab"       id="tcf-no-entry"     onclick="tcSetFilter('no-entry')">⚠️ No Entry</button>
+        <button class="tc-ftab active" id="tcf-all"          onclick="tcSetFilter('all')">All (${rows.length})</button>
+        <button class="tc-ftab"        id="tcf-onair"        onclick="tcSetFilter('onair')">🟢 On Air (${onairN})</button>
+        <button class="tc-ftab"        id="tcf-completed"    onclick="tcSetFilter('completed')">✅ Done (${completedN})</button>
+        <button class="tc-ftab"        id="tcf-missed"       onclick="tcSetFilter('missed')">❌ Missed (${missedN})</button>
+        <button class="tc-ftab"        id="tcf-not-started"  onclick="tcSetFilter('not-started')">⏳ Pending (${pendingN})</button>
+        <button class="tc-ftab"        id="tcf-no-entry"     onclick="tcSetFilter('no-entry')">⚠️ No Entry</button>
       </div>
       <div class="tc-view-toggle">
         <button class="tc-view-btn active" id="tcv-grid" onclick="tcSetView('grid')" title="Cards">⊞</button>
@@ -2108,6 +2340,7 @@ function tcRender(){
   el.innerHTML = window._tcView==='list' ? tcListHTML(rows) : tcGridHTML(rows);
 }
 
+// ── STATUS HELPERS ────────────────────────────────────────────
 const TC_S_COLOR={'onair':'var(--green)','completed':'var(--accent)','missed':'var(--red)','not-started':'var(--muted)'};
 const TC_S_ICON ={'onair':'🟢','completed':'✅','missed':'❌','not-started':'⏳'};
 const TC_S_LABEL={'onair':'On Air','completed':'Completed','missed':'Missed','not-started':'Pending'};
@@ -2126,8 +2359,8 @@ function tcGridHTML(rows){
     const isPlatinum=c.plan==='Platinum'||c.plan==='Platinum Plus';
     const tcId=tc.id||'';
     const cId=c.id;
-    const sessionTime=tc.sessionTime||c.sessionTime||'';
 
+    // action bar buttons based on current status
     let actionBtns='';
     if(liveStatus==='not-started'){
       actionBtns=`
@@ -2163,7 +2396,7 @@ function tcGridHTML(rows){
         <div class="tc-info-row">
           <span style="font-size:13px">🕐</span>
           <span class="tc-info-lbl">Time</span>
-          <span class="tc-info-val" style="color:var(--accent);font-family:'JetBrains Mono',monospace">${sessionTime?to12h(sessionTime):'<em style="color:var(--muted2);font-style:normal">Not set</em>'}</span>
+          <span class="tc-info-val" style="color:var(--accent);font-family:'JetBrains Mono',monospace">${tc.sessionTime?to12h(tc.sessionTime):'<em style="color:var(--muted2);font-style:normal">Not set</em>'}</span>
         </div>
         <div class="tc-info-row">
           <span style="font-size:13px">🧑‍🏫</span>
@@ -2175,18 +2408,20 @@ function tcGridHTML(rows){
           <span class="tc-info-lbl">Type</span>
           <span class="tc-info-val">${tc.sessionType||c.goal||'—'}</span>
         </div>
-        ${startDate?`<div class="tc-info-row"><span style="font-size:13px">📅</span><span class="tc-info-lbl">Start</span><span class="tc-info-val">${startDate}</span></div>`:''}
+        ${startDate?`<div class="tc-info-row">
+          <span style="font-size:13px">📅</span>
+          <span class="tc-info-lbl">Start</span>
+          <span class="tc-info-val">${startDate}</span>
+        </div>`:''}
         ${tc.remarks?`<div style="margin-top:6px;padding:5px 9px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--muted)">📝 ${tc.remarks}</div>`:''}
         ${isPlatinum?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--purple-dim);color:var(--purple)">💎 Platinum Fixed</span></div>`:''}
-        ${!tc.id?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--yellow-dim);color:var(--yellow)">⚠️ No TC Entry</span></div>`:''}
+        ${!tc.id?`<div style="margin-top:6px"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:var(--red-dim);color:var(--red)">⚠️ No TC Entry</span></div>`:''}
       </div>
       <div class="tc-action-bar">${actionBtns}</div>
       <div class="tc-card-footer">
         <button class="btn btn-g btn-sm" style="flex:1" onclick="openEditTcEntry('${cId}')">✏ Edit</button>
         <button class="btn btn-bl btn-sm" style="flex:1" onclick="tcViewDetail('${cId}')">👁 Detail</button>
-        ${canDelete&&tcId
-          ?`<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}',event)">🗑</button>`
-          :''}
+        ${canDelete&&tcId?`<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}')">🗑</button>`:''}
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -2206,7 +2441,6 @@ function tcListHTML(rows){
       const ini=(c.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
       const tcId=tc.id||'';
       const cId=c.id;
-      const sessionTime=tc.sessionTime||c.sessionTime||'';
       return`<div class="tc-list-row" style="border-left:3px solid ${sc}">
         <div style="display:flex;align-items:center;gap:7px;min-width:0">
           <div style="width:26px;height:26px;border-radius:50%;background:${pc}20;color:${pc};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0">${ini}</div>
@@ -2216,7 +2450,7 @@ function tcListHTML(rows){
           </div>
         </div>
         <div><span style="font-size:10px;font-weight:700;color:${pc}">${c.plan?c.plan.substring(0,3).toUpperCase():'—'}</span></div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:700">${sessionTime?to12h(sessionTime):'—'}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:700">${tc.sessionTime?to12h(tc.sessionTime):'—'}</div>
         <div style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${tc.trainerName||c.trainerName||'—'}</div>
         <div style="font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${tc.sessionType||c.goal||'—'}</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple)">${dayNum||'—'}</div>
@@ -2226,7 +2460,7 @@ function tcListHTML(rows){
           <div style="display:flex;gap:4px;flex-wrap:nowrap">
             <button class="btn btn-g btn-sm" onclick="openEditTcEntry('${cId}')">Edit</button>
             <button class="btn btn-g btn-sm" onclick="openTcStatus('${cId}','${(c.name||'').replace(/'/g,"\\'")}')">Status</button>
-            ${canDelete&&tcId?`<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}',event)">Del</button>`:''}
+            ${canDelete&&tcId?`<button class="btn btn-d btn-sm" onclick="delTcEntry('${tcId}','${cId}')">Del</button>`:''}
           </div>
         </div>
       </div>`;
@@ -2234,30 +2468,43 @@ function tcListHTML(rows){
   </div>`;
 }
 
-// ── QUICK STATUS ──────────────────────────────────────────────
+// ── QUICK STATUS (card buttons — no page reload) ──────────────
 async function tcQuickStatus(tcId,status,clientId){
   const today=getTodayStr();
   try{
     if(tcId){
       await fsUpdate('timechart',tcId,{todayStatus:status,lastStatusUpdate:today});
     }else{
+      // no entry yet — create
       const c=(window._tcClients||[]).find(x=>x.id===clientId)||{};
       const ref=await fsAdd('timechart',{
-        clientId,clientName:c.name||'',trainerName:c.trainerName||'',
-        trainerId:c.trainerId||'',sessionTime:c.sessionTime||'',
+        clientId,
+        clientName:c.name||'',
+        trainerName:c.trainerName||'',
+        trainerId:c.trainerId||'',
+        sessionTime:c.sessionTime||'',
         sessionType:c.sessionType||c.goal||'',
-        todayStatus:status,lastStatusUpdate:today
+        todayStatus:status,
+        lastStatusUpdate:today
       });
+      // patch map
       if(!window._tcMap)window._tcMap={};
       window._tcMap[clientId]={id:ref.id,clientId,todayStatus:status,lastStatusUpdate:today};
     }
+    // patch rows in memory
     if(window._tcRows){
       const row=window._tcRows.find(r=>r.client.id===clientId||(tcId&&r.tc&&r.tc.id===tcId));
-      if(row){row.liveStatus=status;if(row.tc)row.tc.todayStatus=status;if(tcId&&row.tc)row.tc.id=tcId;}
+      if(row){
+        row.liveStatus=status;
+        if(row.tc)row.tc.todayStatus=status;
+        if(tcId&&row.tc)row.tc.id=tcId;
+      }
     }
     toast(`Status → ${TC_S_LABEL[status]||status}`,'success');
     tcRender();
-  }catch(e){toast('Error: '+e.message,'error');}
+  }catch(e){
+    toast('Error: '+e.message,'error');
+  }
 }
 
 // ── CLIENT DETAIL MODAL ───────────────────────────────────────
@@ -2271,8 +2518,8 @@ async function tcViewDetail(clientId){
   const startDate=c.startDate||tc.startDate||'';
   const dayNum=startDate?Math.max(Math.floor((new Date()-new Date(startDate))/(1000*60*60*24))+1,1):0;
   const sc=TC_S_COLOR[tc.todayStatus||'not-started']||'var(--yellow)';
-  const sessionTime=tc.sessionTime||c.sessionTime||'';
 
+  // load recent sessions
   let recentSessions=[];
   try{recentSessions=await fsGetAll('sessions',fn().where('clientId','==',clientId));}catch(e){}
   recentSessions.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -2286,6 +2533,8 @@ async function tcViewDetail(clientId){
         <div style="font-weight:700;font-size:15px">${c.name||'—'}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
           <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:9px;background:${pc}20;color:${pc}">${c.plan||'—'}</span>
+          ${c.plan==='Platinum'||c.plan==='Platinum Plus'?`<span class="badge b-p" style="font-size:9px">💎 Fixed</span>`:''}
+          ${c.plan==='Couple'?`<span class="badge b-pk" style="font-size:9px">👫 Couple</span>`:''}
         </div>
       </div>
       <div style="text-align:right">
@@ -2293,21 +2542,34 @@ async function tcViewDetail(clientId){
         <div style="font-size:10px;color:var(--muted)">Day of Programme</div>
       </div>
     </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-      <div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.2);border-radius:9px;padding:11px;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)">${recentSessions.length}</div><div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px">Sessions</div></div>
-      <div style="background:var(--green-dim);border:1px solid rgba(0,230,118,.2);border-radius:9px;padding:11px;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green)">${completedC}</div><div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Completed</div></div>
-      <div style="background:var(--red-dim);border:1px solid rgba(255,68,68,.2);border-radius:9px;padding:11px;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--red)">${missedC}</div><div style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px">Missed</div></div>
+      <div style="background:var(--accent-dim);border:1px solid rgba(212,255,0,.2);border-radius:9px;padding:11px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)">${recentSessions.length}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--accent)">SESSIONS</div>
+      </div>
+      <div style="background:var(--green-dim);border:1px solid rgba(0,230,118,.2);border-radius:9px;padding:11px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green)">${completedC}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--green)">COMPLETED</div>
+      </div>
+      <div style="background:var(--red-dim);border:1px solid rgba(255,68,68,.2);border-radius:9px;padding:11px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--red)">${missedC}</div>
+        <div style="font-size:10px;font-weight:700;color:var(--red)">MISSED</div>
+      </div>
     </div>
+
     <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:13px">
       <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:9px">📋 Schedule</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
-        <div><span style="color:var(--muted)">Time:</span> <strong style="color:var(--accent)">${sessionTime?to12h(sessionTime):'Not set'}</strong></div>
+        <div><span style="color:var(--muted)">Time:</span> <strong style="color:var(--accent)">${tc.sessionTime?to12h(tc.sessionTime):'Not set'}</strong></div>
         <div><span style="color:var(--muted)">Type:</span> <strong>${tc.sessionType||c.goal||'—'}</strong></div>
         <div><span style="color:var(--muted)">Trainer:</span> <strong>${tc.trainerName||c.trainerName||'—'}</strong></div>
         <div><span style="color:var(--muted)">Start Date:</span> <strong>${startDate||'—'}</strong></div>
+        ${c.preferredDays?`<div><span style="color:var(--muted)">Days:</span> <strong>${c.preferredDays}</strong></div>`:''}
       </div>
       ${tc.remarks?`<div style="margin-top:9px;padding:7px 10px;background:var(--surface);border-radius:7px;font-size:11px;color:var(--muted)">📝 ${tc.remarks}</div>`:''}
     </div>
+
     <div style="background:${sc}15;border:1px solid ${sc}30;border-radius:10px;padding:11px 14px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div>
         <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">Today's Status</div>
@@ -2319,22 +2581,29 @@ async function tcViewDetail(clientId){
         <button class="btn btn-d btn-sm" onclick="tcQuickStatus('${tc.id||''}','missed','${clientId}');closeM2()">✗ Miss</button>
       </div>
     </div>
+
     ${recentSessions.length>0?`
     <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden">
       <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:9px 13px;border-bottom:1px solid var(--border)">Recent Sessions</div>
-      ${recentSessions.slice(0,5).map(s=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid rgba(128,128,128,.06)">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);min-width:68px">${to12h(s.time)}</div>
-        <div style="flex:1"><div style="font-size:12px;font-weight:600">${s.date||'—'}</div><div style="font-size:11px;color:var(--muted)">${s.type||'—'}</div></div>
-        ${statusBadge(s.status)}
-      </div>`).join('')}
+      ${recentSessions.slice(0,5).map(s=>{
+        const s2c=TC_S_COLOR[s.status]||'var(--muted)';
+        return`<div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid rgba(128,128,128,.06)">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);min-width:68px">${to12h(s.time)}</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:600">${s.date||'—'}</div><div style="font-size:11px;color:var(--muted)">${s.type||'—'}</div></div>
+          ${statusBadge(s.status)}
+          ${s.meetLink?`<a href="${s.meetLink}" target="_blank" style="color:var(--accent);font-size:11px">🔗</a>`:''}
+        </div>`;
+      }).join('')}
     </div>`:''}
+
     <div class="mo-foot">
       <button class="btn btn-g" onclick="closeM2();openEditTcEntry('${clientId}')">✏ Edit</button>
       <button class="btn btn-g" onclick="closeM2()">Close</button>
-    </div>`);
+    </div>
+  `);
 }
 
-// ── ADD ENTRY ─────────────────────────────────────────────────
+// ── ADD ENTRY MODAL ───────────────────────────────────────────
 async function openAddTcEntry(){
   const clients=window._tcClients||await fsGetAll('clients',fn().where('active','==',true));
   openM1('ADD TIME CHART ENTRY',`
@@ -2360,7 +2629,7 @@ async function openAddTcEntry(){
   attachClientAC('tc-client-inp','tc-client-id',clients);
 }
 
-// ── EDIT ENTRY ────────────────────────────────────────────────
+// ── EDIT ENTRY MODAL ──────────────────────────────────────────
 async function openEditTcEntry(clientId){
   const clients=window._tcClients||await fsGetAll('clients',fn().where('active','==',true));
   const c=clients.find(x=>x.id===clientId)||{};
@@ -2403,8 +2672,10 @@ async function saveTcEntry(existingId='',fixedClientId=''){
   const remarks=document.getElementById('tc-remarks')?.value||'';
   const client=(window._tcClients||[]).find(x=>x.id===clientId)||{};
   const data={
-    clientId,clientName:clientName||client?.name||'',
-    trainerName:client?.trainerName||'',trainerId:client?.trainerId||'',
+    clientId,
+    clientName:clientName||client?.name||'',
+    trainerName:client?.trainerName||'',
+    trainerId:client?.trainerId||'',
     sessionTime,sessionType,remarks
   };
   try{
@@ -2412,15 +2683,13 @@ async function saveTcEntry(existingId='',fixedClientId=''){
       await fsUpdate('timechart',existingId,data);
       toast('Entry updated!','success');
     }else{
-      // Check if an entry already exists for this client — update instead of creating duplicate
       const existing=(window._tcMap||{})[clientId];
       if(existing&&existing.id){
         await fsUpdate('timechart',existing.id,data);
-        toast('Entry updated!','success');
       }else{
         await fsAdd('timechart',data);
-        toast('Entry saved!','success');
       }
+      toast('Entry saved!','success');
     }
     closeM1();
     timechart();
@@ -2428,28 +2697,16 @@ async function saveTcEntry(existingId='',fixedClientId=''){
 }
 
 // ── DELETE ENTRY ──────────────────────────────────────────────
-async function delTcEntry(tcId,clientId,event){
-  // stop event bubbling so card click doesn't fire
-  if(event){event.stopPropagation();event.preventDefault();}
-  if(!tcId){toast('No Time Chart entry to delete for this client','warn');return;}
-  if(!confirm('Delete this Time Chart entry permanently?'))return;
+async function delTcEntry(tcId,clientId){
+  if(!confirm('Delete this time chart entry permanently?'))return;
   try{
     await fsDel('timechart',tcId);
     toast('Deleted','success');
-    // Remove from local state so UI updates immediately
-    if(window._tcMap&&clientId)delete window._tcMap[clientId];
-    if(window._tcRows){
-      const row=window._tcRows.find(r=>r.client.id===clientId);
-      if(row){row.tc={};row.liveStatus='not-started';}
-    }
-    tcRender(); // re-render without full reload
-  }catch(e){
-    console.error('[delTcEntry]',e);
-    toast('Error: '+e.message,'error');
-  }
+    timechart();
+  }catch(e){toast('Error: '+e.message,'error');}
 }
 
-// ── STATUS MODAL ──────────────────────────────────────────────
+// ── STATUS MODAL (list view) ───────────────────────────────────
 async function openTcStatus(clientId,clientName){
   const tc=(window._tcMap||{})[clientId]||{};
   const current=tc.todayStatus||'not-started';
@@ -2460,7 +2717,12 @@ async function openTcStatus(clientId,clientName){
     </div>
     <div class="fg"><label class="fl">Set Today's Status</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        ${[['not-started','⏳','Pending'],['onair','🟢','On Air'],['completed','✅','Completed'],['missed','❌','Missed']].map(([val,icon,label])=>`
+        ${[
+          ['not-started','⏳','Pending','var(--yellow)','var(--yellow-dim)'],
+          ['onair','🟢','On Air','var(--green)','var(--green-dim)'],
+          ['completed','✅','Completed','var(--accent)','var(--accent-dim)'],
+          ['missed','❌','Missed','var(--red)','var(--red-dim)']
+        ].map(([val,icon,label])=>`
           <label id="tcs-opt-${val}" onclick="selectTcStatusCard('${val}')"
             style="display:flex;align-items:center;gap:9px;padding:11px 13px;border:2px solid var(--border2);border-radius:9px;cursor:pointer;background:var(--bg);transition:all .15s">
             <span style="font-size:18px">${icon}</span>
@@ -2477,13 +2739,24 @@ async function openTcStatus(clientId,clientName){
 }
 
 function selectTcStatusCard(val){
-  const cols={'not-started':['var(--yellow)','var(--yellow-dim)'],'onair':['var(--green)','var(--green-dim)'],'completed':['var(--accent)','var(--accent-dim)'],'missed':['var(--red)','var(--red-dim)']};
+  const cols={
+    'not-started':['var(--yellow)','var(--yellow-dim)'],
+    'onair':['var(--green)','var(--green-dim)'],
+    'completed':['var(--accent)','var(--accent-dim)'],
+    'missed':['var(--red)','var(--red-dim)']
+  };
   ['not-started','onair','completed','missed'].forEach(v=>{
-    const el=document.getElementById('tcs-opt-'+v);if(!el)return;
-    if(v===val){const[c,bg]=cols[v]||['var(--accent)','var(--accent-dim)'];el.style.borderColor=c;el.style.background=bg;}
-    else{el.style.borderColor='var(--border2)';el.style.background='var(--bg)';}
+    const el=document.getElementById('tcs-opt-'+v);
+    if(!el)return;
+    if(v===val){
+      const[c,bg]=cols[v]||['var(--accent)','var(--accent-dim)'];
+      el.style.borderColor=c;el.style.background=bg;
+    }else{
+      el.style.borderColor='var(--border2)';el.style.background='var(--bg)';
+    }
   });
-  const h=document.getElementById('tcs-val');if(h)h.value=val;
+  const h=document.getElementById('tcs-val');
+  if(h)h.value=val;
 }
 
 async function saveTcStatusFromModal(tcId,clientId){
@@ -2513,10 +2786,11 @@ async function exportTcPDF(){
     }
 
     pageBase();
+    // Cover content
     doc.setTextColor(212,255,0);doc.setFontSize(22);doc.setFont('helvetica','bold');
     doc.text('CLIENT TIME CHART',pw/2,42,{align:'center'});
     doc.setTextColor(200,200,210);doc.setFontSize(10);doc.setFont('helvetica','normal');
-    doc.text(`${getTodayStr()}  ·  ${rows.length} Active Clients  ·  Sorted by Session Time`,pw/2,52,{align:'center'});
+    doc.text(`${getTodayStr()}  ·  ${rows.length} Active Clients`,pw/2,52,{align:'center'});
 
     const onairN=rows.filter(r=>r.liveStatus==='onair').length;
     const completedN=rows.filter(r=>r.liveStatus==='completed').length;
@@ -2533,6 +2807,7 @@ async function exportTcPDF(){
       doc.text(l,bx+bw/2,81,{align:'center'});
     });
 
+    // Table page
     doc.addPage();pageBase();
     let y=22;
     const headers=['CLIENT','PLAN','TIME','TRAINER','TYPE','DAY','STATUS','REMARKS'];
@@ -2554,14 +2829,13 @@ async function exportTcPDF(){
       const sc={onair:[0,200,110],completed:[212,255,0],missed:[255,75,75],'not-started':[255,190,0]}[liveStatus]||[136,136,136];
       const planCols={Silver:[136,136,136],Gold:[255,187,0],Platinum:[170,102,255],'Platinum Plus':[170,102,255],'Corporate Fitness':[77,159,255],Couple:[255,105,180]};
       const pc2=planCols[c.plan]||[136,136,136];
-      const sessionTime=tc.sessionTime||c.sessionTime||'';
       cx=8;
       doc.setTextColor(220,225,235);doc.setFontSize(7.5);doc.setFont('helvetica','bold');
       doc.text((c.name||'—').substring(0,20),cx,y+5.5);cx+=cw[0];
       doc.setTextColor(...pc2);doc.setFont('helvetica','normal');doc.setFontSize(6.5);
       doc.text((c.plan||'—').substring(0,8),cx,y+5.5);cx+=cw[1];
       doc.setTextColor(212,255,0);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
-      doc.text(sessionTime?to12h(sessionTime):'—',cx,y+5.5);cx+=cw[2];
+      doc.text(tc.sessionTime?to12h(tc.sessionTime):'—',cx,y+5.5);cx+=cw[2];
       doc.setTextColor(220,225,235);doc.setFont('helvetica','normal');doc.setFontSize(7);
       doc.text((tc.trainerName||c.trainerName||'—').substring(0,14),cx,y+5.5);cx+=cw[3];
       doc.text((tc.sessionType||c.goal||'—').substring(0,12),cx,y+5.5);cx+=cw[4];
@@ -2586,7 +2860,10 @@ async function exportTcPDF(){
     }
     doc.save(`GYH_TimeChart_${getTodayStr()}.pdf`);
     toast('✅ PDF exported!','success');
-  }catch(e){toast('Export error: '+e.message,'error');console.error('[TC PDF]',e);}
+  }catch(e){
+    toast('Export error: '+e.message,'error');
+    console.error('[TC PDF]',e);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
