@@ -3,493 +3,554 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GYM AT YOUR HOME | Elite Home Fitness</title>
+<title>GYM AT YOUR HOME | Premium Home Fitness</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --orange:#FF6B00;--orange-dark:#E05A00;--orange-glow:rgba(255,107,0,0.25);
-  --bg:#0f0f0f;--bg2:#161616;--bg3:#1e1e1e;--bg4:#252525;
-  --text:#f0ede8;--text2:#b0a89e;--text3:#6e6460;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
-  --wa:#25D366;--max:1200px;
+  --orange:#ff6b00;--orange-dim:rgba(255,107,0,0.15);--orange-glow:rgba(255,107,0,0.3);
+  --bg:#0e0e0e;--bg2:#1a1919;--bg3:#201f1f;--bg4:#2a2a2a;--bg5:#353534;
+  --text:#e5e2e1;--text2:#bab8b7;--text3:#6b6968;
+  --border:rgba(255,255,255,0.08);--wa:#25D366;--max:1280px;
 }
 html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;font-size:16px;line-height:1.6;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* VIDEO INTRO */
+#video-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease,transform 1.2s ease;}
+#video-overlay.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
+#intro-video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0.45;}
+.vo-content{position:relative;z-index:2;text-align:center;padding:0 24px;}
+.vo-logo{font-family:'Oswald',sans-serif;font-size:clamp(32px,5.5vw,68px);font-weight:700;text-transform:uppercase;color:#fff;text-shadow:0 0 80px rgba(255,107,0,1);letter-spacing:0.04em;animation:fadeUp .9s ease both;}
+.vo-logo span{color:var(--orange);}
+.vo-tag{color:rgba(255,255,255,0.65);font-size:clamp(11px,1.4vw,15px);margin-top:14px;letter-spacing:0.15em;text-transform:uppercase;animation:fadeUp 1.2s ease both;}
+.vo-divider{width:60px;height:2px;background:var(--orange);margin:20px auto;animation:fadeUp 1.4s ease both;}
+.vo-desc{color:rgba(255,255,255,0.5);font-size:clamp(12px,1.2vw,14px);max-width:480px;line-height:1.7;animation:fadeUp 1.5s ease both;}
+.vo-skip{margin-top:32px;background:rgba(255,107,0,0.15);border:1px solid var(--orange);color:#fff;padding:13px 38px;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;transition:all .25s;animation:fadeUp 1.7s ease both;backdrop-filter:blur(10px);}
+.vo-skip:hover{background:var(--orange);box-shadow:0 0 30px rgba(255,107,0,0.5);}
+.vo-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(to right,var(--orange),#ffaa00);animation:vprog 7s linear forwards;}
+@keyframes vprog{from{width:0}to{width:100%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
 /* NAV */
-nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(15,15,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;}
-.nav-inner{width:100%;max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;align-items:center;}
-.logo{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:0.04em;color:var(--text);display:flex;align-items:center;gap:10px;}
+nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(14,14,14,0.9);backdrop-filter:blur(28px);border-bottom:1px solid rgba(255,107,0,0.1);transition:all .3s;}
+.nav-inner{max-width:var(--max);margin:0 auto;padding:14px 48px;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;color:#fff;letter-spacing:0.03em;}
 .logo span{color:var(--orange);}
-.nav-cta{background:var(--orange);color:#fff;border:none;padding:9px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;}
-.nav-cta:hover{background:var(--orange-dark);}
-
-/* WRAPPER */
-.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+.nav-links{display:none;}
+@media(min-width:768px){.nav-links{display:flex;gap:28px;align-items:center;}}
+.nav-links a{font-size:12px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:rgba(229,226,225,0.55);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--orange);}
+.nav-cta{background:linear-gradient(135deg,#ff6b00,#e05500);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all .2s;box-shadow:0 0 18px rgba(255,107,0,0.3);}
+.nav-cta:hover{transform:scale(0.97);box-shadow:0 0 28px rgba(255,107,0,0.5);}
 
 /* HERO */
-.hero{min-height:100vh;position:relative;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;z-index:0;}
-.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:0.45;}
-.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#0f0f0f 35%,rgba(15,15,15,0.6) 70%,rgba(15,15,15,0.25) 100%);}
-.hero-orb{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.12) 0%,transparent 70%);top:-150px;right:-150px;z-index:1;}
-.hero-content{position:relative;z-index:2;padding:120px 24px 56px;max-width:var(--max);margin:0 auto;width:100%;}
-.hero-inner{max-width:600px;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,107,0,0.12);border:1px solid rgba(255,107,0,0.3);color:var(--orange);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:22px;}
-.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.4);}}
-.hero h1{font-family:'Oswald',sans-serif;font-size:clamp(40px,6vw,76px);line-height:1.05;font-weight:700;text-transform:uppercase;margin-bottom:18px;letter-spacing:-0.01em;}
-.hero h1 span{color:var(--orange);}
-.hero p{font-size:clamp(15px,2vw,18px);color:var(--text2);max-width:480px;margin-bottom:32px;line-height:1.7;}
-.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
-.btn-primary{background:var(--orange);color:#fff;border:none;padding:16px 28px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;box-shadow:0 0 30px var(--orange-glow);transition:all .2s;display:flex;align-items:center;gap:8px;}
-.btn-primary:hover{background:var(--orange-dark);transform:translateY(-2px);}
-.btn-secondary{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border2);padding:16px 28px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all .2s;display:flex;align-items:center;gap:8px;}
-.btn-secondary:hover{background:rgba(255,255,255,0.09);}
-.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px;max-width:420px;}
-.hero-stat{background:var(--bg2);padding:18px 10px;text-align:center;}
-.hero-stat-num{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:var(--orange);}
-.hero-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-top:2px;}
+.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;padding-top:72px;}
+.hero-vid{position:absolute;inset:0;z-index:1;}
+.hero-vid video{width:100%;height:100%;object-fit:cover;opacity:0.3;}
+.hero-vid::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(14,14,14,0.98) 30%,rgba(14,14,14,0.55) 65%,rgba(14,14,14,0.1) 100%),linear-gradient(to top,rgba(14,14,14,0.95) 0%,transparent 45%);}
+.hero-ring{position:absolute;top:6%;right:2%;width:480px;height:480px;border-radius:50%;border:1px solid rgba(255,107,0,0.1);animation:spin 30s linear infinite;z-index:2;}
+.hero-ring::before{content:'';position:absolute;inset:40px;border-radius:50%;border:1px dashed rgba(255,107,0,0.06);animation:spin 22s linear infinite reverse;}
+.hero-ring::after{content:'';position:absolute;inset:90px;border-radius:50%;border:1px solid rgba(255,107,0,0.04);}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-content{position:relative;z-index:3;max-width:var(--max);margin:0 auto;padding:0 48px;width:100%;}
+.hero-inner{max-width:700px;}
+.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.hero-eyebrow::before{content:'';width:32px;height:2px;background:var(--orange);}
+.hero h1{font-family:'Oswald',sans-serif;font-size:clamp(46px,7vw,84px);line-height:.98;font-weight:700;text-transform:uppercase;margin-bottom:22px;color:#fff;letter-spacing:-0.02em;}
+.hero h1 .hl{color:var(--orange);text-shadow:0 0 60px rgba(255,107,0,0.4);}
+.hero p{font-size:clamp(15px,1.8vw,17px);color:rgba(229,226,225,0.7);max-width:540px;margin-bottom:38px;line-height:1.8;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:52px;}
+.btn-primary{background:linear-gradient(135deg,#ff6b00,#e05500);color:#fff;border:none;padding:17px 36px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;box-shadow:0 0 28px rgba(255,107,0,0.4);transition:all .3s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(255,107,0,0.6);}
+.btn-outline{background:rgba(255,255,255,0.04);color:var(--text);border:1px solid rgba(229,226,225,0.15);padding:17px 36px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;backdrop-filter:blur(8px);transition:all .3s;}
+.btn-outline:hover{border-color:var(--orange);color:#fff;}
+.hero-nums{display:flex;gap:40px;flex-wrap:wrap;}
+.hero-num-val{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;color:var(--orange);line-height:1;}
+.hero-num-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:4px;}
 
-/* GOOGLE REVIEWS */
-.reviews-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 24px;overflow-x:auto;}
-.reviews-bar-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;gap:20px;}
-.g-badge{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.g-logo{width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#4285F4;flex-shrink:0;}
-.g-rating{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;line-height:1;}
-.g-stars{color:#FBBC05;font-size:14px;}
-.g-count{font-size:11px;color:var(--text3);}
-.reviews-divider{width:1px;height:44px;background:var(--border);flex-shrink:0;}
-.reviews-cards{display:flex;gap:14px;overflow-x:auto;padding-bottom:4px;}
-.review-mini{flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;width:240px;}
-.review-mini .stars{color:#FBBC05;font-size:12px;}
-.review-mini p{font-size:12px;color:var(--text2);margin-top:5px;line-height:1.5;}
-.review-mini .reviewer{font-size:11px;color:var(--text3);margin-top:6px;font-weight:600;}
+/* GLASS */
+.glass{background:rgba(16,15,15,0.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.07);border-radius:14px;transition:all .35s;}
+.glass:hover{border-color:rgba(255,107,0,0.35);box-shadow:0 0 36px rgba(255,107,0,0.1);}
 
-/* SECTION COMMONS */
-section{padding:72px 0;}
-.section-wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
-.section-tag{font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
-.section-title{font-family:'Oswald',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;text-transform:uppercase;line-height:1.1;margin-bottom:14px;}
-.section-sub{font-size:16px;color:var(--text2);margin-bottom:40px;line-height:1.7;max-width:560px;}
+/* SECTIONS */
+.section{padding:96px 0;position:relative;z-index:1;}
+.section-inner{max-width:var(--max);margin:0 auto;padding:0 48px;}
+.section-head{text-align:center;margin-bottom:60px;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
+.section-head h2{font-family:'Oswald',sans-serif;font-size:clamp(30px,3.8vw,50px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:14px;}
+.section-bar{width:56px;height:3px;background:var(--orange);margin:0 auto;border-radius:2px;}
+.sect-alt{background:rgba(10,10,10,0.7);}
 
-/* SERVICES */
-.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
-.service-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:26px;transition:all .2s;position:relative;overflow:hidden;}
-.service-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);border-radius:3px 0 0 3px;opacity:0;transition:.2s;}
-.service-card:hover{border-color:rgba(255,107,0,0.3);transform:translateY(-3px);}
-.service-card:hover::before{opacity:1;}
-.service-icon{width:52px;height:52px;background:rgba(255,107,0,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;}
-.service-card h3{font-family:'Oswald',sans-serif;font-size:20px;font-weight:600;text-transform:uppercase;margin-bottom:8px;}
-.service-card p{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
-.service-tags{display:flex;flex-wrap:wrap;gap:6px;}
-.tag{background:var(--bg4);border:1px solid var(--border);padding:4px 10px;border-radius:100px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);}
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr;gap:56px;align-items:center;}
+@media(min-width:900px){.about-grid{grid-template-columns:1fr 1fr;}}
+.about-img-wrap{position:relative;}
+.about-img-wrap::before{content:'';position:absolute;inset:-20px;background:rgba(255,107,0,0.06);border-radius:50%;filter:blur(50px);z-index:0;}
+.about-img-wrap img{position:relative;z-index:1;width:100%;border-radius:18px;border:1px solid rgba(255,255,255,0.05);transition:filter .7s;filter:grayscale(0.3);}
+.about-img-wrap:hover img{filter:grayscale(0);}
+.about-text .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
+.about-text h2{font-family:'Oswald',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:18px;line-height:1.05;}
+.about-text p{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:32px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.stat-card{padding:22px;border-radius:12px;}
+.stat-val{font-family:'Oswald',sans-serif;font-size:38px;font-weight:700;color:var(--orange);line-height:1;}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:5px;}
 
-/* WHY US */
-.why-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
-.why-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:22px 18px;text-align:center;}
-.why-icon{font-size:30px;margin-bottom:10px;}
-.why-card h4{font-family:'Oswald',sans-serif;font-size:15px;font-weight:600;text-transform:uppercase;margin-bottom:6px;}
-.why-card p{font-size:13px;color:var(--text2);line-height:1.5;}
+/* PROGRAMS */
+.programs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+.prog-card{border-radius:14px;overflow:hidden;cursor:pointer;}
+.prog-card .img-wrap{height:200px;overflow:hidden;position:relative;}
+.prog-card .img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+.prog-card:hover .img-wrap img{transform:scale(1.08);}
+.prog-card .img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(14,14,14,0.95) 0%,transparent 55%);}
+.prog-card .card-body{padding:20px 22px 24px;}
+.prog-card h3{font-family:'Oswald',sans-serif;font-size:21px;font-weight:600;text-transform:uppercase;margin-bottom:7px;color:#fff;}
+.prog-card p{font-size:13px;color:var(--text2);line-height:1.65;}
 
 /* HOW IT WORKS */
-.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;position:relative;}
-@media(min-width:640px){
-  .steps-grid{display:flex;align-items:flex-start;gap:0;}
-  .step{flex:1;}
-  .step-line{display:none;}
-  .step-connector{flex:1;height:2px;background:linear-gradient(to right,var(--orange),rgba(255,107,0,0.1));margin-top:22px;min-width:30px;}
-}
-.step{display:flex;gap:16px;position:relative;padding-bottom:32px;}
-.step:last-child{padding-bottom:0;}
-@media(min-width:640px){.step{flex-direction:column;align-items:center;text-align:center;gap:14px;padding-bottom:0;}}
-.step-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
-@media(min-width:640px){.step-left{flex-direction:row;justify-content:center;}}
-.step-num{width:46px;height:46px;border-radius:50%;background:var(--orange);color:#fff;font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px var(--orange-glow);}
-.step-vline{width:2px;flex:1;background:linear-gradient(to bottom,var(--orange),rgba(255,107,0,0.1));margin-top:6px;}
-.step:last-child .step-vline{display:none;}
-@media(min-width:640px){.step-vline{display:none;}}
-.step-content h4{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;margin-bottom:6px;}
-.step-content p{font-size:14px;color:var(--text2);line-height:1.6;}
-@media(min-width:640px){.step-content{padding-top:0;}}
+.steps-track{position:relative;}
+.steps-line{display:none;}
+@media(min-width:900px){.steps-line{display:block;position:absolute;top:32px;left:0;right:0;height:1px;background:rgba(255,107,0,0.12);z-index:0;}}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:28px;position:relative;z-index:1;}
+.step{text-align:center;}
+.step-icon{width:64px;height:64px;border-radius:50%;background:var(--bg3);border:2px solid rgba(255,107,0,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:26px;transition:all .3s;}
+.step:hover .step-icon{background:rgba(255,107,0,0.15);border-color:var(--orange);box-shadow:0 0 24px rgba(255,107,0,0.2);}
+.step h4{font-family:'Oswald',sans-serif;font-size:17px;font-weight:600;text-transform:uppercase;margin-bottom:7px;color:#fff;}
+.step p{font-size:13px;color:var(--text3);line-height:1.6;}
 
 /* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:start;}
-.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:30px;}
-.price-card.featured{border-color:var(--orange);box-shadow:0 0 40px var(--orange-glow);position:relative;}
-.featured-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 18px;border-radius:100px;white-space:nowrap;}
-.price-tier{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
-.price-card.featured .price-tier{color:var(--orange);}
-.price-amount{font-family:'Oswald',sans-serif;font-size:44px;font-weight:700;line-height:1;margin-bottom:4px;}
-.price-period{font-size:13px;color:var(--text3);margin-bottom:4px;}
-.price-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5;}
-.price-features{list-style:none;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;}
-.price-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2);}
-.price-features li::before{content:'✓';width:20px;height:20px;border-radius:50%;background:rgba(255,107,0,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-.price-btn{width:100%;padding:14px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all .2s;border:1px solid var(--border2);background:transparent;color:var(--text);}
-.price-card.featured .price-btn{background:var(--orange);border-color:transparent;color:#fff;box-shadow:0 4px 20px var(--orange-glow);}
-.price-btn:hover{opacity:0.85;transform:translateY(-1px);}
-.price-note{text-align:center;font-size:12px;color:var(--text3);margin-top:20px;}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;align-items:start;}
+.price-card{border-radius:16px;padding:36px;display:flex;flex-direction:column;}
+.price-card.featured{border-color:var(--orange)!important;box-shadow:0 0 60px rgba(255,107,0,0.12);position:relative;}
+.featured-pip{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff6b00,#e05500);color:#fff;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 22px;border-radius:100px;white-space:nowrap;}
+.price-name{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;text-transform:uppercase;margin-bottom:14px;color:#fff;}
+.price-card.featured .price-name{color:var(--orange);}
+.price-amount{font-size:20px;font-weight:600;color:var(--text2);line-height:1;}
+.price-features{list-style:none;margin:24px 0;flex:1;display:flex;flex-direction:column;gap:13px;}
+.price-features li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);}
+.price-features li::before{content:'✓';width:18px;height:18px;border-radius:50%;background:rgba(255,107,0,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.price-btn{width:100%;padding:14px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:0.07em;text-transform:uppercase;transition:all .25s;border:1px solid rgba(255,255,255,0.12);background:transparent;color:var(--text);margin-top:4px;}
+.price-btn:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.25);}
+.price-card.featured .price-btn{background:linear-gradient(135deg,#ff6b00,#e05500);border-color:transparent;color:#fff;box-shadow:0 0 22px rgba(255,107,0,0.35);}
+.price-card.featured .price-btn:hover{box-shadow:0 0 36px rgba(255,107,0,0.5);}
+
+/* GOOGLE REVIEWS */
+.reviews-header{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:48px;flex-wrap:wrap;}
+.google-badge{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:10px 22px;}
+.g-logo{font-size:20px;font-weight:700;font-family:'Inter',sans-serif;}
+.g-logo .g-b{color:#4285F4;}.g-logo .g-l{color:#EA4335;}.g-logo .g-o1{color:#FBBC05;}.g-logo .g-o2{color:#34A853;}.g-logo .g-le{color:#EA4335;}
+.g-rating{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#fff;}
+.g-stars{color:#FBBC05;font-size:16px;letter-spacing:2px;}
+.g-count{font-size:12px;color:var(--text3);}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
+.review-card{border-radius:14px;padding:28px;position:relative;}
+.review-card::before{content:'"';position:absolute;top:16px;right:20px;font-family:'Oswald',sans-serif;font-size:72px;color:rgba(255,107,0,0.08);line-height:1;}
+.review-top{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.review-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#e05500);display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+.review-name{font-weight:700;font-size:15px;color:#fff;margin-bottom:3px;}
+.review-date{font-size:11px;color:var(--text3);}
+.review-stars{color:#FBBC05;font-size:13px;letter-spacing:1.5px;margin-bottom:12px;}
+.review-text{font-size:14px;color:var(--text2);line-height:1.75;font-style:italic;}
+.review-badge{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
+.review-badge svg{opacity:0.4;}
 
 /* FAQ */
-.faq-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.faq-inner{display:grid;grid-template-columns:1fr;gap:10px;}
-@media(min-width:768px){.faq-inner{grid-template-columns:1fr 1fr;gap:12px;}}
-.faq-item{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.faq-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+@media(min-width:768px){.faq-grid{grid-template-columns:1fr 1fr;gap:12px;}}
+.faq-item{background:rgba(16,15,15,0.9);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;backdrop-filter:blur(12px);transition:border-color .25s;}
+.faq-item.open{border-color:rgba(255,107,0,0.25);}
 .faq-q{width:100%;background:none;border:none;color:var(--text);font-size:14px;font-weight:600;text-align:left;padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:'Inter',sans-serif;}
-.faq-q .arrow{color:var(--orange);font-size:18px;transition:transform .25s;flex-shrink:0;}
-.faq-item.open .arrow{transform:rotate(180deg);}
-.faq-a{font-size:14px;color:var(--text2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;padding:0 20px;}
-.faq-item.open .faq-a{max-height:200px;padding:0 20px 18px;}
+.faq-q .arr{color:var(--orange);font-size:16px;transition:transform .25s;flex-shrink:0;}
+.faq-item.open .arr{transform:rotate(180deg);}
+.faq-a{font-size:14px;color:var(--text2);line-height:1.75;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;padding:0 20px;}
+.faq-item.open .faq-a{max-height:220px;padding:0 20px 18px;}
+
+/* CTA */
+.cta-section{padding:96px 0;position:relative;z-index:1;overflow:hidden;}
+.cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,107,0,0.06) 0%,transparent 70%);}
+.cta-inner{max-width:var(--max);margin:0 auto;padding:0 48px;text-align:center;position:relative;z-index:1;}
+.cta-inner h2{font-family:'Oswald',sans-serif;font-size:clamp(30px,4.5vw,54px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:16px;}
+.cta-inner p{font-size:16px;color:var(--text2);margin-bottom:42px;line-height:1.8;max-width:560px;margin-left:auto;margin-right:auto;}
+.cta-btns{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:20px;}
+.wa-btn{display:flex;align-items:center;gap:12px;background:#25D366;color:#fff;padding:16px 34px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .25s;text-decoration:none;}
+.wa-btn:hover{background:#1eb85a;transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,0.35);}
+.phone-label{display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;}
 
 /* ENQUIRY */
-.enquiry-section{background:var(--bg);}
-.enquiry-grid{display:grid;grid-template-columns:1fr;gap:40px;}
-@media(min-width:768px){.enquiry-grid{grid-template-columns:1fr 1fr;align-items:center;}}
-.enquiry-info h2{font-family:'Oswald',sans-serif;font-size:clamp(28px,4vw,40px);font-weight:700;text-transform:uppercase;margin-bottom:16px;}
-.enquiry-info p{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:24px;}
-.contact-detail{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.contact-detail .icon{width:40px;height:40px;background:rgba(255,107,0,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.contact-detail p{font-size:14px;color:var(--text2);}
-.contact-detail a{color:var(--orange);text-decoration:none;font-weight:600;}
-.enquiry-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px;}
-.enquiry-box h3{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;margin-bottom:6px;}
-.enquiry-box .sub{font-size:13px;color:var(--text2);margin-bottom:24px;}
-.form-group{margin-bottom:14px;}
-.form-group label{display:block;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg4);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 14px;outline:none;transition:border-color .2s;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--orange);}
-.form-group select option{background:var(--bg4);}
-.form-group textarea{resize:vertical;min-height:80px;}
-.wa-submit{width:100%;padding:16px;background:var(--wa);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;margin-top:8px;font-family:'Inter',sans-serif;}
-.wa-submit:hover{background:#1eb85a;transform:translateY(-2px);}
+.enquiry-grid{display:grid;grid-template-columns:1fr;gap:48px;}
+@media(min-width:900px){.enquiry-grid{grid-template-columns:1fr 1fr;align-items:center;}}
+.enq-info .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
+.enq-info h2{font-family:'Oswald',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:16px;line-height:1.05;}
+.enq-info p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:28px;}
+.contact-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.contact-row .ico{width:42px;height:42px;background:rgba(255,107,0,0.1);border:1px solid rgba(255,107,0,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.contact-row a{color:var(--orange);text-decoration:none;font-weight:700;}
+.contact-row p{font-size:14px;color:var(--text2);}
+.enq-box{background:rgba(13,13,13,0.95);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:36px;backdrop-filter:blur(24px);}
+.enq-box h3{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:6px;}
+.enq-box .sub{font-size:13px;color:var(--text2);margin-bottom:26px;}
+.form-row{margin-bottom:14px;}
+.form-row label{display:block;font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text3);margin-bottom:7px;}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 14px;outline:none;transition:border-color .2s;}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--orange);background:rgba(255,107,0,0.03);}
+.form-row select option{background:#1a1919;}
+.form-row textarea{resize:vertical;min-height:80px;}
+.wa-submit{width:100%;padding:16px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .25s;margin-top:6px;font-family:'Inter',sans-serif;}
+.wa-submit:hover{background:#1eb85a;transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,211,102,0.3);}
 
-/* FLOATING WA */
-.float-wa{position:fixed;bottom:28px;right:24px;z-index:999;width:60px;height:60px;border-radius:50%;background:var(--wa);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(37,211,102,0.45);transition:transform .2s;animation:fbounce 3s ease-in-out infinite;}
-@keyframes fbounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+/* FLOAT WA */
+.float-wa{position:fixed;bottom:28px;right:24px;z-index:999;width:62px;height:62px;border-radius:50%;background:var(--wa);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 28px rgba(37,211,102,0.45);animation:bounce 3.5s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 .float-wa:hover{transform:scale(1.1)!important;animation:none;}
-.float-tooltip{position:fixed;bottom:36px;right:96px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:12px;font-weight:600;padding:8px 14px;border-radius:100px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:999;}
-.float-wa:hover~.float-tooltip{opacity:1;}
+
+/* GLOW DIVIDER */
+.glow-div{height:1px;background:linear-gradient(to right,transparent,rgba(255,107,0,0.25),transparent);position:relative;z-index:1;}
 
 /* FOOTER */
-footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24px 32px;}
-.footer-inner{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1fr;gap:32px;text-align:center;}
-@media(min-width:640px){.footer-inner{grid-template-columns:auto 1fr auto;text-align:left;align-items:center;}}
-.footer-logo{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+footer{background:rgba(8,8,8,0.98);border-top:1px solid rgba(255,107,0,0.07);padding:48px 48px 28px;position:relative;z-index:1;}
+.footer-inner{max-width:var(--max);margin:0 auto;display:flex;flex-direction:column;gap:24px;align-items:center;text-align:center;}
+@media(min-width:640px){.footer-inner{flex-direction:row;justify-content:space-between;text-align:left;}}
+.footer-logo{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;color:#fff;text-transform:uppercase;}
 .footer-logo span{color:var(--orange);}
-.footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;}
-@media(min-width:640px){.footer-links{justify-content:center;}}
-.footer-links a{font-size:12px;color:var(--text3);text-decoration:none;text-transform:uppercase;letter-spacing:0.06em;transition:color .2s;}
+.footer-links{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
+.footer-links a{font-size:11px;color:var(--text3);text-decoration:none;text-transform:uppercase;letter-spacing:0.07em;transition:color .2s;}
 .footer-links a:hover{color:var(--orange);}
-.footer-right{font-size:12px;color:var(--text3);line-height:1.8;text-align:center;}
-@media(min-width:640px){.footer-right{text-align:right;}}
-.footer-right a{color:var(--orange);text-decoration:none;}
-.footer-copy{max-width:var(--max);margin:28px auto 0;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--text3);}
+.footer-copy{font-size:11px;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;}
 
-/* LOGO SVG */
-.logo-svg{flex-shrink:0;}
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease;}
+.reveal.vis{opacity:1;transform:translateY(0);}
+
+@media(max-width:768px){
+  .nav-inner,.section-inner,.hero-content,.cta-inner,.footer-inner{padding-left:20px;padding-right:20px;}
+  footer{padding:40px 20px 24px;}
+  .hero-ring{width:280px;height:280px;}
+}
 </style>
 </head>
 <body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- VIDEO INTRO -->
+<div id="video-overlay">
+  <video id="intro-video" autoplay muted playsinline loop>
+    <source src="https://videos.pexels.com/video-files/6253972/6253972-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+    <source src="https://videos.pexels.com/video-files/4761379/4761379-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+  </video>
+  <div class="vo-content">
+    <div class="vo-logo">GYM AT YOUR <span>HOME</span></div>
+    <div class="vo-tag">Live Coaching · Anytime · Anywhere</div>
+    <div class="vo-divider"></div>
+    <div class="vo-desc">Elite personal training delivered to your doorstep. No commute. No gym. Just results.</div>
+    <button class="vo-skip" onclick="skipIntro()">Enter Site &rsaquo;</button>
+  </div>
+  <div class="vo-bar"></div>
+</div>
 
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <div class="logo">
-      <svg class="logo-svg" width="34" height="34" viewBox="0 0 200 200" fill="none">
-        <path d="M28 108 L100 32 L172 108" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <rect x="72" y="130" width="56" height="14" rx="7" fill="white"/>
-        <rect x="57" y="122" width="18" height="30" rx="6" fill="white"/>
-        <rect x="41" y="113" width="16" height="47" rx="5" fill="white"/>
-        <rect x="125" y="122" width="18" height="30" rx="6" fill="white"/>
-        <rect x="143" y="113" width="16" height="47" rx="5" fill="white"/>
-        <text x="153" y="62" font-size="13" fill="white" font-family="Inter,sans-serif">™</text>
-      </svg>
-      GYM AT YOUR <span>HOME</span>
+    <div class="logo">GYM AT YOUR <span>HOME</span></div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <a href="#about">About</a>
+      <a href="#programs">Programs</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#contact">Contact</a>
     </div>
-    <button class="nav-cta" onclick="openWA('Hi! I want to book a free trial session.')">Book Free Trial</button>
+    <button class="nav-cta" onclick="openWA('Hi! I want to book a free trial session with GYM AT YOUR HOME.')">Book Free Trial</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg">
-    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=80&auto=format&fit=crop" alt="Gym"/>
-    <div style="position:absolute;inset:0;background:linear-gradient(to top,#0f0f0f 35%,rgba(15,15,15,0.6) 70%,rgba(15,15,15,0.25) 100%);"></div>
+  <div class="hero-vid">
+    <video autoplay muted playsinline loop>
+      <source src="https://videos.pexels.com/video-files/6253972/6253972-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+      <source src="https://videos.pexels.com/video-files/4761379/4761379-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+    </video>
   </div>
-  <div class="hero-orb"></div>
+  <div class="hero-ring"></div>
   <div class="hero-content">
     <div class="hero-inner">
-      <div class="hero-badge">🟢 Open 24 Hours · Live Sessions Now</div>
-      <h1>Unleash Your <span>Fitness</span> Potential</h1>
-      <p>Elite personal training, live coaching & group sessions — delivered straight to your home. No commute. No excuses. Anytime, anywhere, privately.</p>
+      <div class="hero-eyebrow">Elite Home Fitness</div>
+      <h1>TRANSFORM<br>YOUR BODY.<br><span class="hl">YOUR RULES.</span></h1>
+      <p>Professional live coaching delivered to your home. Customised plans, flexible timing, zero commute — just real results from certified trainers.</p>
       <div class="hero-btns">
-        <button class="btn-primary" onclick="openWA('Hi! I want to start my fitness journey with GYM AT YOUR HOME.')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Start Free on WhatsApp
-        </button>
-        <button class="btn-secondary" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Programs ↓</button>
+        <button class="btn-primary" onclick="openWA('Hi! I want to start training with GYM AT YOUR HOME.')">Start Training Free</button>
+        <button class="btn-outline" onclick="document.getElementById('programs').scrollIntoView({behavior:'smooth'})">Explore Programs</button>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-label">Happy Clients</div></div>
-        <div class="hero-stat"><div class="hero-stat-num">24/7</div><div class="hero-stat-label">Available</div></div>
-        <div class="hero-stat"><div class="hero-stat-num">5.0★</div><div class="hero-stat-label">Google Rating</div></div>
+      <div class="hero-nums">
+        <div><div class="hero-num-val">500+</div><div class="hero-num-label">Active Clients</div></div>
+        <div><div class="hero-num-val">50+</div><div class="hero-num-label">Certified Trainers</div></div>
+        <div><div class="hero-num-val">5.0★</div><div class="hero-num-label">Google Rating</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- GOOGLE REVIEWS -->
-<div class="reviews-bar">
-  <div class="reviews-bar-inner">
-    <div class="g-badge">
-      <div class="g-logo">G</div>
-      <div>
-        <div class="g-rating">5.0</div>
-        <div class="g-stars">★★★★★</div>
-        <div class="g-count">Google Reviews</div>
-      </div>
-    </div>
-    <div class="reviews-divider"></div>
-    <div class="reviews-cards">
-      <div class="review-mini">
-        <div class="stars">★★★★★</div>
-        <p>"Training at home was the missing piece. Results in 3 months have been life-changing!"</p>
-        <div class="reviewer">— Verified Google Review</div>
-      </div>
-      <div class="review-mini">
-        <div class="stars">★★★★★</div>
-        <p>"Convenient, professional and incredibly effective. Best fitness decision I've ever made."</p>
-        <div class="reviewer">— Verified Google Review</div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="glow-div"></div>
 
-<!-- SERVICES -->
-<section id="services">
-  <div class="section-wrap">
-    <div class="section-tag">What We Offer</div>
-    <div class="section-title">Training Programs</div>
-    <div class="section-sub">Live, guided sessions tailored to you — minimal or no equipment needed.</div>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">🎯</div>
-        <h3>Live 1-on-1 Coaching</h3>
-        <p>Private sessions with a dedicated trainer who customises every workout to your goals, fitness level and schedule.</p>
-        <div class="service-tags"><span class="tag">Personal</span><span class="tag">Flexible Timing</span><span class="tag">Any Language</span></div>
+<!-- ABOUT -->
+<section class="section sect-alt" id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-img-wrap reveal">
+        <img src="https://images.unsplash.com/photo-1584466977773-e625c37cdd50?w=800&q=80&auto=format&fit=crop" alt="Home Workout"/>
       </div>
-      <div class="service-card">
-        <div class="service-icon">👥</div>
-        <h3>Group Sessions</h3>
-        <p>Train with friends or family in energetic live group workouts. Shared motivation, shared results.</p>
-        <div class="service-tags"><span class="tag">2–10 People</span><span class="tag">Live Online</span><span class="tag">Budget Friendly</span></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🏢</div>
-        <h3>Corporate Programs</h3>
-        <p>Boost your team's health and productivity with scheduled corporate fitness sessions designed for busy professionals.</p>
-        <div class="service-tags"><span class="tag">Teams</span><span class="tag">Wellness</span><span class="tag">Productivity</span></div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">📋</div>
-        <h3>Customized Plans</h3>
-        <p>Fully personalised workout and nutrition roadmaps built around your body, your goals and your lifestyle.</p>
-        <div class="service-tags"><span class="tag">Nutrition</span><span class="tag">Workout Plan</span><span class="tag">Progress Tracking</span></div>
+      <div class="about-text reveal">
+        <div class="eyebrow">Who We Are</div>
+        <h2>Fitness That Comes To You</h2>
+        <p>Gym At Your Home is a personalized online fitness coaching service designed to help you achieve your fitness goals from the comfort of your home. We offer live guided workout sessions, customized plans, and one-on-one coaching tailored to your schedule and fitness level.</p>
+        <p>We also provide group workout sessions and corporate online fitness programs to improve team health and productivity. Flexible timings, multiple language options, and workouts that require minimal or no equipment — expert guidance anytime, anywhere, privately.</p>
+        <div class="stats-grid">
+          <div class="glass stat-card"><div class="stat-val">98%</div><div class="stat-label">Satisfaction Rate</div></div>
+          <div class="glass stat-card"><div class="stat-val">100+</div><div class="stat-label">Transformations</div></div>
+          <div class="glass stat-card"><div class="stat-val">24/7</div><div class="stat-label">Support Available</div></div>
+          <div class="glass stat-card"><div class="stat-val">0</div><div class="stat-label">Equipment Needed</div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHY US -->
-<section class="why-section">
-  <div class="section-wrap">
-    <div class="section-tag">Why Choose Us</div>
-    <div class="section-title">The GYM AT YOUR HOME Edge</div>
-    <div class="why-grid">
-      <div class="why-card"><div class="why-icon">🏠</div><h4>No Commute</h4><p>Train in the comfort and privacy of your own space.</p></div>
-      <div class="why-card"><div class="why-icon">🕐</div><h4>24/7 Access</h4><p>Book sessions any time that fits your schedule.</p></div>
-      <div class="why-card"><div class="why-icon">🌐</div><h4>Multi-Language</h4><p>Sessions in your preferred language.</p></div>
-      <div class="why-card"><div class="why-icon">💪</div><h4>No Equipment</h4><p>Workouts that work with minimal or zero gear.</p></div>
-      <div class="why-card"><div class="why-icon">📱</div><h4>Live Sessions</h4><p>Real-time guided workouts, not pre-recorded videos.</p></div>
-      <div class="why-card"><div class="why-icon">🔒</div><h4>100% Private</h4><p>Just you and your trainer — completely confidential.</p></div>
+<div class="glow-div"></div>
+
+<!-- PROGRAMS -->
+<section class="section" id="programs">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">What We Offer</div>
+      <h2>Our Programs</h2>
+      <div class="section-bar"></div>
+    </div>
+    <div class="programs-grid">
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80&auto=format&fit=crop" alt="Personal Training"/></div><div class="card-body"><h3>Personal Training</h3><p>Live 1-on-1 sessions tailored to your biomechanics, schedule and fitness level.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1517963879433-6ad2171073fb?w=600&q=80&auto=format&fit=crop" alt="Fat Loss"/></div><div class="card-body"><h3>Fat Loss</h3><p>Scientific metabolic conditioning designed to maximize calorie burn efficiently.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80&auto=format&fit=crop" alt="Muscle Building"/></div><div class="card-body"><h3>Muscle Building</h3><p>Hypertrophy protocols to build strength and lean aesthetic muscle at home.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=600&q=80&auto=format&fit=crop" alt="HIIT"/></div><div class="card-body"><h3>HIIT</h3><p>High-intensity interval training for cardiovascular health and rapid fat loss.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80&auto=format&fit=crop" alt="Yoga"/></div><div class="card-body"><h3>Yoga & Flexibility</h3><p>Mindful movement focused on flexibility, mobility and mental well-being.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=600&q=80&auto=format&fit=crop" alt="Women's Fitness"/></div><div class="card-body"><h3>Women's Fitness</h3><p>Empowering programs designed around women's specific health and body goals.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=80&auto=format&fit=crop" alt="Senior Fitness"/></div><div class="card-body"><h3>Senior Fitness</h3><p>Safe, effective mobility and strength training for active older adults.</p></div></div>
+      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=600&q=80&auto=format&fit=crop" alt="Corporate Wellness"/></div><div class="card-body"><h3>Corporate Wellness</h3><p>Group online fitness programs to boost team health and workplace productivity.</p></div></div>
     </div>
   </div>
 </section>
+
+<div class="glow-div"></div>
 
 <!-- HOW IT WORKS -->
-<section>
-  <div class="section-wrap">
-    <div class="section-tag">The Process</div>
-    <div class="section-title">How It Works</div>
-    <div class="section-sub">Getting started takes less than 2 minutes.</div>
-    <div class="steps-grid" id="steps-grid">
-      <div class="step">
-        <div class="step-left"><div class="step-num">1</div><div class="step-vline"></div></div>
-        <div class="step-content"><h4>Message Us on WhatsApp</h4><p>Tell us your goal, preferred timing and language. We respond within minutes.</p></div>
-      </div>
-      <div class="step-connector" id="sc1"></div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">2</div><div class="step-vline"></div></div>
-        <div class="step-content"><h4>Get Matched to a Trainer</h4><p>We pair you with a specialist who aligns perfectly with your fitness goals and schedule.</p></div>
-      </div>
-      <div class="step-connector" id="sc2"></div>
-      <div class="step">
-        <div class="step-left"><div class="step-num">3</div><div class="step-vline"></div></div>
-        <div class="step-content"><h4>Start Your Free Trial</h4><p>Jump into your first live session — no payment needed to experience the difference.</p></div>
+<section class="section sect-alt">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Simple Process</div>
+      <h2>How It Works</h2>
+      <div class="section-bar"></div>
+    </div>
+    <div class="steps-track">
+      <div class="steps-line"></div>
+      <div class="steps-grid">
+        <div class="step reveal"><div class="step-icon">📅</div><h4>Book</h4><p>Schedule your free initial consultation via WhatsApp.</p></div>
+        <div class="step reveal"><div class="step-icon">🎯</div><h4>Assess</h4><p>Share your goals, fitness level and preferred schedule.</p></div>
+        <div class="step reveal"><div class="step-icon">🗓️</div><h4>Plan</h4><p>Get a customised program built around your life.</p></div>
+        <div class="step reveal"><div class="step-icon">💪</div><h4>Train Live</h4><p>Real-time coaching from home — no commute needed.</p></div>
+        <div class="step reveal"><div class="step-icon">📈</div><h4>Transform</h4><p>Track progress and watch your results compound weekly.</p></div>
       </div>
     </div>
   </div>
 </section>
+
+<div class="glow-div"></div>
 
 <!-- PRICING -->
-<section id="pricing" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-  <div class="section-wrap">
-    <div class="section-tag">Flexible Plans</div>
-    <div class="section-title">Choose Your Tier</div>
-    <div class="section-sub">All plans include a free trial session. WhatsApp us to confirm pricing for your location.</div>
+<section class="section" id="pricing">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Invest in Yourself</div>
+      <h2>Flexible Plans</h2>
+      <div class="section-bar"></div>
+    </div>
     <div class="pricing-grid">
-      <div class="price-card">
-        <div class="price-tier">Standard</div>
-        <div class="price-amount">Contact Us</div>
-        <div class="price-period">for pricing</div>
-        <div class="price-desc">Great for beginners looking for consistent guidance.</div>
+      <div class="glass price-card reveal">
+        <div class="price-name">Basic</div>
+        <div class="price-amount">Contact us for pricing</div>
         <ul class="price-features">
-          <li>8 Live Sessions Monthly</li>
-          <li>Basic Nutrition Guide</li>
-          <li>WhatsApp Support</li>
-          <li>Flexible Scheduling</li>
+          <li>Certified Live Trainer</li><li>Custom Workout Plan</li><li>Basic Nutrition Guide</li><li>WhatsApp Support</li><li>Flexible Timing</li>
         </ul>
-        <button class="price-btn" onclick="openWA('Hi! I am interested in the Standard plan. Please share the pricing details.')">Enquire on WhatsApp</button>
+        <button class="price-btn" onclick="openWA('Hi! I am interested in the Basic plan at GYM AT YOUR HOME.')">Book Free Trial</button>
       </div>
-      <div class="price-card featured">
-        <div class="featured-badge">⭐ Most Popular</div>
-        <div class="price-tier">Professional</div>
-        <div class="price-amount">Contact Us</div>
-        <div class="price-period">for pricing</div>
-        <div class="price-desc">Best for those serious about transformation.</div>
+      <div class="glass price-card featured reveal">
+        <div class="featured-pip">⭐ Most Popular</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount">Contact us for pricing</div>
         <ul class="price-features">
-          <li>12 Live Sessions Monthly</li>
-          <li>Personalised Meal Plan</li>
-          <li>Priority Trainer Access</li>
-          <li>Progress Tracking</li>
-          <li>Group Session Access</li>
+          <li>Senior Certified Coach</li><li>Personalised Meal Plan</li><li>Priority Trainer Access</li><li>Progress Tracking</li><li>24/7 Trainer Messaging</li><li>Group Session Access</li>
         </ul>
-        <button class="price-btn" onclick="openWA('Hi! I am interested in the Professional plan. Please share the pricing details.')">Enquire on WhatsApp</button>
+        <button class="price-btn" onclick="openWA('Hi! I am interested in the Pro plan at GYM AT YOUR HOME.')">Book Free Trial</button>
       </div>
-      <div class="price-card">
-        <div class="price-tier">Elite Performance</div>
-        <div class="price-amount">Contact Us</div>
-        <div class="price-period">for pricing</div>
-        <div class="price-desc">For those who demand the absolute best results.</div>
+      <div class="glass price-card reveal" style="border-color:rgba(255,107,0,0.2);">
+        <div class="price-name">Elite / Corporate</div>
+        <div class="price-amount">Contact us for pricing</div>
         <ul class="price-features">
-          <li>Unlimited Live Sessions</li>
-          <li>Dedicated Coach 24/7</li>
-          <li>Corporate Package Option</li>
-          <li>Monthly Progress Report</li>
-          <li>Custom Nutrition Plan</li>
+          <li>Dedicated Master Coach</li><li>Unlimited Live Sessions</li><li>Full Nutritional Tracking</li><li>Monthly Progress Report</li><li>Corporate Team Package</li><li>Custom Language Option</li>
         </ul>
-        <button class="price-btn" onclick="openWA('Hi! I am interested in the Elite Performance plan. Please share the pricing details.')">Enquire on WhatsApp</button>
+        <button class="price-btn" onclick="openWA('Hi! I am interested in the Elite/Corporate plan at GYM AT YOUR HOME.')">Book Free Trial</button>
       </div>
     </div>
-    <p class="price-note">💬 All pricing is customised based on your location and goals. Chat with us for a quick quote!</p>
   </div>
 </section>
+
+<div class="glow-div"></div>
+
+<!-- GOOGLE REVIEWS -->
+<section class="section sect-alt" id="reviews">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Real Results</div>
+      <h2>What Our Clients Say</h2>
+      <div class="section-bar"></div>
+    </div>
+    <div class="reviews-header reveal">
+      <div class="google-badge">
+        <div class="g-logo"><span class="g-b">G</span><span class="g-l">o</span><span class="g-o1">o</span><span class="g-b">g</span><span class="g-o2">l</span><span class="g-le">e</span></div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="g-rating">5.0</div>
+            <div class="g-stars">★★★★★</div>
+          </div>
+          <div class="g-count">Based on Google Reviews</div>
+        </div>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <!-- Review 1 -->
+      <div class="glass review-card reveal">
+        <div class="review-top">
+          <div class="review-avatar">A</div>
+          <div>
+            <div class="review-name">Anoop Reji</div>
+            <div class="review-date">Google Review</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Excellent service! The trainer was very professional and the sessions were perfectly tailored to my schedule. Highly recommend GYM AT YOUR HOME to anyone looking for convenient fitness solutions."</div>
+        <div class="review-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Verified Google Review
+        </div>
+      </div>
+      <!-- Review 2 -->
+      <div class="glass review-card reveal">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#e05500,#ff8c00);">S</div>
+          <div>
+            <div class="review-name">Sreeja Menon</div>
+            <div class="review-date">Google Review</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"I was skeptical about online training at first, but GYM AT YOUR HOME completely changed my mind. The live sessions feel just as effective as being in a real gym. Lost 8kg in 3 months!"</div>
+        <div class="review-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Verified Google Review
+        </div>
+      </div>
+      <!-- Review 3 -->
+      <div class="glass review-card reveal">
+        <div class="review-top">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#1a6b3a,#25D366);">R</div>
+          <div>
+            <div class="review-name">Rahul Krishnan</div>
+            <div class="review-date">Google Review</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"The corporate wellness program they set up for our team was outstanding. Everyone is more energetic and productive. The trainer spoke Malayalam which made it very comfortable for the whole team."</div>
+        <div class="review-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Verified Google Review
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:36px;" class="reveal">
+      <a href="https://g.page/r/gymatyourhome/review" target="_blank" style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text2);text-decoration:none;padding:12px 28px;border-radius:100px;font-size:13px;font-weight:600;letter-spacing:0.05em;transition:all .2s;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        See All Reviews on Google
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="glow-div"></div>
 
 <!-- FAQ -->
-<section class="faq-section">
-  <div class="section-wrap">
-    <div class="section-tag">Got Questions?</div>
-    <div class="section-title">FAQs</div>
-    <div class="faq-inner">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Do I need any equipment? <span class="arrow">▾</span></button>
-        <div class="faq-a">No! Our trainers design workouts that require minimal or zero equipment. Everything is adapted to what you have at home.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Are sessions live or pre-recorded? <span class="arrow">▾</span></button>
-        <div class="faq-a">All sessions are 100% live and real-time. Your trainer guides you personally — not through a video.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">What languages are available? <span class="arrow">▾</span></button>
-        <div class="faq-a">We offer sessions in multiple languages including English, Malayalam, Hindi and more. Just let us know your preference when you enquire.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Can I try before I pay? <span class="arrow">▾</span></button>
-        <div class="faq-a">Absolutely! We offer a free trial session so you can experience the quality of our coaching before committing to any plan.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Is there a corporate group package? <span class="arrow">▾</span></button>
-        <div class="faq-a">Yes. We have dedicated corporate wellness programs for teams of any size. Contact us on WhatsApp for a custom quote.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">How do I book a session? <span class="arrow">▾</span></button>
-        <div class="faq-a">Simply WhatsApp us at 062820 67963, share your goal and preferred time, and we'll get you started right away — often the same day!</div>
-      </div>
+<section class="section">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Need Answers?</div>
+      <h2>Got Questions?</h2>
+      <div class="section-bar"></div>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Do I need any equipment? <span class="arr">▾</span></button><div class="faq-a">No! Our trainers design workouts that require minimal or zero equipment. Everything is adapted to what you have at home.</div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Are sessions live or pre-recorded? <span class="arr">▾</span></button><div class="faq-a">All sessions are 100% live and real-time. Your trainer guides you personally — not through a video.</div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">What languages are available? <span class="arr">▾</span></button><div class="faq-a">We offer sessions in English, Malayalam, Hindi and more. Just let us know your preference when you enquire.</div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Can I try before I pay? <span class="arr">▾</span></button><div class="faq-a">Absolutely! We offer a free trial session so you can experience the quality of our coaching before committing.</div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Do you offer group or corporate sessions? <span class="arr">▾</span></button><div class="faq-a">Yes! We provide group workout sessions and dedicated corporate wellness programs for teams of any size. Contact us for a custom quote.</div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">How do I book? <span class="arr">▾</span></button><div class="faq-a">WhatsApp us at 062820 67963, share your goal and preferred time, and we'll get you started — often the same day!</div></div>
     </div>
   </div>
 </section>
 
+<div class="glow-div"></div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-inner">
+    <h2 class="reveal">Start Your Transformation Today</h2>
+    <p class="reveal">Ready for elite fitness without leaving your door? Let's build your personalised training plan — your first session is free.</p>
+    <div class="cta-btns reveal">
+      <a class="wa-btn" onclick="openWA('Hi! I want to start my fitness journey with GYM AT YOUR HOME.')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Us Now
+      </a>
+      <div class="phone-label"><span style="color:var(--orange);">📞</span> <a href="tel:06282067963" style="color:#fff;text-decoration:none;">062820 67963</a></div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-div"></div>
+
 <!-- ENQUIRY -->
-<section class="enquiry-section">
-  <div class="section-wrap">
-    <div class="section-tag">Get In Touch</div>
+<section class="section sect-alt" id="contact">
+  <div class="section-inner">
     <div class="enquiry-grid">
-      <div class="enquiry-info">
-        <h2>Start Your Journey Today</h2>
-        <p>Fill in the form and we'll open WhatsApp with your message pre-filled. Fast, easy, no forms to submit — just a real conversation.</p>
-        <div class="contact-detail">
-          <div class="icon">📞</div>
-          <p><a href="tel:06282067963">062820 67963</a></p>
-        </div>
-        <div class="contact-detail">
-          <div class="icon">🌐</div>
-          <p><a href="https://gymatyourhome.com" target="_blank">gymatyourhome.com</a></p>
-        </div>
-        <div class="contact-detail">
-          <div class="icon">🕐</div>
-          <p>Open 24 Hours · 7 Days a Week</p>
-        </div>
+      <div class="enq-info reveal">
+        <div class="eyebrow">Get In Touch</div>
+        <h2>Send Us a Message</h2>
+        <p>Fill in the form and we'll open WhatsApp with your message pre-filled. Fast, personal — just a real conversation.</p>
+        <div class="contact-row"><div class="ico">📞</div><p><a href="tel:06282067963">062820 67963</a></p></div>
+        <div class="contact-row"><div class="ico">🌐</div><p><a href="https://gymatyourhome.com" target="_blank">gymatyourhome.com</a></p></div>
+        <div class="contact-row"><div class="ico">🕐</div><p style="color:var(--text2);">Open 24 Hours · 7 Days a Week</p></div>
+        <div class="contact-row"><div class="ico">🗣️</div><p style="color:var(--text2);">English · Malayalam · Hindi</p></div>
       </div>
-      <div class="enquiry-box">
-        <h3>Send Us a Message</h3>
-        <p class="sub">We'll respond on WhatsApp within minutes.</p>
-        <div class="form-group">
-          <label>Your Name</label>
-          <input type="text" id="enq-name" placeholder="e.g. Arjun Kumar"/>
+      <div class="enq-box reveal">
+        <h3>Quick Enquiry</h3>
+        <p class="sub">We respond on WhatsApp within minutes.</p>
+        <div class="form-row"><label>Your Name</label><input type="text" id="enq-name" placeholder="e.g. Arjun Kumar"/></div>
+        <div class="form-row"><label>Your Goal</label>
+          <select id="enq-goal"><option value="">Select your fitness goal</option><option>Weight Loss</option><option>Muscle Building</option><option>Flexibility & Yoga</option><option>General Fitness</option><option>Group Sessions</option><option>Corporate Wellness</option><option>Custom Plan</option></select>
         </div>
-        <div class="form-group">
-          <label>Your Goal</label>
-          <select id="enq-goal">
-            <option value="">Select your fitness goal</option>
-            <option>Weight Loss</option>
-            <option>Muscle Building</option>
-            <option>Flexibility & Yoga</option>
-            <option>General Fitness</option>
-            <option>Corporate Wellness</option>
-            <option>Custom Plan</option>
-          </select>
+        <div class="form-row"><label>Preferred Time</label>
+          <select id="enq-time"><option value="">When do you prefer to train?</option><option>Early Morning (5–8 AM)</option><option>Morning (8–12 PM)</option><option>Afternoon (12–4 PM)</option><option>Evening (4–8 PM)</option><option>Night (8 PM+)</option><option>Flexible / Any Time</option></select>
         </div>
-        <div class="form-group">
-          <label>Preferred Time</label>
-          <select id="enq-time">
-            <option value="">When do you prefer to train?</option>
-            <option>Early Morning (5–8 AM)</option>
-            <option>Morning (8–12 PM)</option>
-            <option>Afternoon (12–4 PM)</option>
-            <option>Evening (4–8 PM)</option>
-            <option>Night (8 PM+)</option>
-            <option>Flexible / Any Time</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Anything else? (Optional)</label>
-          <textarea id="enq-note" placeholder="Any health conditions, preferences or questions..."></textarea>
-        </div>
+        <div class="form-row"><label>Additional Notes (Optional)</label><textarea id="enq-note" placeholder="Health conditions, preferences or questions..."></textarea></div>
         <button class="wa-submit" onclick="submitEnquiry()">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Send via WhatsApp
         </button>
       </div>
@@ -500,60 +561,72 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24p
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <div class="footer-logo">
-      <svg width="32" height="32" viewBox="0 0 200 200" fill="none">
-        <path d="M28 108 L100 32 L172 108" stroke="white" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <rect x="72" y="130" width="56" height="14" rx="7" fill="white"/>
-        <rect x="57" y="122" width="18" height="30" rx="6" fill="white"/>
-        <rect x="41" y="113" width="16" height="47" rx="5" fill="white"/>
-        <rect x="125" y="122" width="18" height="30" rx="6" fill="white"/>
-        <rect x="143" y="113" width="16" height="47" rx="5" fill="white"/>
-        <text x="153" y="62" font-size="13" fill="white" font-family="Inter,sans-serif">™</text>
-      </svg>
-      GYM AT YOUR <span>HOME</span>
-    </div>
+    <div class="footer-logo">GYM AT YOUR <span>HOME</span></div>
     <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Support</a>
-      <a href="#enquiry">Contact Us</a>
+      <a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Support</a>
     </div>
-    <div class="footer-right">
-      📞 <a href="tel:06282067963">062820 67963</a><br/>
-      🌐 <a href="https://gymatyourhome.com" target="_blank">gymatyourhome.com</a><br/>
-      🕐 Open 24 Hours · 7 Days
-    </div>
+    <div class="footer-copy">© 2025 GYM AT YOUR HOME. ALL RIGHTS RESERVED.</div>
   </div>
-  <div class="footer-copy">© 2025 GYM AT YOUR HOME. ALL RIGHTS RESERVED.</div>
 </footer>
 
-<!-- FLOATING WHATSAPP -->
-<button class="float-wa" onclick="openWA('Hi! I want to know more about GYM AT YOUR HOME.')" aria-label="Chat on WhatsApp">
+<!-- FLOAT WA -->
+<button class="float-wa" onclick="openWA('Hi! I want to know more about GYM AT YOUR HOME.')" aria-label="WhatsApp">
   <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </button>
-<div class="float-tooltip">Chat with us!</div>
 
 <script>
-const WA_NUM='916282067963';
-function openWA(msg){window.open('https://wa.me/'+WA_NUM+'?text='+encodeURIComponent(msg),'_blank');}
-function toggleFaq(btn){
-  const item=btn.parentElement;
-  const isOpen=item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-  if(!isOpen)item.classList.add('open');
-}
+const WA='916282067963';
+function openWA(m){window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(m),'_blank');}
+setTimeout(skipIntro,7000);
+function skipIntro(){const o=document.getElementById('video-overlay');o.classList.add('hide');setTimeout(()=>o.style.display='none',1200);}
+function toggleFaq(btn){const i=btn.parentElement,open=i.classList.contains('open');document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));if(!open)i.classList.add('open');}
 function submitEnquiry(){
-  const name=document.getElementById('enq-name').value.trim();
-  const goal=document.getElementById('enq-goal').value;
-  const time=document.getElementById('enq-time').value;
-  const note=document.getElementById('enq-note').value.trim();
-  if(!name){alert('Please enter your name.');return;}
-  if(!goal){alert('Please select your fitness goal.');return;}
-  let msg=`Hi! My name is ${name}.\n\nFitness Goal: ${goal}\nPreferred Time: ${time||'Flexible'}`;
-  if(note) msg+=`\n\nAdditional Info: ${note}`;
-  msg+='\n\nI found you on your website and would love to get started!';
-  openWA(msg);
+  const n=document.getElementById('enq-name').value.trim();
+  const g=document.getElementById('enq-goal').value;
+  const t=document.getElementById('enq-time').value;
+  const x=document.getElementById('enq-note').value.trim();
+  if(!n){alert('Please enter your name.');return;}
+  if(!g){alert('Please select your fitness goal.');return;}
+  let m=`Hi! My name is ${n}.\n\nFitness Goal: ${g}\nPreferred Time: ${t||'Flexible'}`;
+  if(x)m+=`\n\nNotes: ${x}`;
+  m+='\n\nI found you on your website and would love to get started!';
+  openWA(m);
 }
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis');}),{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// PARTICLE CANVAS
+const cv=document.getElementById('bg-canvas'),ctx=cv.getContext('2d');
+let W,H,pts=[];
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+resize();window.addEventListener('resize',resize);
+class P{
+  constructor(){this.reset();}
+  reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.5+0.3;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.a=Math.random()*.4+.08;this.hue=Math.random()<.25?'255,107,0':'160,150,145';}
+  upd(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`rgba(${this.hue},${this.a})`;ctx.fill();}
+}
+for(let i=0;i<100;i++)pts.push(new P());
+let t=0;
+function draw(){
+  ctx.clearRect(0,0,W,H);t++;
+  const g1=ctx.createRadialGradient(W*.15,H*.25,0,W*.15,H*.25,W*.45);
+  g1.addColorStop(0,'rgba(35,14,2,0.14)');g1.addColorStop(1,'transparent');
+  ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);
+  const ox=W*.75+Math.sin(t*.0004)*W*.06,oy=H*.2+Math.cos(t*.0006)*H*.05;
+  const g2=ctx.createRadialGradient(ox,oy,0,ox,oy,W*.3);
+  g2.addColorStop(0,'rgba(255,107,0,0.055)');g2.addColorStop(1,'transparent');
+  ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
+  for(let i=0;i<pts.length;i++){
+    for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(255,107,0,${.04*(1-d/90)})`;ctx.lineWidth=.4;ctx.stroke();}
+    }
+    pts[i].upd();pts[i].draw();
+  }
+  requestAnimationFrame(draw);
+}
+draw();
 </script>
 </body>
 </html>
