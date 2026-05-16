@@ -173,7 +173,7 @@ tbody tr:last-child td{border-bottom:none}
 .dot-g{background:var(--green);animation:blink 1.4s infinite}.dot-y{background:var(--yellow)}.dot-r{background:var(--red)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;padding:20px}
-mo.open{display:flex}
+.mo.open{display:flex}
 .mb{background:rgba(14,14,14,0.95);backdrop-filter:blur(28px) saturate(1.3);-webkit-backdrop-filter:blur(28px) saturate(1.3);border:1px solid rgba(212,255,0,0.13);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:26px;animation:moslide .2s ease;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
 .mb-lg{max-width:760px}.mb-xl{max-width:960px}
 @keyframes moslide{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -7877,20 +7877,6 @@ async function saveAddClientToBatch(batchId){
   try{const b=await fsGet('batches',batchId);const enrolled=b?.enrolledClients||[];if(enrolled.includes(clientId)){toast('Already enrolled','info');return}if(enrolled.length>=(b?.maxCapacity||10)){toast('At max capacity','error');return}await fn().updateDoc(fn().doc(db(),'batches',batchId),{enrolledClients:[...enrolled,clientId]});closeM1();toast('Client added!','success');batches()}catch(e){toast('Error: '+e.message,'error')}
 }
 async function delBatch(id){if(!confirm('Delete?'))return;try{await fsDel('batches',id);toast('Deleted','success');batches()}catch(e){toast('Error','error')}}
-
-// ── BADGE HELPERS ─────────────────────────────────────────────
-function statusBadge(s){
-  const map={onair:`<span class="badge b-g"><span class="dot dot-g"></span>On Air</span>`,'not-started':`<span class="badge b-y"><span class="dot dot-y"></span>Pending</span>`,missed:`<span class="badge b-r"><span class="dot dot-r"></span>Missed</span>`,completed:`<span class="badge b-gray">✓ Done</span>`,present:`<span class="badge b-g">✅ Present</span>`,absent:`<span class="badge b-r">❌ Absent</span>`,late:`<span class="badge b-y">⏰ Late</span>`};
-  return map[s]||`<span class="badge b-gray">${s||'—'}</span>`;
-}
-function planBadge(p){
-  if(!p)return`<span class="badge b-gray">—</span>`;
-  if(p==='Gold')return`<span class="badge b-y">🥇 Gold</span>`;
-  if(p==='Platinum')return`<span class="badge b-p">💎 Platinum</span>`;
-  if(p==='Platinum Plus')return`<span class="badge b-p">💎+ Plat+</span>`;
-  if(p==='Corporate Fitness')return`<span class="badge b-b">🏢 Corporate</span>`;
-  return`<span class="badge b-gray">🥈 Silver</span>`;
-}
 
 // ── FIREBASE INIT ─────────────────────────────────────────────
 document.addEventListener('fbReady',()=>{
