@@ -1,632 +1,860 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GYM AT YOUR HOME | Premium Home Fitness</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>HomeGym™ Elite Command</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --orange:#ff6b00;--orange-dim:rgba(255,107,0,0.15);--orange-glow:rgba(255,107,0,0.3);
-  --bg:#0e0e0e;--bg2:#1a1919;--bg3:#201f1f;--bg4:#2a2a2a;--bg5:#353534;
-  --text:#e5e2e1;--text2:#bab8b7;--text3:#6b6968;
-  --border:rgba(255,255,255,0.08);--wa:#25D366;--max:1280px;
+  --bg:#07122a;--surface:#151f37;--surface2:#1f2942;--surface3:#2a344e;
+  --border:#4e4639;--border2:rgba(233,193,118,.15);
+  --text:#d9e2ff;--text2:#d1c5b4;--text3:#9a8f80;
+  --gold:#e9c176;--gold2:#c5a059;--gold3:#ffdea5;
+  --rc:#e9c176;
+  --shadow:0 8px 32px rgba(0,0,0,.6);
+  --modal-bg:rgba(0,0,0,.75);
 }
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
-#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+input,select,button,textarea{font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--text)}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--gold2);border-radius:99px;opacity:.4}
+select option{background:var(--surface);color:var(--text)}
+h1,h2,h3,.font-display{font-family:'Archivo Narrow',sans-serif}
 
-/* VIDEO INTRO */
-#video-overlay{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease,transform 1.2s ease;}
-#video-overlay.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
-#intro-video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0.45;}
-.vo-content{position:relative;z-index:2;text-align:center;padding:0 24px;}
-.vo-logo{font-family:'Oswald',sans-serif;font-size:clamp(32px,5.5vw,68px);font-weight:700;text-transform:uppercase;color:#fff;text-shadow:0 0 80px rgba(255,107,0,1);letter-spacing:0.04em;animation:fadeUp .9s ease both;}
-.vo-logo span{color:var(--orange);}
-.vo-tag{color:rgba(255,255,255,0.65);font-size:clamp(11px,1.4vw,15px);margin-top:14px;letter-spacing:0.15em;text-transform:uppercase;animation:fadeUp 1.2s ease both;}
-.vo-divider{width:60px;height:2px;background:var(--orange);margin:20px auto;animation:fadeUp 1.4s ease both;}
-.vo-desc{color:rgba(255,255,255,0.5);font-size:clamp(12px,1.2vw,14px);max-width:480px;line-height:1.7;animation:fadeUp 1.5s ease both;}
-.vo-skip{margin-top:32px;background:rgba(255,107,0,0.15);border:1px solid var(--orange);color:#fff;padding:13px 38px;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;transition:all .25s;animation:fadeUp 1.7s ease both;backdrop-filter:blur(10px);}
-.vo-skip:hover{background:var(--orange);box-shadow:0 0 30px rgba(255,107,0,0.5);}
-.vo-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(to right,var(--orange),#ffaa00);animation:vprog 7s linear forwards;}
-@keyframes vprog{from{width:0}to{width:100%}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+/* BG TEXTURE */
+.carbon-bg{
+  background-image:linear-gradient(rgba(7,18,42,.95),rgba(7,18,42,.92)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23071228'/%3E%3Crect width='1' height='1' fill='%230a1630'/%3E%3C/svg%3E");
+  background-size:cover,4px 4px;
+}
 
-/* NAV */
-nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(14,14,14,0.9);backdrop-filter:blur(28px);border-bottom:1px solid rgba(255,107,0,0.1);transition:all .3s;}
-.nav-inner{max-width:var(--max);margin:0 auto;padding:14px 48px;display:flex;justify-content:space-between;align-items:center;}
-.logo{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;color:#fff;letter-spacing:0.03em;}
-.logo span{color:var(--orange);}
-.nav-links{display:none;}
-@media(min-width:768px){.nav-links{display:flex;gap:28px;align-items:center;}}
-.nav-links a{font-size:12px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:rgba(229,226,225,0.55);text-decoration:none;transition:color .2s;}
-.nav-links a:hover{color:var(--orange);}
-.nav-cta{background:linear-gradient(135deg,#ff6b00,#e05500);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all .2s;box-shadow:0 0 18px rgba(255,107,0,0.3);}
-.nav-cta:hover{transform:scale(0.97);box-shadow:0 0 28px rgba(255,107,0,0.5);}
+/* BRUSHED METAL */
+.brushed{background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,rgba(0,0,0,.08) 50%,rgba(255,255,255,.04) 100%);position:relative}
+.brushed::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.08) 0,rgba(0,0,0,.08) 1px,transparent 1px,transparent 2px);pointer-events:none;opacity:.15}
 
-/* HERO */
-.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;padding-top:72px;}
-.hero-vid{position:absolute;inset:0;z-index:1;}
-.hero-vid video{width:100%;height:100%;object-fit:cover;opacity:0.3;}
-.hero-vid::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(14,14,14,0.98) 30%,rgba(14,14,14,0.55) 65%,rgba(14,14,14,0.1) 100%),linear-gradient(to top,rgba(14,14,14,0.95) 0%,transparent 45%);}
-.hero-ring{position:absolute;top:6%;right:2%;width:480px;height:480px;border-radius:50%;border:1px solid rgba(255,107,0,0.1);animation:spin 30s linear infinite;z-index:2;}
-.hero-ring::before{content:'';position:absolute;inset:40px;border-radius:50%;border:1px dashed rgba(255,107,0,0.06);animation:spin 22s linear infinite reverse;}
-.hero-ring::after{content:'';position:absolute;inset:90px;border-radius:50%;border:1px solid rgba(255,107,0,0.04);}
+/* GOLD BTN */
+.btn-gold{background:var(--gold2);background-image:linear-gradient(135deg,rgba(255,255,255,.12) 0%,rgba(0,0,0,.12) 100%);color:#412d00;font-family:'Archivo Narrow',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border:none;cursor:pointer;position:relative;overflow:hidden;transition:filter .2s,transform .15s}
+.btn-gold:hover{filter:brightness(1.1)}
+.btn-gold:active{transform:scale(.98)}
+.btn-gold::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.06) 1px,transparent 1px,transparent 2px);pointer-events:none}
+
+/* GLASS CARD */
+.glass{background:rgba(21,31,55,.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(197,160,89,.2);box-shadow:0 8px 32px rgba(0,0,0,.8)}
+
+/* LOGIN */
+#loginWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:100;transition:opacity .4s;overflow-y:auto;background:#07122a}
+#loginWrap.hide{opacity:0;pointer-events:none}
+.login-bg-img{position:absolute;inset:0;z-index:0}
+.login-bg-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.35)}
+.login-bg-img .overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent,rgba(7,18,42,.7) 60%,rgba(7,18,42,.95))}
+.login-card{width:100%;max-width:460px;position:relative;z-index:1}
+.login-glass{background:rgba(21,31,55,.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(197,160,89,.2);box-shadow:0 8px 32px rgba(0,0,0,.8);border-radius:.5rem;padding:2.5rem}
+.field-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:6px}
+.field-wrap{position:relative;display:flex;align-items:center}
+.field-icon{position:absolute;left:12px;font-size:18px;color:var(--text3);pointer-events:none;transition:color .2s}
+.field-input{width:100%;background:rgba(3,13,37,.6);border:none;border-bottom:2px solid var(--border);padding:13px 13px 13px 40px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s;border-radius:0}
+.field-input:focus{border-color:var(--gold)}
+.field-input:focus~.field-icon,.field-wrap:focus-within .field-icon{color:var(--gold)}
+.err-msg{color:#ff8a80;font-size:11px;margin-bottom:8px;display:none;padding:8px 10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:.25rem}
+.gold-divider{height:1px;width:3rem;background:var(--gold);margin:1rem auto 0}
+
+/* APP LAYOUT */
+#app{display:flex;height:100dvh;overflow:hidden;opacity:0;transition:opacity .4s;position:relative}
+#app.show{opacity:1}
+
+/* SIDEBAR */
+#sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;padding:1.25rem 1rem;z-index:50;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 .5rem;margin-bottom:2rem}
+.sidebar-brand-logo{width:40px;height:40px;object-fit:contain}
+.sidebar-brand-name{font-family:'Archivo Narrow',sans-serif;font-size:20px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;line-height:1}
+.sidebar-brand-sub{font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.sidebar-nav{flex:1;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:none;background:transparent;color:var(--text3);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-left:3px solid transparent;transition:all .18s;text-align:left;width:100%}
+.nav-item:hover{background:var(--surface2);color:var(--text);border-left-color:var(--border)}
+.nav-item.active{background:var(--surface2);color:var(--gold);border-left-color:var(--gold);font-weight:700}
+.nav-item .mso{font-size:18px}
+.sidebar-foot{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border2)}
+.sidebar-user{display:flex;align-items:center;gap:9px;padding:.75rem .5rem}
+.sidebar-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#412d00;font-size:12px;background:var(--gold2);flex-shrink:0}
+.sidebar-user-name{font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-user-role{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.05em}
+.logout-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;margin-left:auto;padding:4px;transition:color .2s}
+.logout-btn:hover{color:var(--gold)}
+
+/* TOP BAR */
+#topbar{background:rgba(7,18,42,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0}
+.hamburger{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:6px;display:none}
+.ham-line{width:20px;height:2px;background:var(--text);border-radius:99px}
+.topbar-title{flex:1;min-width:0}
+.topbar-title p{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-title small{color:var(--text3);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.icon-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:.25rem;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2);transition:all .2s}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold)}
+.mso{font-family:'Material Symbols Outlined';font-size:20px;line-height:1;font-variation-settings:'wght' 300}
+
+/* DRAWER (mobile) */
+#drawer{position:fixed;inset:0;z-index:200;pointer-events:none}
+#drawerBg{position:absolute;inset:0;background:var(--modal-bg);opacity:0;transition:opacity .3s}
+#drawerPanel{position:absolute;left:0;top:0;bottom:0;width:240px;background:var(--surface);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:1.25rem 1rem;border-right:1px solid var(--border2)}
+#drawer.open{pointer-events:all}
+#drawer.open #drawerBg{opacity:1}
+#drawer.open #drawerPanel{transform:translateX(0)}
+
+/* MAIN */
+#mainWrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.page{padding:16px;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:.5rem;padding:16px;box-shadow:var(--shadow);position:relative}
+.card-title{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.card+.card{margin-top:14px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(min-width:700px){.stat-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{border-radius:.5rem;padding:16px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.stat-card::before{content:'';position:absolute;top:-16px;right:-16px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.06)}
+.stat-icon{font-size:22px;margin-bottom:6px;opacity:.8}
+.stat-val{font-family:'Archivo Narrow',sans-serif;font-size:26px;font-weight:700;color:#fff;line-height:1}
+.stat-label{color:rgba(255,255,255,.7);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.stat-delta{display:inline-block;margin-top:8px;background:rgba(255,255,255,.18);border-radius:99px;padding:2px 9px;font-size:9px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.06em}
+
+/* MISC */
+.pill{border-radius:2px;padding:2px 8px;font-size:9px;font-weight:700;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase}
+.bar-track{background:var(--surface3);border-radius:99px;height:3px;margin-top:5px;overflow:hidden}
+.bar-fill{height:3px;border-radius:99px;transition:width .9s ease}
+.two-col{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px}
+@media(min-width:700px){.two-col{grid-template-columns:1fr 1fr}}
+
+/* PLAN BADGES */
+.plan-silver{background:rgba(148,163,184,.2);color:#94a3b8;border:1px solid rgba(148,163,184,.3)}
+.plan-gold{background:rgba(245,158,11,.2);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+.plan-platinum{background:rgba(139,92,246,.2);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+.plan-couple{background:rgba(236,72,153,.2);color:#f472b6;border:1px solid rgba(236,72,153,.3)}
+
+/* LEAD ITEMS */
+.lead-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:.25rem;cursor:pointer;transition:background .15s;margin-bottom:2px}
+.lead-row:hover{background:var(--surface2)}
+.list-search{width:100%;background:rgba(3,13,37,.6);border:none;border-bottom:2px solid var(--border);padding:9px 12px 9px 36px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s}
+.list-search:focus{border-color:var(--gold)}
+.tab-row{display:flex;gap:5px;margin-top:8px}
+.tab-btn{flex:1;padding:6px 0;background:var(--surface2);border:1px solid var(--border);border-radius:.25rem;color:var(--text3);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.tab-btn.active-tab{background:var(--gold);color:#412d00;border-color:var(--gold)}
+.lead-item{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid rgba(78,70,57,.3);cursor:pointer;transition:background .15s}
+.lead-item:hover{background:var(--surface2)}
+.plat-dot{position:absolute;bottom:0;right:0;font-size:8px}
+.pipe-badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:8px;font-weight:700;background:rgba(233,193,118,.2);color:var(--gold);border:1px solid rgba(233,193,118,.3);margin-left:3px;text-transform:uppercase;letter-spacing:.06em}
+
+/* AV */
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#412d00;flex-shrink:0;background:var(--gold2)}
+
+/* CHAT */
+.chat-view{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.chat-head{padding:10px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;background:var(--surface);flex-shrink:0}
+.chat-back{background:none;border:none;color:var(--gold);font-size:22px;cursor:pointer;padding:4px}
+.chat-name{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:15px;color:var(--gold)}
+.chat-sub{color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.chat-hactions{margin-left:auto;display:flex;gap:6px;align-items:center}
+.action-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:.25rem;padding:5px 10px;color:var(--text2);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .2s;font-weight:600}
+.action-btn:hover{border-color:var(--gold);color:var(--gold)}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px}
+.msg-bubble{max-width:75%;padding:10px 14px;font-size:13px;line-height:1.5;word-break:break-word;border-radius:.25rem}
+.msg-time{font-size:9px;color:rgba(127,127,127,.5);text-align:right;margin-top:3px}
+.msg-out{margin-left:auto;color:#412d00;background:var(--gold2)}
+.msg-in{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.chat-input-row{padding:10px 14px;border-top:1px solid var(--border2);display:flex;gap:8px;flex-shrink:0;background:var(--surface)}
+.emoji-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:.25rem;width:36px;height:36px;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.msg-input{flex:1;background:rgba(3,13,37,.6);border:none;border-bottom:2px solid var(--border);padding:9px 12px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
+.msg-input:focus{border-color:var(--gold)}
+.send-btn{border:none;padding:9px 18px;color:#412d00;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;flex-shrink:0;font-family:'Archivo Narrow',sans-serif}
+
+/* DETAIL SHEET */
+.detail-sheet{position:fixed;inset:0;z-index:150;pointer-events:none}
+.detail-bg{position:absolute;inset:0;background:var(--modal-bg);opacity:0;transition:opacity .3s}
+.detail-panel{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border2);border-radius:.5rem .5rem 0 0;max-height:85dvh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding:20px 16px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.detail-sheet.open{pointer-events:all}
+.detail-sheet.open .detail-bg{opacity:1}
+.detail-sheet.open .detail-panel{transform:translateY(0)}
+.detail-handle{width:36px;height:3px;border-radius:99px;background:var(--border);margin:0 auto 16px}
+.detail-block{background:var(--surface2);border-radius:.25rem;border:1px solid var(--border);padding:9px 12px;margin-bottom:7px}
+.detail-key{color:var(--text3);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.detail-val{font-size:12px;font-weight:600;color:var(--text)}
+.ghost-btn{width:100%;padding:11px;border-radius:.25rem;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;margin-bottom:7px;background:transparent;border:1px solid var(--border);color:var(--text2);font-family:'Archivo Narrow',sans-serif}
+.ghost-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* PIPELINE */
+.pipeline-page-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.pipe-tab-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border2);overflow-x:auto;flex-shrink:0}
+.pipe-tab{flex-shrink:0;padding:6px 14px;border-radius:.25rem;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all .2s;border:1px solid var(--border);background:var(--surface2);color:var(--text3);font-family:'Archivo Narrow',sans-serif}
+.pipe-tab.active{background:var(--gold);color:#412d00;border-color:var(--gold)}
+.pipe-action-btn{flex-shrink:0;padding:6px 12px;border-radius:.25rem;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap;border:none;font-family:'Archivo Narrow',sans-serif}
+.pipeline-wrap{padding:14px;overflow-x:auto;overflow-y:auto;user-select:none;flex:1}
+.kanban{display:flex;gap:12px;min-width:max-content;align-items:flex-start}
+.col-wrap{width:210px;flex-shrink:0}
+.col-inner{border-radius:.5rem;border:1px solid var(--border2);background:var(--surface);overflow:hidden;transition:border-color .2s}
+.col-inner.drag-over{border-color:var(--gold);background:rgba(233,193,118,.04)}
+.col-head{padding:10px 12px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.col-dot{width:7px;height:7px;border-radius:50%;margin-right:6px;flex-shrink:0}
+.col-title-text{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;color:var(--text)}
+.col-count{background:rgba(233,193,118,.15);border:1px solid rgba(233,193,118,.2);border-radius:99px;padding:1px 7px;font-size:9px;font-weight:700;color:var(--gold)}
+.col-body{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:7px}
+.k-card{background:var(--surface2);border:1px solid var(--border);border-radius:.25rem;padding:10px;cursor:grab;transition:box-shadow .15s,transform .15s,opacity .15s}
+.k-card:active{cursor:grabbing}
+.k-card.dragging{opacity:.4;transform:scale(.97)}
+.k-card-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.k-name{font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);flex:1}
+.k-val{color:var(--gold);font-size:14px;font-weight:700;margin:3px 0;font-family:'Archivo Narrow',sans-serif}
+.k-src{color:var(--text3);font-size:10px}
+.k-actions{display:flex;gap:4px;margin-top:8px}
+.k-act-btn{flex:1;border:none;border-radius:.25rem;padding:5px 0;font-size:9px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;font-family:'Archivo Narrow',sans-serif}
+.drop-zone{border:1.5px dashed var(--border);border-radius:.25rem;min-height:50px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:10px;opacity:.5;transition:all .2s;letter-spacing:.06em;text-transform:uppercase}
+.drop-zone.active{border-color:var(--gold);opacity:1;background:rgba(233,193,118,.04)}
+
+/* AGENTS */
+.agent-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:16px}
+@media(min-width:500px){.agent-grid{grid-template-columns:1fr 1fr}}
+.agent-card{background:var(--surface);border:1px solid var(--border2);border-radius:.5rem;padding:16px;box-shadow:var(--shadow)}
+.agent-conv-val{font-family:'Archivo Narrow',sans-serif;font-size:22px;font-weight:700;color:var(--gold)}
+.agent-conv-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.agent-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}
+.agent-stat{background:var(--surface2);border:1px solid var(--border);border-radius:.25rem;padding:8px 0;text-align:center}
+.agent-stat-val{font-weight:700;font-size:13px;color:var(--text);font-family:'Archivo Narrow',sans-serif}
+.agent-stat-key{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+
+/* TASKS */
+.fu-counters{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.fu-counter{background:var(--surface);border:1px solid var(--border2);border-radius:.5rem;padding:14px;text-align:center}
+.fu-num{font-family:'Archivo Narrow',sans-serif;font-size:32px;font-weight:700}
+.fu-lbl{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+.task-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:.25rem;margin-bottom:6px;background:var(--surface2);border:1px solid var(--border)}
+.task-prio{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.task-lead{font-size:12px;font-weight:700;color:var(--text)}
+.task-info{color:var(--text3);font-size:10px;margin-top:2px;letter-spacing:.04em}
+.task-actions{display:flex;gap:4px;margin-left:auto;flex-shrink:0}
+.task-btn{border:none;border-radius:.25rem;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Archivo Narrow',sans-serif;text-transform:uppercase;letter-spacing:.04em}
+
+/* AUTOMATION */
+.auto-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:.25rem;margin-bottom:7px;border:1px solid var(--border)}
+.tag{padding:2px 7px;border-radius:2px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:'Archivo Narrow',sans-serif}
+.toggle{width:40px;height:21px;border-radius:99px;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
+.toggle-knob{position:absolute;top:2.5px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
+/* CAMPAIGNS */
+.camp-row{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--surface2);border-radius:.25rem;margin-bottom:7px;flex-wrap:wrap;border:1px solid var(--border)}
+.camp-name{font-weight:700;font-size:13px;color:var(--text);font-family:'Archivo Narrow',sans-serif}
+.camp-stat{background:var(--surface);border:1px solid var(--border2);border-radius:.5rem;padding:14px;text-align:center}
+.camp-stat-val{font-family:'Archivo Narrow',sans-serif;font-size:20px;font-weight:700;margin:4px 0 2px;color:var(--text)}
+.camp-stat-key{color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.campaign-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(min-width:600px){.campaign-stat-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* TEMPLATES */
+.tpl-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:16px}
+@media(min-width:500px){.tpl-grid{grid-template-columns:1fr 1fr}}
+.tpl-card{background:var(--surface);border:1px solid var(--border2);border-radius:.5rem;padding:16px}
+.tpl-title{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:14px;color:var(--gold)}
+.tpl-body{color:var(--text2);font-size:12px;line-height:1.6;white-space:pre-line;margin-top:8px}
+.tpl-add{border:1.5px dashed rgba(233,193,118,.3);border-radius:.5rem;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:120px;transition:border-color .2s}
+.tpl-add:hover{border-color:var(--gold)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:var(--modal-bg);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-top:1px solid var(--border2);border-radius:.5rem .5rem 0 0;padding:22px 20px;width:100%;max-width:100%;box-shadow:0 -8px 40px rgba(0,0,0,.5);max-height:90dvh;overflow-y:auto;padding-bottom:max(22px,env(safe-area-inset-bottom))}
+.modal-handle{width:36px;height:3px;border-radius:99px;background:var(--border);margin:0 auto 16px}
+.modal-title{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:18px;margin-bottom:16px;color:var(--gold);text-transform:uppercase;letter-spacing:.06em}
+.modal-footer{display:flex;gap:9px;margin-top:18px}
+.btn-cancel{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:.25rem;padding:12px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;font-family:'Archivo Narrow',sans-serif}
+.btn-save{flex:2;border:none;border-radius:.25rem;padding:12px;color:#412d00;font-weight:700;font-size:12px;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;background:var(--gold2);font-family:'Archivo Narrow',sans-serif}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:10px;color:var(--text3);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:rgba(3,13,37,.6);border:none;border-bottom:2px solid var(--border);padding:11px 12px;color:var(--text);font-size:14px;outline:none;transition:border-color .2s;border-radius:0}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--gold)}
+.form-row textarea{resize:vertical;min-height:80px}
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:.25rem;margin-bottom:7px;border:1px solid var(--border)}
+.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;gap:10px;color:var(--text3)}
+.stage-btn{width:100%;padding:11px 12px;border-radius:.25rem;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:12px;text-align:left;cursor:pointer;margin-bottom:6px;transition:all .15s;display:flex;align-items:center;gap:9px;font-weight:600}
+.stage-btn.current{border-color:var(--gold);background:rgba(233,193,118,.08)}
+.stage-manage-row{display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--surface2);border-radius:.25rem;margin-bottom:6px;border:1px solid var(--border)}
+
+/* BOTTOM NAV (mobile) */
+#bottomNav{display:none;background:var(--surface);border-top:1px solid var(--border2);flex-shrink:0;padding-bottom:max(6px,env(safe-area-inset-bottom))}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border:none;background:transparent;cursor:pointer;gap:3px;touch-action:manipulation;transition:all .15s;color:var(--text3)}
+.bnav-btn.active{color:var(--gold)}
+.bnav-icon{font-size:20px}
+.bnav-label{font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+
+/* TOAST */
+.toast{position:fixed;bottom:max(80px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border2);border-radius:.25rem;padding:11px 18px;font-size:13px;color:var(--text);z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.5);animation:slideUp .3s ease;display:flex;align-items:center;gap:9px;white-space:nowrap;max-width:90vw}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.reminder-popup{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9998;background:var(--surface);border:1px solid rgba(233,193,118,.4);border-radius:.5rem;padding:16px 20px;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(233,193,118,.15);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.reminder-popup-title{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:14px;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.reminder-popup-body{font-size:13px;color:var(--text);margin-bottom:12px}
+.reminder-finish-btn{width:100%;padding:10px;background:var(--gold2);border:none;border-radius:.25rem;color:#412d00;font-weight:700;font-size:12px;cursor:pointer;font-family:'Archivo Narrow',sans-serif;text-transform:uppercase;letter-spacing:.08em}
+
+/* SPINNER */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(233,193,118,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.hero-content{position:relative;z-index:3;max-width:var(--max);margin:0 auto;padding:0 48px;width:100%;}
-.hero-inner{max-width:700px;}
-.hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-.hero-eyebrow::before{content:'';width:32px;height:2px;background:var(--orange);}
-.hero h1{font-family:'Oswald',sans-serif;font-size:clamp(46px,7vw,84px);line-height:.98;font-weight:700;text-transform:uppercase;margin-bottom:22px;color:#fff;letter-spacing:-0.02em;}
-.hero h1 .hl{color:var(--orange);text-shadow:0 0 60px rgba(255,107,0,0.4);}
-.hero p{font-size:clamp(15px,1.8vw,17px);color:rgba(229,226,225,0.7);max-width:540px;margin-bottom:38px;line-height:1.8;}
-.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:52px;}
-.btn-primary{background:linear-gradient(135deg,#ff6b00,#e05500);color:#fff;border:none;padding:17px 36px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;box-shadow:0 0 28px rgba(255,107,0,0.4);transition:all .3s;}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(255,107,0,0.6);}
-.btn-outline{background:rgba(255,255,255,0.04);color:var(--text);border:1px solid rgba(229,226,225,0.15);padding:17px 36px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;backdrop-filter:blur(8px);transition:all .3s;}
-.btn-outline:hover{border-color:var(--orange);color:#fff;}
-.hero-nums{display:flex;gap:40px;flex-wrap:wrap;}
-.hero-num-val{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;color:var(--orange);line-height:1;}
-.hero-num-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:4px;}
 
-/* GLASS */
-.glass{background:rgba(16,15,15,0.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.07);border-radius:14px;transition:all .35s;}
-.glass:hover{border-color:rgba(255,107,0,0.35);box-shadow:0 0 36px rgba(255,107,0,0.1);}
+/* SETTINGS */
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:.25rem;border:1px solid var(--border);margin-bottom:6px}
+.settings-row-label{font-size:13px;font-weight:700;color:var(--text)}
+.settings-row-sub{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
 
-/* SECTIONS */
-.section{padding:96px 0;position:relative;z-index:1;}
-.section-inner{max-width:var(--max);margin:0 auto;padding:0 48px;}
-.section-head{text-align:center;margin-bottom:60px;}
-.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;}
-.section-head h2{font-family:'Oswald',sans-serif;font-size:clamp(30px,3.8vw,50px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:14px;}
-.section-bar{width:56px;height:3px;background:var(--orange);margin:0 auto;border-radius:2px;}
-.sect-alt{background:rgba(10,10,10,0.7);}
+/* PLAN REVENUE */
+.plan-rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.plan-rev-card{border-radius:.5rem;padding:14px;text-align:center;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.plan-rev-val{font-family:'Archivo Narrow',sans-serif;font-size:20px;font-weight:700;color:#fff;margin:4px 0 2px}
+.plan-rev-key{color:rgba(255,255,255,.7);font-size:9px;text-transform:uppercase;letter-spacing:.1em}
+.plan-rev-count{font-size:9px;color:rgba(255,255,255,.5);margin-top:3px;letter-spacing:.06em}
 
-/* ABOUT */
-.about-grid{display:grid;grid-template-columns:1fr;gap:56px;align-items:center;}
-@media(min-width:900px){.about-grid{grid-template-columns:1fr 1fr;}}
-.about-img-wrap{position:relative;}
-.about-img-wrap::before{content:'';position:absolute;inset:-20px;background:rgba(255,107,0,0.06);border-radius:50%;filter:blur(50px);z-index:0;}
-.about-img-wrap img{position:relative;z-index:1;width:100%;border-radius:18px;border:1px solid rgba(255,255,255,0.05);transition:filter .7s;filter:grayscale(0.3);}
-.about-img-wrap:hover img{filter:grayscale(0);}
-.about-text .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
-.about-text h2{font-family:'Oswald',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:18px;line-height:1.05;}
-.about-text p{font-size:15px;color:var(--text2);line-height:1.85;margin-bottom:32px;}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.stat-card{padding:22px;border-radius:12px;}
-.stat-val{font-family:'Oswald',sans-serif;font-size:38px;font-weight:700;color:var(--orange);line-height:1;}
-.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:5px;}
-
-/* PROGRAMS */
-.programs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
-.prog-card{border-radius:14px;overflow:hidden;cursor:pointer;}
-.prog-card .img-wrap{height:200px;overflow:hidden;position:relative;}
-.prog-card .img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
-.prog-card:hover .img-wrap img{transform:scale(1.08);}
-.prog-card .img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(14,14,14,0.95) 0%,transparent 55%);}
-.prog-card .card-body{padding:20px 22px 24px;}
-.prog-card h3{font-family:'Oswald',sans-serif;font-size:21px;font-weight:600;text-transform:uppercase;margin-bottom:7px;color:#fff;}
-.prog-card p{font-size:13px;color:var(--text2);line-height:1.65;}
-
-/* HOW IT WORKS */
-.steps-track{position:relative;}
-.steps-line{display:none;}
-@media(min-width:900px){.steps-line{display:block;position:absolute;top:32px;left:0;right:0;height:1px;background:rgba(255,107,0,0.12);z-index:0;}}
-.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:28px;position:relative;z-index:1;}
-.step{text-align:center;}
-.step-icon{width:64px;height:64px;border-radius:50%;background:var(--bg3);border:2px solid rgba(255,107,0,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:26px;transition:all .3s;}
-.step:hover .step-icon{background:rgba(255,107,0,0.15);border-color:var(--orange);box-shadow:0 0 24px rgba(255,107,0,0.2);}
-.step h4{font-family:'Oswald',sans-serif;font-size:17px;font-weight:600;text-transform:uppercase;margin-bottom:7px;color:#fff;}
-.step p{font-size:13px;color:var(--text3);line-height:1.6;}
-
-/* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;align-items:start;}
-.price-card{border-radius:16px;padding:36px;display:flex;flex-direction:column;}
-.price-card.featured{border-color:var(--orange)!important;box-shadow:0 0 60px rgba(255,107,0,0.12);position:relative;}
-.featured-pip{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff6b00,#e05500);color:#fff;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:5px 22px;border-radius:100px;white-space:nowrap;}
-.price-name{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;text-transform:uppercase;margin-bottom:14px;color:#fff;}
-.price-card.featured .price-name{color:var(--orange);}
-.price-amount{font-size:20px;font-weight:600;color:var(--text2);line-height:1;}
-.price-features{list-style:none;margin:24px 0;flex:1;display:flex;flex-direction:column;gap:13px;}
-.price-features li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);}
-.price-features li::before{content:'✓';width:18px;height:18px;border-radius:50%;background:rgba(255,107,0,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
-.price-btn{width:100%;padding:14px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;letter-spacing:0.07em;text-transform:uppercase;transition:all .25s;border:1px solid rgba(255,255,255,0.12);background:transparent;color:var(--text);margin-top:4px;}
-.price-btn:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.25);}
-.price-card.featured .price-btn{background:linear-gradient(135deg,#ff6b00,#e05500);border-color:transparent;color:#fff;box-shadow:0 0 22px rgba(255,107,0,0.35);}
-.price-card.featured .price-btn:hover{box-shadow:0 0 36px rgba(255,107,0,0.5);}
-
-/* GOOGLE REVIEWS */
-.reviews-header{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:48px;flex-wrap:wrap;}
-.google-badge{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:100px;padding:10px 22px;}
-.g-logo{font-size:20px;font-weight:700;font-family:'Inter',sans-serif;}
-.g-logo .g-b{color:#4285F4;}.g-logo .g-l{color:#EA4335;}.g-logo .g-o1{color:#FBBC05;}.g-logo .g-o2{color:#34A853;}.g-logo .g-le{color:#EA4335;}
-.g-rating{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:#fff;}
-.g-stars{color:#FBBC05;font-size:16px;letter-spacing:2px;}
-.g-count{font-size:12px;color:var(--text3);}
-.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
-.review-card{border-radius:14px;padding:28px;position:relative;}
-.review-card::before{content:'"';position:absolute;top:16px;right:20px;font-family:'Oswald',sans-serif;font-size:72px;color:rgba(255,107,0,0.08);line-height:1;}
-.review-top{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-.review-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--orange),#e05500);display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
-.review-name{font-weight:700;font-size:15px;color:#fff;margin-bottom:3px;}
-.review-date{font-size:11px;color:var(--text3);}
-.review-stars{color:#FBBC05;font-size:13px;letter-spacing:1.5px;margin-bottom:12px;}
-.review-text{font-size:14px;color:var(--text2);line-height:1.75;font-style:italic;}
-.review-badge{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
-.review-badge svg{opacity:0.4;}
-
-/* FAQ */
-.faq-grid{display:grid;grid-template-columns:1fr;gap:10px;}
-@media(min-width:768px){.faq-grid{grid-template-columns:1fr 1fr;gap:12px;}}
-.faq-item{background:rgba(16,15,15,0.9);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;backdrop-filter:blur(12px);transition:border-color .25s;}
-.faq-item.open{border-color:rgba(255,107,0,0.25);}
-.faq-q{width:100%;background:none;border:none;color:var(--text);font-size:14px;font-weight:600;text-align:left;padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:'Inter',sans-serif;}
-.faq-q .arr{color:var(--orange);font-size:16px;transition:transform .25s;flex-shrink:0;}
-.faq-item.open .arr{transform:rotate(180deg);}
-.faq-a{font-size:14px;color:var(--text2);line-height:1.75;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;padding:0 20px;}
-.faq-item.open .faq-a{max-height:220px;padding:0 20px 18px;}
-
-/* CTA */
-.cta-section{padding:96px 0;position:relative;z-index:1;overflow:hidden;}
-.cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,107,0,0.06) 0%,transparent 70%);}
-.cta-inner{max-width:var(--max);margin:0 auto;padding:0 48px;text-align:center;position:relative;z-index:1;}
-.cta-inner h2{font-family:'Oswald',sans-serif;font-size:clamp(30px,4.5vw,54px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:16px;}
-.cta-inner p{font-size:16px;color:var(--text2);margin-bottom:42px;line-height:1.8;max-width:560px;margin-left:auto;margin-right:auto;}
-.cta-btns{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:20px;}
-.wa-btn{display:flex;align-items:center;gap:12px;background:#25D366;color:#fff;padding:16px 34px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .25s;text-decoration:none;}
-.wa-btn:hover{background:#1eb85a;transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,0.35);}
-.phone-label{display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;}
-
-/* ENQUIRY */
-.enquiry-grid{display:grid;grid-template-columns:1fr;gap:48px;}
-@media(min-width:900px){.enquiry-grid{grid-template-columns:1fr 1fr;align-items:center;}}
-.enq-info .eyebrow{font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
-.enq-info h2{font-family:'Oswald',sans-serif;font-size:clamp(26px,3.5vw,40px);font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:16px;line-height:1.05;}
-.enq-info p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:28px;}
-.contact-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
-.contact-row .ico{width:42px;height:42px;background:rgba(255,107,0,0.1);border:1px solid rgba(255,107,0,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.contact-row a{color:var(--orange);text-decoration:none;font-weight:700;}
-.contact-row p{font-size:14px;color:var(--text2);}
-.enq-box{background:rgba(13,13,13,0.95);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:36px;backdrop-filter:blur(24px);}
-.enq-box h3{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;color:#fff;margin-bottom:6px;}
-.enq-box .sub{font-size:13px;color:var(--text2);margin-bottom:26px;}
-.form-row{margin-bottom:14px;}
-.form-row label{display:block;font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text3);margin-bottom:7px;}
-.form-row input,.form-row select,.form-row textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:13px 14px;outline:none;transition:border-color .2s;}
-.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--orange);background:rgba(255,107,0,0.03);}
-.form-row select option{background:#1a1919;}
-.form-row textarea{resize:vertical;min-height:80px;}
-.wa-submit{width:100%;padding:16px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .25s;margin-top:6px;font-family:'Inter',sans-serif;}
-.wa-submit:hover{background:#1eb85a;transform:translateY(-2px);box-shadow:0 6px 24px rgba(37,211,102,0.3);}
-
-/* FLOAT WA */
-.float-wa{position:fixed;bottom:28px;right:24px;z-index:999;width:62px;height:62px;border-radius:50%;background:var(--wa);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 28px rgba(37,211,102,0.45);animation:bounce 3.5s ease-in-out infinite;}
-@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-.float-wa:hover{transform:scale(1.1)!important;animation:none;}
-
-/* GLOW DIVIDER */
-.glow-div{height:1px;background:linear-gradient(to right,transparent,rgba(255,107,0,0.25),transparent);position:relative;z-index:1;}
-
-/* FOOTER */
-footer{background:rgba(8,8,8,0.98);border-top:1px solid rgba(255,107,0,0.07);padding:48px 48px 28px;position:relative;z-index:1;}
-.footer-inner{max-width:var(--max);margin:0 auto;display:flex;flex-direction:column;gap:24px;align-items:center;text-align:center;}
-@media(min-width:640px){.footer-inner{flex-direction:row;justify-content:space-between;text-align:left;}}
-.footer-logo{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;color:#fff;text-transform:uppercase;}
-.footer-logo span{color:var(--orange);}
-.footer-links{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
-.footer-links a{font-size:11px;color:var(--text3);text-decoration:none;text-transform:uppercase;letter-spacing:0.07em;transition:color .2s;}
-.footer-links a:hover{color:var(--orange);}
-.footer-copy{font-size:11px;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;}
-
-/* SCROLL REVEAL */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease;}
-.reveal.vis{opacity:1;transform:translateY(0);}
-
-@media(max-width:768px){
-  .nav-inner,.section-inner,.hero-content,.cta-inner,.footer-inner{padding-left:20px;padding-right:20px;}
-  footer{padding:40px 20px 24px;}
-  .hero-ring{width:280px;height:280px;}
+/* MOBILE */
+@media(max-width:767px){
+  #sidebar{display:none}
+  .hamburger{display:flex}
+  #bottomNav{display:flex}
+  #mainWrap{flex:1}
 }
 </style>
 </head>
-<body>
-<canvas id="bg-canvas"></canvas>
+<body class="carbon-bg">
 
-<!-- VIDEO INTRO -->
-<div id="video-overlay">
-  <video id="intro-video" autoplay muted playsinline loop>
-    <source src="https://videos.pexels.com/video-files/6253972/6253972-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
-    <source src="https://videos.pexels.com/video-files/4761379/4761379-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
-  </video>
-  <div class="vo-content">
-    <div class="vo-logo">GYM AT YOUR <span>HOME</span></div>
-    <div class="vo-tag">Live Coaching · Anytime · Anywhere</div>
-    <div class="vo-divider"></div>
-    <div class="vo-desc">Elite personal training delivered to your doorstep. No commute. No gym. Just results.</div>
-    <button class="vo-skip" onclick="skipIntro()">Enter Site &rsaquo;</button>
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="login-bg-img">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(7,18,42,.97),rgba(21,31,55,.95))"></div>
+    <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(233,193,118,.02) 0,rgba(233,193,118,.02) 1px,transparent 1px,transparent 8px);pointer-events:none"></div>
   </div>
-  <div class="vo-bar"></div>
+  <div class="login-card">
+    <div class="login-glass">
+      <div style="text-align:center;margin-bottom:2rem">
+        <svg width="56" height="52" viewBox="0 0 220 200" fill="none" style="margin-bottom:12px">
+          <path d="M20 95 L110 18 L200 95" stroke="#e9c176" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="22" y="112" width="26" height="65" rx="9" fill="#e9c176"/>
+          <rect x="48" y="125" width="20" height="42" rx="8" fill="#e9c176"/>
+          <rect x="68" y="142" width="84" height="14" rx="7" fill="#e9c176"/>
+          <rect x="152" y="125" width="20" height="42" rx="8" fill="#e9c176"/>
+          <rect x="172" y="112" width="26" height="65" rx="9" fill="#e9c176"/>
+        </svg>
+        <h1 style="font-family:'Archivo Narrow',sans-serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.12em;text-transform:uppercase">Sales Command Center</h1>
+        <p style="color:var(--text3);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px">HomeGym™ Elite</p>
+        <div style="height:1px;width:3rem;background:var(--gold);margin:.75rem auto 0;opacity:.6"></div>
+      </div>
+      <p style="color:var(--text3);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px;text-align:center">Sign in to your account</p>
+      <div class="form-row">
+        <label class="field-label">Mission ID / Email</label>
+        <div class="field-wrap"><span class="mso field-icon" style="left:10px;position:absolute;font-size:18px;color:var(--text3)">person</span><input id="emailInput" class="field-input" type="email" placeholder="representative@homegym.com" autocomplete="email"/></div>
+      </div>
+      <div class="form-row">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <label class="field-label" style="margin-bottom:0">Secure Key</label>
+        </div>
+        <div class="field-wrap"><span class="mso field-icon" style="left:10px;position:absolute;font-size:18px;color:var(--text3)">lock</span><input id="passInput" class="field-input" type="password" placeholder="••••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      </div>
+      <p class="err-msg" id="errMsg"></p>
+      <button onclick="doLogin()" id="signInBtn" class="btn-gold" style="width:100%;padding:14px;font-size:14px;border-radius:.25rem;margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:8px">
+        <span>Sign In</span><span class="mso" style="font-size:18px">login</span>
+      </button>
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(78,70,57,.4);text-align:center">
+        <p style="color:var(--text3);font-size:12px">New user? <span style="color:var(--gold);cursor:pointer">Contact your admin</span> for access.</p>
+        <p style="color:var(--text3);font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px;opacity:.5">System v5.0.0 · Secure Node: HG-Elite-01</p>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <div class="logo">GYM AT YOUR <span>HOME</span></div>
-    <div class="nav-links">
-      <a href="#">Home</a>
-      <a href="#about">About</a>
-      <a href="#programs">Programs</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#contact">Contact</a>
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR (desktop) -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <svg width="36" height="32" viewBox="0 0 220 200" fill="none">
+        <path d="M20 95 L110 18 L200 95" stroke="#e9c176" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="22" y="112" width="26" height="65" rx="9" fill="#e9c176"/>
+        <rect x="48" y="125" width="20" height="42" rx="8" fill="#e9c176"/>
+        <rect x="68" y="142" width="84" height="14" rx="7" fill="#e9c176"/>
+        <rect x="152" y="125" width="20" height="42" rx="8" fill="#e9c176"/>
+        <rect x="172" y="112" width="26" height="65" rx="9" fill="#e9c176"/>
+      </svg>
+      <div><div class="sidebar-brand-name">HomeGym™</div><div class="sidebar-brand-sub">Elite Command</div></div>
     </div>
-    <button class="nav-cta" onclick="openWA('Hi! I want to book a free trial session with GYM AT YOUR HOME.')">Book Free Trial</button>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-vid">
-    <video autoplay muted playsinline loop>
-      <source src="https://videos.pexels.com/video-files/6253972/6253972-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
-      <source src="https://videos.pexels.com/video-files/4761379/4761379-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
-    </video>
-  </div>
-  <div class="hero-ring"></div>
-  <div class="hero-content">
-    <div class="hero-inner">
-      <div class="hero-eyebrow">Elite Home Fitness</div>
-      <h1>TRANSFORM<br>YOUR BODY.<br><span class="hl">YOUR RULES.</span></h1>
-      <p>Professional live coaching delivered to your home. Customised plans, flexible timing, zero commute — just real results from certified trainers.</p>
-      <div class="hero-btns">
-        <button class="btn-primary" onclick="openWA('Hi! I want to start training with GYM AT YOUR HOME.')">Start Training Free</button>
-        <button class="btn-outline" onclick="document.getElementById('programs').scrollIntoView({behavior:'smooth'})">Explore Programs</button>
-      </div>
-      <div class="hero-nums">
-        <div><div class="hero-num-val">500+</div><div class="hero-num-label">Active Clients</div></div>
-        <div><div class="hero-num-val">50+</div><div class="hero-num-label">Certified Trainers</div></div>
-        <div><div class="hero-num-val">5.0★</div><div class="hero-num-label">Google Rating</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- ABOUT -->
-<section class="section sect-alt" id="about">
-  <div class="section-inner">
-    <div class="about-grid">
-      <div class="about-img-wrap reveal">
-        <img src="https://images.unsplash.com/photo-1584466977773-e625c37cdd50?w=800&q=80&auto=format&fit=crop" alt="Home Workout"/>
-      </div>
-      <div class="about-text reveal">
-        <div class="eyebrow">Who We Are</div>
-        <h2>Fitness That Comes To You</h2>
-        <p>Gym At Your Home is a personalized online fitness coaching service designed to help you achieve your fitness goals from the comfort of your home. We offer live guided workout sessions, customized plans, and one-on-one coaching tailored to your schedule and fitness level.</p>
-        <p>We also provide group workout sessions and corporate online fitness programs to improve team health and productivity. Flexible timings, multiple language options, and workouts that require minimal or no equipment — expert guidance anytime, anywhere, privately.</p>
-        <div class="stats-grid">
-          <div class="glass stat-card"><div class="stat-val">98%</div><div class="stat-label">Satisfaction Rate</div></div>
-          <div class="glass stat-card"><div class="stat-val">100+</div><div class="stat-label">Transformations</div></div>
-          <div class="glass stat-card"><div class="stat-val">24/7</div><div class="stat-label">Support Available</div></div>
-          <div class="glass stat-card"><div class="stat-val">0</div><div class="stat-label">Equipment Needed</div></div>
+    <nav class="sidebar-nav" id="sideNav"></nav>
+    <div class="sidebar-foot">
+      <div class="sidebar-user">
+        <div class="sidebar-av" id="sideAv"></div>
+        <div style="flex:1;min-width:0">
+          <div class="sidebar-user-name" id="sideUserName"></div>
+          <div class="sidebar-user-role" id="sideUserRole"></div>
         </div>
+        <button class="logout-btn" onclick="doLogout()"><span class="mso">logout</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAP -->
+  <div id="mainWrap">
+    <!-- TOPBAR -->
+    <div id="topbar">
+      <button class="hamburger" onclick="toggleDrawer()"><div class="ham-line"></div><div class="ham-line"></div><div class="ham-line"></div></button>
+      <div class="topbar-title"><p id="pageTitle">Dashboard</p><small id="pageDate"></small></div>
+      <button class="icon-btn" onclick="showReminderModal()" style="position:relative"><span class="mso">notifications</span><span id="bellBadge" style="display:none;position:absolute;top:4px;right:4px;width:7px;height:7px;background:#ef4444;border-radius:50%"></span></button>
+      <div class="av" id="topAv" style="width:32px;height:32px;font-size:12px"></div>
+    </div>
+    <main id="mainContent"></main>
+    <div id="bottomNav"></div>
+  </div>
+</div>
+
+<!-- DRAWER (mobile) -->
+<div id="drawer">
+  <div id="drawerBg" onclick="closeDrawer()"></div>
+  <div id="drawerPanel">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:1.5rem;padding:.5rem">
+      <svg width="30" height="28" viewBox="0 0 220 200" fill="none"><path d="M20 95 L110 18 L200 95" stroke="#e9c176" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><rect x="22" y="112" width="26" height="65" rx="9" fill="#e9c176"/><rect x="48" y="125" width="20" height="42" rx="8" fill="#e9c176"/><rect x="68" y="142" width="84" height="14" rx="7" fill="#e9c176"/><rect x="152" y="125" width="20" height="42" rx="8" fill="#e9c176"/><rect x="172" y="112" width="26" height="65" rx="9" fill="#e9c176"/></svg>
+      <div><div style="font-family:'Archivo Narrow',sans-serif;font-size:16px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em">HomeGym™</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em">Elite Command</div></div>
+    </div>
+    <nav class="sidebar-nav" id="drawerNav"></nav>
+    <div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border2)">
+      <div style="display:flex;align-items:center;gap:9px;padding:.75rem .5rem">
+        <div class="sidebar-av" id="drawerAv"></div>
+        <div style="flex:1;min-width:0"><div class="sidebar-user-name" id="drawerUserName"></div><div style="font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="drawerUserEmail"></div></div>
+        <button class="logout-btn" onclick="doLogout()"><span class="mso">logout</span></button>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<div class="glow-div"></div>
-
-<!-- PROGRAMS -->
-<section class="section" id="programs">
-  <div class="section-inner">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">What We Offer</div>
-      <h2>Our Programs</h2>
-      <div class="section-bar"></div>
-    </div>
-    <div class="programs-grid">
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80&auto=format&fit=crop" alt="Personal Training"/></div><div class="card-body"><h3>Personal Training</h3><p>Live 1-on-1 sessions tailored to your biomechanics, schedule and fitness level.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1517963879433-6ad2171073fb?w=600&q=80&auto=format&fit=crop" alt="Fat Loss"/></div><div class="card-body"><h3>Fat Loss</h3><p>Scientific metabolic conditioning designed to maximize calorie burn efficiently.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80&auto=format&fit=crop" alt="Muscle Building"/></div><div class="card-body"><h3>Muscle Building</h3><p>Hypertrophy protocols to build strength and lean aesthetic muscle at home.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=600&q=80&auto=format&fit=crop" alt="HIIT"/></div><div class="card-body"><h3>HIIT</h3><p>High-intensity interval training for cardiovascular health and rapid fat loss.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&q=80&auto=format&fit=crop" alt="Yoga"/></div><div class="card-body"><h3>Yoga & Flexibility</h3><p>Mindful movement focused on flexibility, mobility and mental well-being.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=600&q=80&auto=format&fit=crop" alt="Women's Fitness"/></div><div class="card-body"><h3>Women's Fitness</h3><p>Empowering programs designed around women's specific health and body goals.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=80&auto=format&fit=crop" alt="Senior Fitness"/></div><div class="card-body"><h3>Senior Fitness</h3><p>Safe, effective mobility and strength training for active older adults.</p></div></div>
-      <div class="glass prog-card reveal"><div class="img-wrap"><img src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=600&q=80&auto=format&fit=crop" alt="Corporate Wellness"/></div><div class="card-body"><h3>Corporate Wellness</h3><p>Group online fitness programs to boost team health and workplace productivity.</p></div></div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- HOW IT WORKS -->
-<section class="section sect-alt">
-  <div class="section-inner">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">Simple Process</div>
-      <h2>How It Works</h2>
-      <div class="section-bar"></div>
-    </div>
-    <div class="steps-track">
-      <div class="steps-line"></div>
-      <div class="steps-grid">
-        <div class="step reveal"><div class="step-icon">📅</div><h4>Book</h4><p>Schedule your free initial consultation via WhatsApp.</p></div>
-        <div class="step reveal"><div class="step-icon">🎯</div><h4>Assess</h4><p>Share your goals, fitness level and preferred schedule.</p></div>
-        <div class="step reveal"><div class="step-icon">🗓️</div><h4>Plan</h4><p>Get a customised program built around your life.</p></div>
-        <div class="step reveal"><div class="step-icon">💪</div><h4>Train Live</h4><p>Real-time coaching from home — no commute needed.</p></div>
-        <div class="step reveal"><div class="step-icon">📈</div><h4>Transform</h4><p>Track progress and watch your results compound weekly.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- PRICING -->
-<section class="section" id="pricing">
-  <div class="section-inner">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">Invest in Yourself</div>
-      <h2>Flexible Plans</h2>
-      <div class="section-bar"></div>
-    </div>
-    <div class="pricing-grid">
-      <div class="glass price-card reveal">
-        <div class="price-name">Basic</div>
-        <div class="price-amount">Contact us for pricing</div>
-        <ul class="price-features">
-          <li>Certified Live Trainer</li><li>Custom Workout Plan</li><li>Basic Nutrition Guide</li><li>WhatsApp Support</li><li>Flexible Timing</li>
-        </ul>
-        <button class="price-btn" onclick="openWA('Hi! I am interested in the Basic plan at GYM AT YOUR HOME.')">Book Free Trial</button>
-      </div>
-      <div class="glass price-card featured reveal">
-        <div class="featured-pip">⭐ Most Popular</div>
-        <div class="price-name">Pro</div>
-        <div class="price-amount">Contact us for pricing</div>
-        <ul class="price-features">
-          <li>Senior Certified Coach</li><li>Personalised Meal Plan</li><li>Priority Trainer Access</li><li>Progress Tracking</li><li>24/7 Trainer Messaging</li><li>Group Session Access</li>
-        </ul>
-        <button class="price-btn" onclick="openWA('Hi! I am interested in the Pro plan at GYM AT YOUR HOME.')">Book Free Trial</button>
-      </div>
-      <div class="glass price-card reveal" style="border-color:rgba(255,107,0,0.2);">
-        <div class="price-name">Elite / Corporate</div>
-        <div class="price-amount">Contact us for pricing</div>
-        <ul class="price-features">
-          <li>Dedicated Master Coach</li><li>Unlimited Live Sessions</li><li>Full Nutritional Tracking</li><li>Monthly Progress Report</li><li>Corporate Team Package</li><li>Custom Language Option</li>
-        </ul>
-        <button class="price-btn" onclick="openWA('Hi! I am interested in the Elite/Corporate plan at GYM AT YOUR HOME.')">Book Free Trial</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- GOOGLE REVIEWS -->
-<section class="section sect-alt" id="reviews">
-  <div class="section-inner">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">Real Results</div>
-      <h2>What Our Clients Say</h2>
-      <div class="section-bar"></div>
-    </div>
-    <div class="reviews-header reveal">
-      <div class="google-badge">
-        <div class="g-logo"><span class="g-b">G</span><span class="g-l">o</span><span class="g-o1">o</span><span class="g-b">g</span><span class="g-o2">l</span><span class="g-le">e</span></div>
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="g-rating">5.0</div>
-            <div class="g-stars">★★★★★</div>
-          </div>
-          <div class="g-count">Based on Google Reviews</div>
-        </div>
-      </div>
-    </div>
-    <div class="reviews-grid">
-      <!-- Review 1 -->
-      <div class="glass review-card reveal">
-        <div class="review-top">
-          <div class="review-avatar">A</div>
-          <div>
-            <div class="review-name">Anoop Reji</div>
-            <div class="review-date">Google Review</div>
-          </div>
-        </div>
-        <div class="review-stars">★★★★★</div>
-        <div class="review-text">"Excellent service! The trainer was very professional and the sessions were perfectly tailored to my schedule. Highly recommend GYM AT YOUR HOME to anyone looking for convenient fitness solutions."</div>
-        <div class="review-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Verified Google Review
-        </div>
-      </div>
-      <!-- Review 2 -->
-      <div class="glass review-card reveal">
-        <div class="review-top">
-          <div class="review-avatar" style="background:linear-gradient(135deg,#e05500,#ff8c00);">S</div>
-          <div>
-            <div class="review-name">Sreeja Menon</div>
-            <div class="review-date">Google Review</div>
-          </div>
-        </div>
-        <div class="review-stars">★★★★★</div>
-        <div class="review-text">"I was skeptical about online training at first, but GYM AT YOUR HOME completely changed my mind. The live sessions feel just as effective as being in a real gym. Lost 8kg in 3 months!"</div>
-        <div class="review-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Verified Google Review
-        </div>
-      </div>
-      <!-- Review 3 -->
-      <div class="glass review-card reveal">
-        <div class="review-top">
-          <div class="review-avatar" style="background:linear-gradient(135deg,#1a6b3a,#25D366);">R</div>
-          <div>
-            <div class="review-name">Rahul Krishnan</div>
-            <div class="review-date">Google Review</div>
-          </div>
-        </div>
-        <div class="review-stars">★★★★★</div>
-        <div class="review-text">"The corporate wellness program they set up for our team was outstanding. Everyone is more energetic and productive. The trainer spoke Malayalam which made it very comfortable for the whole team."</div>
-        <div class="review-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Verified Google Review
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:36px;" class="reveal">
-      <a href="https://g.page/r/gymatyourhome/review" target="_blank" style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text2);text-decoration:none;padding:12px 28px;border-radius:100px;font-size:13px;font-weight:600;letter-spacing:0.05em;transition:all .2s;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-        See All Reviews on Google
-      </a>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- FAQ -->
-<section class="section">
-  <div class="section-inner">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">Need Answers?</div>
-      <h2>Got Questions?</h2>
-      <div class="section-bar"></div>
-    </div>
-    <div class="faq-grid">
-      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Do I need any equipment? <span class="arr">▾</span></button><div class="faq-a">No! Our trainers design workouts that require minimal or zero equipment. Everything is adapted to what you have at home.</div></div>
-      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Are sessions live or pre-recorded? <span class="arr">▾</span></button><div class="faq-a">All sessions are 100% live and real-time. Your trainer guides you personally — not through a video.</div></div>
-      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">What languages are available? <span class="arr">▾</span></button><div class="faq-a">We offer sessions in English, Malayalam, Hindi and more. Just let us know your preference when you enquire.</div></div>
-      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Can I try before I pay? <span class="arr">▾</span></button><div class="faq-a">Absolutely! We offer a free trial session so you can experience the quality of our coaching before committing.</div></div>
-      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">Do you offer group or corporate sessions? <span class="arr">▾</span></button><div class="faq-a">Yes! We provide group workout sessions and dedicated corporate wellness programs for teams of any size. Contact us for a custom quote.</div></div>
-      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">How do I book? <span class="arr">▾</span></button><div class="faq-a">WhatsApp us at 062820 67963, share your goal and preferred time, and we'll get you started — often the same day!</div></div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-glow"></div>
-  <div class="cta-inner">
-    <h2 class="reveal">Start Your Transformation Today</h2>
-    <p class="reveal">Ready for elite fitness without leaving your door? Let's build your personalised training plan — your first session is free.</p>
-    <div class="cta-btns reveal">
-      <a class="wa-btn" onclick="openWA('Hi! I want to start my fitness journey with GYM AT YOUR HOME.')">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp Us Now
-      </a>
-      <div class="phone-label"><span style="color:var(--orange);">📞</span> <a href="tel:06282067963" style="color:#fff;text-decoration:none;">062820 67963</a></div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-div"></div>
-
-<!-- ENQUIRY -->
-<section class="section sect-alt" id="contact">
-  <div class="section-inner">
-    <div class="enquiry-grid">
-      <div class="enq-info reveal">
-        <div class="eyebrow">Get In Touch</div>
-        <h2>Send Us a Message</h2>
-        <p>Fill in the form and we'll open WhatsApp with your message pre-filled. Fast, personal — just a real conversation.</p>
-        <div class="contact-row"><div class="ico">📞</div><p><a href="tel:06282067963">062820 67963</a></p></div>
-        <div class="contact-row"><div class="ico">🌐</div><p><a href="https://gymatyourhome.com" target="_blank">gymatyourhome.com</a></p></div>
-        <div class="contact-row"><div class="ico">🕐</div><p style="color:var(--text2);">Open 24 Hours · 7 Days a Week</p></div>
-        <div class="contact-row"><div class="ico">🗣️</div><p style="color:var(--text2);">English · Malayalam · Hindi</p></div>
-      </div>
-      <div class="enq-box reveal">
-        <h3>Quick Enquiry</h3>
-        <p class="sub">We respond on WhatsApp within minutes.</p>
-        <div class="form-row"><label>Your Name</label><input type="text" id="enq-name" placeholder="e.g. Arjun Kumar"/></div>
-        <div class="form-row"><label>Your Goal</label>
-          <select id="enq-goal"><option value="">Select your fitness goal</option><option>Weight Loss</option><option>Muscle Building</option><option>Flexibility & Yoga</option><option>General Fitness</option><option>Group Sessions</option><option>Corporate Wellness</option><option>Custom Plan</option></select>
-        </div>
-        <div class="form-row"><label>Preferred Time</label>
-          <select id="enq-time"><option value="">When do you prefer to train?</option><option>Early Morning (5–8 AM)</option><option>Morning (8–12 PM)</option><option>Afternoon (12–4 PM)</option><option>Evening (4–8 PM)</option><option>Night (8 PM+)</option><option>Flexible / Any Time</option></select>
-        </div>
-        <div class="form-row"><label>Additional Notes (Optional)</label><textarea id="enq-note" placeholder="Health conditions, preferences or questions..."></textarea></div>
-        <button class="wa-submit" onclick="submitEnquiry()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Send via WhatsApp
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo">GYM AT YOUR <span>HOME</span></div>
-    <div class="footer-links">
-      <a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Support</a>
-    </div>
-    <div class="footer-copy">© 2025 GYM AT YOUR HOME. ALL RIGHTS RESERVED.</div>
-  </div>
-</footer>
-
-<!-- FLOAT WA -->
-<button class="float-wa" onclick="openWA('Hi! I want to know more about GYM AT YOUR HOME.')" aria-label="WhatsApp">
-  <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-</button>
+<div id="detailSheet" class="detail-sheet">
+  <div class="detail-bg" onclick="closeDetailSheet()"></div>
+  <div class="detail-panel" id="detailPanel"><div class="detail-handle"></div></div>
+</div>
+<div id="modalContainer"></div>
+<div id="reminderContainer"></div>
 
 <script>
-const WA='916282067963';
-function openWA(m){window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(m),'_blank');}
-setTimeout(skipIntro,7000);
-function skipIntro(){const o=document.getElementById('video-overlay');o.classList.add('hide');setTimeout(()=>o.style.display='none',1200);}
-function toggleFaq(btn){const i=btn.parentElement,open=i.classList.contains('open');document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));if(!open)i.classList.add('open');}
-function submitEnquiry(){
-  const n=document.getElementById('enq-name').value.trim();
-  const g=document.getElementById('enq-goal').value;
-  const t=document.getElementById('enq-time').value;
-  const x=document.getElementById('enq-note').value.trim();
-  if(!n){alert('Please enter your name.');return;}
-  if(!g){alert('Please select your fitness goal.');return;}
-  let m=`Hi! My name is ${n}.\n\nFitness Goal: ${g}\nPreferred Time: ${t||'Flexible'}`;
-  if(x)m+=`\n\nNotes: ${x}`;
-  m+='\n\nI found you on your website and would love to get started!';
-  openWA(m);
-}
-const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis');}),{threshold:0.08});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+/* ══ FIREBASE ══ */
+var FB_CFG={apiKey:"AIzaSyAaryFhV7yH9NAUO9TlmINcTn9UxuIIebg",authDomain:"gym-sales.firebaseapp.com",projectId:"gym-sales",storageBucket:"gym-sales.firebasestorage.app",messagingSenderId:"253046066659",appId:"1:253046066699:web:60c96dde428eed01bd64d6"};
+firebase.initializeApp(FB_CFG);
+var auth=firebase.auth(),db=firebase.firestore();
 
-// PARTICLE CANVAS
-const cv=document.getElementById('bg-canvas'),ctx=cv.getContext('2d');
-let W,H,pts=[];
-function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
-resize();window.addEventListener('resize',resize);
-class P{
-  constructor(){this.reset();}
-  reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.5+0.3;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.a=Math.random()*.4+.08;this.hue=Math.random()<.25?'255,107,0':'160,150,145';}
-  upd(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();}
-  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`rgba(${this.hue},${this.a})`;ctx.fill();}
+/* ══ HELPERS ══ */
+function gid(id){return document.getElementById(id);}
+function rc(){return "#e9c176";}
+function initials(n){return (n||"?").split(" ").map(function(w){return w[0];}).join("").toUpperCase().slice(0,2);}
+function nowT(){return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});}
+function today(){return new Date().toLocaleDateString("en-IN",{weekday:"short",month:"short",day:"numeric"});}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function fmtCur(v){return v?("₹"+Number(v).toLocaleString("en-IN")):"—";}
+function av(t,sz,bg){sz=sz||34;bg=bg||"var(--gold2)";return '<div class="av" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.max(sz*.3,10)+'px;background:'+bg+';color:#412d00">'+t+'</div>';}
+function pill(label,color){return '<span class="pill" style="background:'+color+'22;color:'+color+';border:1px solid '+color+'44">'+label+'</span>';}
+function bar(v,max,color){max=max||100;return '<div class="bar-track"><div class="bar-fill" style="width:'+Math.min((v/(max||1))*100,100)+'%;background:'+(color||rc())+'"></div></div>';}
+function showToast(msg,dur){dur=dur||3000;var t=document.createElement("div");t.className="toast";t.innerHTML=msg;document.body.appendChild(t);setTimeout(function(){t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(function(){t.remove();},300);},dur);}
+function closeModal(){gid("modalContainer").innerHTML="";}
+function showModal(html){gid("modalContainer").innerHTML='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">'+html+'</div>';}
+function accessDenied(l){return '<div class="access-denied"><span class="mso" style="font-size:48px;opacity:.3">lock</span><p style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:16px;color:var(--text);text-transform:uppercase;letter-spacing:.06em">Access Restricted</p><p style="font-size:12px">Your role does not include '+(l||"this feature")+'.</p></div>';}
+function confirmDelete(msg,fn){showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#ef4444">Confirm Delete</div><p style="color:var(--text2);font-size:14px;margin-bottom:6px">'+msg+'</p><p style="color:var(--text3);font-size:11px;letter-spacing:.04em;text-transform:uppercase">This action cannot be undone.</p><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:#c62828" onclick="closeModal();'+fn+'">Delete</button></div></div>');}
+
+/* ══ PLANS ══ */
+var PLANS={Silver:{color:"#94a3b8",gradient:"rgba(148,163,184,.25),rgba(100,116,139,.25)",icon:"🥈"},Gold:{color:"#f59e0b",gradient:"rgba(245,158,11,.25),rgba(217,119,6,.25)",icon:"🥇"},Platinum:{color:"#a78bfa",gradient:"rgba(139,92,246,.25),rgba(109,40,217,.25)",icon:"💎"},Couple:{color:"#f472b6",gradient:"rgba(236,72,153,.25),rgba(190,24,93,.25)",icon:"💑"}};
+var PLAN_NAMES=Object.keys(PLANS);
+
+/* ══ STAGES ══ */
+var DEFAULT_STAGES=["New Lead","Contacted","Demo","Interested","Payment Pending","Closed","Not Interested"];
+var DEFAULT_STAGE_COLORS={"New Lead":"#3b82f6","Contacted":"#f59e0b","Demo":"#06b6d4","Interested":"#a78bfa","Payment Pending":"#f97316","Closed":"#22c55e","Not Interested":"#ef4444"};
+var COLOR_POOL=["#3b82f6","#f59e0b","#a78bfa","#f97316","#22c55e","#ef4444","#06b6d4","#ec4899","#14b8a6","#f43f5e","#e9c176","#64748b","#eab308","#0ea5e9"];
+var customStageColors={};
+function stageColor(s){if(DEFAULT_STAGE_COLORS[s])return DEFAULT_STAGE_COLORS[s];if(customStageColors[s])return customStageColors[s];var k=Object.keys(customStageColors);var c=COLOR_POOL[k.length%COLOR_POOL.length];customStageColors[s]=c;return c;}
+function getPipelineStages(pid){var p=pipelines.find(function(x){return x.id===pid;});if(p&&p.stages&&p.stages.length)return p.stages;return DEFAULT_STAGES.slice();}
+
+/* ══ CONSTANTS ══ */
+var PLATFORMS=["WhatsApp","Instagram"];
+var SOURCES=["Meta Ad","Organic","Referral","WhatsApp","Instagram","Google Ad"];
+var ROLES={admin:{label:"Admin / CSO",icon:"crown",color:"#e9c176"},manager:{label:"Manager",icon:"manage_accounts",color:"#06b6d4"},agent:{label:"Sales Agent",icon:"chat",color:"#22c55e"}};
+var ROLE_NAV={admin:["dashboard","inbox","pipeline","agents","followups","automation","campaigns","templates","settings"],manager:["dashboard","inbox","pipeline","agents","followups","templates"],agent:["inbox","pipeline","followups","templates"]};
+var BOTTOM_NAV={admin:["dashboard","inbox","pipeline","followups"],manager:["dashboard","inbox","pipeline","followups"],agent:["inbox","pipeline","followups","templates"]};
+var TITLES={dashboard:"Dashboard",inbox:"Inbox",pipeline:"Pipeline",agents:"Agents",followups:"Follow-ups",automation:"Automation",campaigns:"Campaigns",templates:"Templates",settings:"User Management"};
+var NAV_ICONS={dashboard:"dashboard",inbox:"inbox",pipeline:"view_kanban",agents:"groups",followups:"task",automation:"bolt",campaigns:"campaign",templates:"description",settings:"manage_accounts"};
+var TRIGGERS=["New lead arrives","No reply in 24h","Call not answered","Stage: Interested","Stage: Demo","Stage: Closed","Stage: Payment Pending"];
+var ACTIONS=["Send welcome message","Send follow-up reminder","Schedule retry call","Assign to agent","Create task","Send notification"];
+
+/* ══ STATE ══ */
+var currentUser=null,selectedRole=null,curPage="dashboard",selectedLead=null,chatView=false;
+var leads=[],agents=[],tasks=[],templates=[],autos=[],campaigns=[],managedUsers=[],reminders=[],pipelines=[];
+var activePipelineId=null;
+var unsubLeads=null,unsubAgents=null,unsubTasks=null,unsubTemplates=null,unsubAutos=null,unsubCampaigns=null,unsubMessages=null,unsubReminders=null,unsubPipelines=null;
+var reminderCheckInterval=null,dragLead=null;
+var dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false,pipelines:false};
+var initialRenderDone=false;
+
+/* ══ FIRESTORE ══ */
+var COL={
+  leads:function(){return db.collection("leads");},agents:function(){return db.collection("agents");},tasks:function(){return db.collection("tasks");},
+  templates:function(){return db.collection("templates");},autos:function(){return db.collection("automations");},campaigns:function(){return db.collection("campaigns");},
+  messages:function(lid){return db.collection("leads").doc(lid).collection("messages");},users:function(){return db.collection("users");},
+  reminders:function(){return db.collection("reminders");},pipelines:function(){return db.collection("pipelines");}
+};
+
+/* ══ LISTENERS ══ */
+function checkInitialRender(){if(initialRenderDone)return;var ok=true;var ks=Object.keys(dataReady);for(var i=0;i<ks.length;i++){if(!dataReady[ks[i]]){ok=false;break;}}if(ok){initialRenderDone=true;renderPage(selectedRole==="agent"?"inbox":"dashboard");}}
+function showAppLoader(){var m=gid("mainContent");if(m)m.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px"><div class="spinner" style="width:36px;height:36px;border-width:3px"></div><p style="color:var(--text3);font-size:11px;letter-spacing:.14em;text-transform:uppercase">Loading your data…</p></div>';}
+function safeRender(pages){for(var i=0;i<pages.length;i++){if(pages[i]===curPage){renderPage(curPage);return;}}}
+
+async function ensureDefaultPipeline(){
+  if(pipelines.length===0){var ref=await COL.pipelines().add({name:"Default",stages:DEFAULT_STAGES.slice(),createdAt:new Date().toISOString(),createdBy:currentUser.uid});var snap=await COL.leads().get();if(!snap.empty){var b=db.batch();snap.docs.forEach(function(d){if(!d.data().pipelineId)b.update(d.ref,{pipelineId:ref.id});});await b.commit();}return;}
+  var defId=pipelines[0].id;var snap2=await COL.leads().get();var tom=[];snap2.docs.forEach(function(d){if(!d.data().pipelineId)tom.push(d);});
+  if(tom.length){var b2=db.batch();tom.forEach(function(d){b2.update(d.ref,{pipelineId:defId});});await b2.commit();showToast("✅ "+tom.length+" lead(s) migrated to "+pipelines[0].name);}
 }
-for(let i=0;i<100;i++)pts.push(new P());
-let t=0;
-function draw(){
-  ctx.clearRect(0,0,W,H);t++;
-  const g1=ctx.createRadialGradient(W*.15,H*.25,0,W*.15,H*.25,W*.45);
-  g1.addColorStop(0,'rgba(35,14,2,0.14)');g1.addColorStop(1,'transparent');
-  ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);
-  const ox=W*.75+Math.sin(t*.0004)*W*.06,oy=H*.2+Math.cos(t*.0006)*H*.05;
-  const g2=ctx.createRadialGradient(ox,oy,0,ox,oy,W*.3);
-  g2.addColorStop(0,'rgba(255,107,0,0.055)');g2.addColorStop(1,'transparent');
-  ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
-  for(let i=0;i<pts.length;i++){
-    for(let j=i+1;j<pts.length;j++){
-      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
-      if(d<90){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(255,107,0,${.04*(1-d/90)})`;ctx.lineWidth=.4;ctx.stroke();}
-    }
-    pts[i].upd();pts[i].draw();
-  }
-  requestAnimationFrame(draw);
+
+function startListeners(){
+  showAppLoader();
+  unsubPipelines=COL.pipelines().orderBy("createdAt").onSnapshot(function(snap){
+    pipelines=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    if(pipelines.length===0){ensureDefaultPipeline();return;}
+    if(!activePipelineId||!pipelines.find(function(p){return p.id===activePipelineId;}))activePipelineId=pipelines[0].id;
+    if(!dataReady.pipelines){dataReady.pipelines=true;checkInitialRender();}
+    else if(initialRenderDone)safeRender(["pipeline","dashboard","inbox"]);
+  },function(){dataReady.pipelines=true;checkInitialRender();});
+  unsubLeads=COL.leads().orderBy("createdAt","desc").onSnapshot(function(snap){leads=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!dataReady.leads){dataReady.leads=true;checkInitialRender();}else if(initialRenderDone&&!chatView)safeRender(["dashboard","inbox","pipeline"]);},function(){dataReady.leads=true;checkInitialRender();});
+  unsubAgents=COL.agents().orderBy("createdAt").onSnapshot(function(snap){agents=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!dataReady.agents){dataReady.agents=true;checkInitialRender();}else if(initialRenderDone)safeRender(["agents","dashboard"]);},function(){dataReady.agents=true;checkInitialRender();});
+  unsubTasks=COL.tasks().orderBy("createdAt","desc").onSnapshot(function(snap){tasks=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!dataReady.tasks){dataReady.tasks=true;checkInitialRender();}else if(initialRenderDone)safeRender(["followups"]);},function(){dataReady.tasks=true;checkInitialRender();});
+  unsubTemplates=COL.templates().orderBy("createdAt").onSnapshot(function(snap){templates=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!dataReady.templates){dataReady.templates=true;checkInitialRender();}else if(initialRenderDone)safeRender(["templates"]);},function(){dataReady.templates=true;checkInitialRender();});
+  unsubAutos=COL.autos().orderBy("createdAt").onSnapshot(function(snap){autos=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!dataReady.autos){dataReady.autos=true;checkInitialRender();}else if(initialRenderDone)safeRender(["automation"]);},function(){dataReady.autos=true;checkInitialRender();});
+  unsubCampaigns=COL.campaigns().orderBy("createdAt","desc").onSnapshot(function(snap){campaigns=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});if(!dataReady.campaigns){dataReady.campaigns=true;checkInitialRender();}else if(initialRenderDone)safeRender(["campaigns"]);},function(){dataReady.campaigns=true;checkInitialRender();});
+  unsubReminders=COL.reminders().where("userId","==",currentUser.uid).where("done","==",false).onSnapshot(function(snap){reminders=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});checkReminders();updateBellBadge();},function(){});
+  reminderCheckInterval=setInterval(checkReminders,60000);
+  setTimeout(function(){if(!initialRenderDone){Object.keys(dataReady).forEach(function(k){dataReady[k]=true;});checkInitialRender();}},6000);
 }
-draw();
+function stopListeners(){[unsubLeads,unsubAgents,unsubTasks,unsubTemplates,unsubAutos,unsubCampaigns,unsubMessages,unsubReminders,unsubPipelines].forEach(function(u){if(u)u();});if(reminderCheckInterval)clearInterval(reminderCheckInterval);dataReady={leads:false,agents:false,tasks:false,templates:false,autos:false,campaigns:false,pipelines:false};initialRenderDone=false;}
+
+/* ══ REMINDERS ══ */
+function checkReminders(){var ns=new Date().toISOString().slice(0,16);reminders.forEach(function(r){if(!r.done&&r.datetime<=ns)showReminderPopup(r);});}
+function updateBellBadge(){var b=gid("bellBadge");if(b)b.style.display=reminders.length>0?"block":"none";}
+function showReminderPopup(r){var ex=document.getElementById("rpop-"+r.id);if(ex)return;var d=document.createElement("div");d.className="reminder-popup";d.id="rpop-"+r.id;d.innerHTML='<div class="reminder-popup-title">⏰ Reminder</div><div class="reminder-popup-body"><b>'+(r.leadName||"General")+'</b> — '+(r.note||"Follow up!")+'<br><span style="font-size:11px;color:var(--text3)">'+(r.datetime||"").replace("T"," ")+'</span></div><button class="reminder-finish-btn" onclick="finishReminder(\''+r.id+'\')">Mark Done</button>';gid("reminderContainer").appendChild(d);}
+async function finishReminder(id){try{await COL.reminders().doc(id).update({done:true});var el=document.getElementById("rpop-"+id);if(el){el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(function(){el.remove();},300);}showToast("Reminder completed ✅");}catch(e){showToast("❌ "+e.message);}}
+function showReminderModal(){
+  var pending=reminders.filter(function(r){return !r.done;});var ns=new Date().toISOString().slice(0,16);var rows="";
+  if(pending.length){pending.forEach(function(r){rows+='<div style="background:var(--surface2);border-radius:.25rem;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;border:1px solid '+(r.datetime<=ns?"rgba(233,193,118,.3)":"var(--border)")+'"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--text)">'+(r.leadName||"General")+'</div><div style="color:var(--text3);font-size:11px">'+(r.note||"")+'</div><div style="color:var(--gold);font-size:10px;margin-top:2px;letter-spacing:.04em">📅 '+(r.datetime||"").replace("T"," ")+'</div></div><button onclick="finishReminder(\''+r.id+'\')" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:.25rem;padding:5px 9px;color:#22c55e;font-size:10px;font-weight:700;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;text-transform:uppercase;letter-spacing:.04em">Done</button></div>';});}
+  else rows='<div style="text-align:center;padding:28px;color:var(--text3)"><span class="mso" style="font-size:40px;display:block;margin-bottom:8px">check_circle</span><p style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">No pending reminders</p></div>';
+  showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Reminders</div><button onclick="closeModal();showAddReminderModal()" class="btn-gold" style="width:100%;padding:10px;font-size:12px;border-radius:.25rem;margin-bottom:14px">+ Add Reminder</button>'+rows+'<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:6px">Close</button></div>');
+}
+function showAddReminderModal(leadName){
+  var dt=new Date(Date.now()+3600000).toISOString().slice(0,16);var safe=(leadName||"").replace(/"/g,"&quot;");
+  var opts=leads.map(function(l){return '<option value="'+l.name.replace(/"/g,"&quot;")+'"></option>';}).join("");
+  showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Add Reminder</div><div class="form-row"><label>Lead / Topic</label><input id="rem_ln" list="rLeadNames" value="'+safe+'" placeholder="Lead name or topic"/><datalist id="rLeadNames">'+opts+'</datalist></div><div class="form-row"><label>Note</label><input id="rem_note" placeholder="e.g. Call back after 5pm"/></div><div class="form-row"><label>Date & Time</label><input id="rem_dt" type="datetime-local" value="'+dt+'"/></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="addReminder()">Set Reminder</button></div></div>');
+}
+async function addReminder(){var ln=gid("rem_ln"),no=gid("rem_note"),dt=gid("rem_dt");if(!ln||!dt){showToast("❌ Form error");return;}if(!dt.value){showToast("Please set a date & time");return;}try{await COL.reminders().add({leadName:(ln.value||"").trim(),note:(no?no.value||"":"").trim(),datetime:dt.value,userId:currentUser.uid,done:false,createdAt:new Date().toISOString()});closeModal();showToast("⏰ Reminder set!");}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ AUTH ══ */
+auth.onAuthStateChanged(async function(user){
+  if(user){try{var docRef=COL.users().doc(user.uid);var snap=await docRef.get();if(snap.exists){var d=snap.data();currentUser={uid:user.uid,email:user.email,name:d.name||user.email,role:d.role||"agent"};selectedRole=currentUser.role;initApp();}else{var all=await COL.users().limit(1).get();if(all.empty){var name=user.email.split("@")[0];await docRef.set({name:name,email:user.email,role:"admin",createdAt:new Date().toISOString()});currentUser={uid:user.uid,email:user.email,name:name,role:"admin"};selectedRole="admin";initApp();setTimeout(function(){showToast("👑 You are Admin — first login!",5000);},800);}else{await auth.signOut();showLoginScreen();showErrMsg("No account found.");}}}catch(e){await auth.signOut();showLoginScreen();showErrMsg("Error: "+e.message);}}else{showLoginScreen();}
+});
+function showLoginScreen(){stopListeners();gid("app").style.opacity="0";gid("app").style.display="none";gid("app").classList.remove("show");gid("loginWrap").style.display="flex";gid("loginWrap").classList.remove("hide");var btn=gid("signInBtn");if(btn){btn.innerHTML='<span>Sign In</span><span class="mso" style="font-size:18px">login</span>';btn.disabled=false;}}
+function showErrMsg(msg){var e=gid("errMsg");if(e){e.style.display="block";e.textContent=msg;}}
+async function doLogin(){var email=(gid("emailInput").value||"").trim(),pass=gid("passInput").value||"";if(!email||!pass){showErrMsg("Please enter email and password.");return;}var btn=gid("signInBtn");btn.innerHTML='<span class="spinner"></span>Signing in…';btn.disabled=true;gid("errMsg").style.display="none";try{await auth.signInWithEmailAndPassword(email,pass);}catch(e){var msgs={"auth/user-not-found":"No account with this email.","auth/wrong-password":"Incorrect password.","auth/invalid-email":"Invalid email.","auth/too-many-requests":"Too many attempts.","auth/invalid-credential":"Invalid email or password."};showErrMsg(msgs[e.code]||"Login failed: "+e.message);btn.innerHTML='<span>Sign In</span><span class="mso" style="font-size:18px">login</span>';btn.disabled=false;}}
+async function doLogout(){gid("app").style.opacity="0";stopListeners();leads=[];agents=[];tasks=[];templates=[];autos=[];campaigns=[];managedUsers=[];reminders=[];pipelines=[];currentUser=null;selectedRole=null;selectedLead=null;chatView=false;activePipelineId=null;await auth.signOut();}
+
+/* ══ INIT ══ */
+function initApp(){
+  gid("loginWrap").classList.add("hide");
+  setTimeout(function(){gid("loginWrap").style.display="none";gid("app").style.display="flex";setTimeout(function(){gid("app").classList.add("show");},10);},400);
+  var ini=initials(currentUser.name);
+  [gid("topAv"),gid("sideAv"),gid("drawerAv")].forEach(function(el){if(el)el.textContent=ini;});
+  if(gid("sideUserName"))gid("sideUserName").textContent=currentUser.name;
+  if(gid("sideUserRole"))gid("sideUserRole").textContent=ROLES[selectedRole]?ROLES[selectedRole].label:"";
+  if(gid("drawerUserName"))gid("drawerUserName").textContent=currentUser.name;
+  if(gid("drawerUserEmail"))gid("drawerUserEmail").textContent=currentUser.email||"";
+  gid("pageDate").textContent=today();
+  buildNav();buildBottomNav();startListeners();
+}
+
+/* ══ NAV ══ */
+function toggleDrawer(){gid("drawer").classList.toggle("open");}
+function closeDrawer(){gid("drawer").classList.remove("open");}
+function buildNav(){
+  var pages=ROLE_NAV[selectedRole]||ROLE_NAV.agent;
+  [gid("sideNav"),gid("drawerNav")].forEach(function(nav){
+    if(!nav)return;nav.innerHTML="";
+    pages.forEach(function(id){
+      var btn=document.createElement("button");btn.className="nav-item"+(id===curPage?" active":"");
+      btn.innerHTML='<span class="mso">'+NAV_ICONS[id]+'</span><span>'+TITLES[id]+'</span>';
+      btn.onclick=function(){renderPage(id);closeDrawer();};nav.appendChild(btn);
+    });
+  });
+}
+function buildBottomNav(){
+  var bn=gid("bottomNav");bn.innerHTML="";
+  var pages=BOTTOM_NAV[selectedRole]||BOTTOM_NAV.agent;
+  var allB=[{id:"dashboard",icon:"dashboard",label:"Home"},{id:"inbox",icon:"inbox",label:"Inbox"},{id:"pipeline",icon:"view_kanban",label:"Pipeline"},{id:"followups",icon:"task",label:"Tasks"},{id:"templates",icon:"description",label:"Templates"}];
+  allB.filter(function(n){return pages.indexOf(n.id)>-1;}).forEach(function(n){var btn=document.createElement("button");btn.className="bnav-btn"+(n.id===curPage?" active":"");btn.innerHTML='<span class="mso bnav-icon">'+n.icon+'</span><span class="bnav-label">'+n.label+'</span>';btn.onclick=function(){renderPage(n.id);};bn.appendChild(btn);});
+}
+function renderPage(id){
+  curPage=id;if(id!=="inbox")chatView=false;
+  gid("pageTitle").textContent=TITLES[id]||id;
+  document.querySelectorAll(".nav-item").forEach(function(b){b.classList.toggle("active",b.querySelector("span:last-child")&&b.querySelector("span:last-child").textContent===TITLES[id]);});
+  var lm={Home:"dashboard",Inbox:"inbox",Pipeline:"pipeline",Tasks:"followups",Templates:"templates"};
+  document.querySelectorAll(".bnav-btn").forEach(function(b){var lbl=b.querySelector(".bnav-label");b.classList.toggle("active",lbl&&lm[lbl.textContent]===id);});
+  var m=gid("mainContent");m.innerHTML="";m.style.overflow="";m.style.height="";
+  var pg={dashboard:pgDashboard,inbox:pgInbox,pipeline:pgPipeline,agents:pgAgents,followups:pgFollowups,automation:pgAutomation,campaigns:pgCampaigns,templates:pgTemplates,settings:pgSettings};
+  (pg[id]||pgDashboard)(m);
+}
+
+/* ══ PIPELINE MANAGEMENT ══ */
+function switchPipeline(id){
+  if(activePipelineId===id)return;activePipelineId=id;
+  document.querySelectorAll(".pipe-tab").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-pid")===id);});
+  renderKanbanOnly();
+}
+function showCreatePipelineModal(){showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">New Pipeline</div><div class="form-row"><label>Pipeline Name *</label><input id="pipeName" placeholder="e.g. Kolkata Branch"/></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="createPipeline()">Create</button></div></div>');}
+async function createPipeline(){var name=(gid("pipeName").value||"").trim();if(!name){showToast("Name required");return;}if(pipelines.find(function(p){return p.name.toLowerCase()===name.toLowerCase();})){showToast("Pipeline already exists");return;}try{var ref=await COL.pipelines().add({name:name,stages:DEFAULT_STAGES.slice(),createdAt:new Date().toISOString(),createdBy:currentUser.uid});activePipelineId=ref.id;closeModal();showToast("✅ Pipeline "+name+" created");}catch(e){showToast("❌ "+e.message);}}
+function showRenamePipelineModal(id){var p=pipelines.find(function(x){return x.id===id;});if(!p)return;showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Rename Pipeline</div><div class="form-row"><label>Name *</label><input id="pipeRename" value="'+p.name+'"/></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" onclick="renamePipeline(\''+id+'\')">Save</button></div></div>');}
+async function renamePipeline(id){var name=(gid("pipeRename").value||"").trim();if(!name){showToast("Name required");return;}try{await COL.pipelines().doc(id).update({name:name});closeModal();showToast("Renamed ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deletePipelineConfirmed(id){var p=pipelines.find(function(x){return x.id===id;});if(!p)return;var cnt=leads.filter(function(l){return l.pipelineId===id;}).length;if(cnt>0){showToast("❌ "+cnt+" leads in this pipeline. Reassign first.",4000);return;}try{await COL.pipelines().doc(id).delete();if(activePipelineId===id){var o=pipelines.find(function(p2){return p2.id!==id;});activePipelineId=o?o.id:null;}showToast("Pipeline deleted");}catch(e){showToast("❌ "+e.message);}}
+function showPipelineManager(){
+  var rows="";pipelines.forEach(function(p){var cnt=leads.filter(function(l){return l.pipelineId===p.id;}).length;var del=pipelines.length>1?'<button onclick="closeModal();confirmDelete(\'Delete pipeline '+p.name+'?\',\'deletePipelineConfirmed(\\\''+p.id+'\\\')\');" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:.25rem;padding:5px 9px;font-size:10px;color:#ef4444;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em">Delete</button>':"";rows+='<div style="display:flex;align-items:center;gap:9px;padding:10px 12px;background:var(--surface2);border-radius:.25rem;margin-bottom:7px;border:1px solid '+(p.id===activePipelineId?"rgba(233,193,118,.4)":"var(--border)")+'"><div style="flex:1;min-width:0"><div style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:14px;color:var(--text)">'+p.name+'</div><div style="color:var(--text3);font-size:10px;letter-spacing:.04em">'+cnt+' leads</div></div><button onclick="closeModal();showRenamePipelineModal(\''+p.id+'\')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:5px 9px;font-size:10px;color:var(--text2);cursor:pointer;margin-right:4px">✏️</button>'+del+'</div>';});
+  showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Manage Pipelines</div>'+rows+'<button onclick="closeModal();showCreatePipelineModal()" class="btn-gold" style="width:100%;padding:11px;border-radius:.25rem;margin-top:4px;font-size:12px">+ New Pipeline</button><button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:8px">Close</button></div>');
+}
+
+/* ══ STAGE MANAGEMENT ══ */
+function showManageStagesModal(pid){
+  var p=pipelines.find(function(x){return x.id===pid;});if(!p)return;
+  function renderRows(){var stages=getPipelineStages(pid);var rows="";stages.forEach(function(s,i){var color=stageColor(s);var isDef=DEFAULT_STAGES.indexOf(s)>-1;var up=i>0?'<button onclick="stageMoveUp(\''+pid+'\','+i+')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--text2)">↑</button>':'<span style="width:30px;display:inline-block"></span>';var dn=i<stages.length-1?'<button onclick="stageMoveDown(\''+pid+'\','+i+')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--text2)">↓</button>':'<span style="width:30px;display:inline-block"></span>';var del=isDef?'<span style="font-size:8px;color:var(--text3);padding:2px 6px;background:var(--surface);border-radius:2px;border:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase">Built-in</span>':'<button onclick="stageDelete(\''+pid+'\',\''+s+'\')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:.25rem;padding:3px 8px;font-size:10px;cursor:pointer;color:#ef4444;font-family:\'Archivo Narrow\',sans-serif;font-weight:700">Del</button>';rows+='<div class="stage-manage-row"><div style="width:9px;height:9px;border-radius:50%;background:'+color+';flex-shrink:0"></div><span style="flex:1;font-size:13px;font-weight:700;color:var(--text)">'+s+'</span>'+up+dn+del+'</div>';});return rows;}
+  showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Manage Stages — '+p.name+'</div><p style="color:var(--text3);font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">Add custom stages. Built-in stages cannot be removed.</p><div id="stageRowsWrap">'+renderRows()+'</div><div style="display:flex;gap:8px;margin-top:12px"><input id="newStageName" placeholder="New stage name…" style="flex:1;background:rgba(3,13,37,.6);border:none;border-bottom:2px solid var(--border);padding:10px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s"/><button onclick="stageAdd(\''+pid+'\')" class="btn-gold" style="border-radius:.25rem;padding:10px 14px;font-size:12px">+ Add</button></div><button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:10px">Done</button></div>');
+  window._reRenderStageRows=renderRows;
+}
+function _refreshStageRows(){var w=gid("stageRowsWrap");if(w&&window._reRenderStageRows)w.innerHTML=window._reRenderStageRows();}
+function stageAdd(pid){var inp=gid("newStageName");if(!inp)return;var name=(inp.value||"").trim();if(!name){showToast("Enter a stage name");return;}var stages=getPipelineStages(pid);if(stages.indexOf(name)>-1){showToast("Stage already exists");return;}stageColor(name);stages.push(name);COL.pipelines().doc(pid).update({stages:stages}).then(function(){var p=pipelines.find(function(x){return x.id===pid;});if(p)p.stages=stages;inp.value="";_refreshStageRows();showToast("✅ Stage added");}).catch(function(e){showToast("❌ "+e.message);});}
+function stageMoveUp(pid,idx){var stages=getPipelineStages(pid).slice();if(idx<=0)return;var tmp=stages[idx-1];stages[idx-1]=stages[idx];stages[idx]=tmp;COL.pipelines().doc(pid).update({stages:stages}).then(function(){var p=pipelines.find(function(x){return x.id===pid;});if(p)p.stages=stages;_refreshStageRows();}).catch(function(e){showToast("❌ "+e.message);});}
+function stageMoveDown(pid,idx){var stages=getPipelineStages(pid).slice();if(idx>=stages.length-1)return;var tmp=stages[idx+1];stages[idx+1]=stages[idx];stages[idx]=tmp;COL.pipelines().doc(pid).update({stages:stages}).then(function(){var p=pipelines.find(function(x){return x.id===pid;});if(p)p.stages=stages;_refreshStageRows();}).catch(function(e){showToast("❌ "+e.message);});}
+function stageDelete(pid,stage){var inUse=leads.filter(function(l){return l.pipelineId===pid&&l.status===stage;}).length;if(inUse>0){showToast("❌ "+inUse+" lead(s) in this stage.",4000);return;}var stages=getPipelineStages(pid).filter(function(s){return s!==stage;});COL.pipelines().doc(pid).update({stages:stages}).then(function(){var p=pipelines.find(function(x){return x.id===pid;});if(p)p.stages=stages;_refreshStageRows();showToast("Stage removed");}).catch(function(e){showToast("❌ "+e.message);});}
+
+/* ══ PIPELINE PAGE ══ */
+function pgPipeline(el){
+  var isAdmin=(selectedRole==="admin");var tabs="";
+  pipelines.forEach(function(p){var cnt=leads.filter(function(l){return l.pipelineId===p.id;}).length;var active=p.id===activePipelineId;tabs+='<button class="pipe-tab'+(active?" active":"")+'" data-pid="'+p.id+'" onclick="switchPipeline(\''+p.id+'\')">'+p.name+' ('+cnt+')</button>';});
+  var adminBtns=isAdmin?'<button class="pipe-action-btn" onclick="showCreatePipelineModal()" style="background:rgba(233,193,118,.15);color:var(--gold);border:1px solid rgba(233,193,118,.3)">+ New</button><button class="pipe-action-btn" onclick="showPipelineManager()" style="background:var(--surface2);color:var(--text2);border:1px solid var(--border)">⚙ Manage</button><button class="pipe-action-btn" onclick="showManageStagesModal(\''+activePipelineId+'\')" style="background:var(--surface2);color:var(--text2);border:1px solid var(--border)">🗂 Stages</button>':"";
+  el.style.height="100%";el.style.overflow="hidden";
+  el.innerHTML='<div class="pipeline-page-wrap"><div class="pipe-tab-bar">'+tabs+adminBtns+'</div><div class="pipeline-wrap" id="kanbanWrap"></div></div>';
+  renderKanbanOnly();
+}
+function renderKanbanOnly(){
+  var pid=activePipelineId;var stages=getPipelineStages(pid);
+  var visibleLeads=leads.filter(function(l){if(l.pipelineId!==pid)return false;if(selectedRole==="agent"&&l.agentName!==currentUser.name)return false;return true;});
+  var grouped={};stages.forEach(function(s){grouped[s]=[];});
+  visibleLeads.forEach(function(l){if(grouped[l.status]!==undefined)grouped[l.status].push(l);else if(stages.length)grouped[stages[0]].push(l);});
+  var cols="";
+  stages.forEach(function(col){var color=stageColor(col);var cid="col-"+col.replace(/ /g,"-");var did="dz-"+col.replace(/ /g,"-");var colLeads=grouped[col]||[];var cards="";
+    colLeads.forEach(function(c){var pb=c.plan?'<span class="pill plan-'+c.plan.toLowerCase()+'" style="font-size:8px;padding:1px 5px">'+(PLANS[c.plan]?PLANS[c.plan].icon:"")+'</span>':"";var dh=c.enquiryDate?'<div style="color:var(--text3);font-size:9px;margin-top:3px;letter-spacing:.04em">📅 '+new Date(c.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short"})+'</div>':"";var sn=c.name.replace(/'/g,"\\'");cards+='<div class="k-card brushed" id="kcard-'+c.id+'" draggable="true" ondragstart="pipeDragStart(event,\''+c.id+'\',\''+col+'\')" ondragend="pipeDragEnd(event)"><div class="k-card-top">'+av(initials(c.name),22,"rgba(233,193,118,.25)")+'<span class="k-name">'+c.name+'</span>'+pb+'</div><div class="k-val">'+fmtCur(c.value)+'</div><div class="k-src">'+(c.source||"—")+' · '+(c.agentName||"Unassigned")+'</div>'+dh+'<div class="k-actions"><button class="k-act-btn" style="background:rgba(233,193,118,.15);color:var(--gold);border:1px solid rgba(233,193,118,.25)" onclick="selectLead(\''+c.id+'\');renderPage(\'inbox\')">Chat</button><button class="k-act-btn" style="background:var(--surface);color:var(--text2);border:1px solid var(--border)" onclick="showEditLeadModal(\''+c.id+'\')">Edit</button><button class="k-act-btn" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.25)" onclick="showAddReminderModal(\''+sn+'\')">⏰</button></div></div>';});
+    if(!colLeads.length)cards='<div class="drop-zone" id="'+did+'">Drop here</div>';
+    cols+='<div class="col-wrap"><div class="col-inner" id="'+cid+'" ondragover="pipeDragOver(event,\''+col+'\')" ondragleave="pipeDragLeave(event)" ondrop="pipeDrop(event,\''+col+'\')"><div class="col-head"><div class="col-title-text"><div class="col-dot" style="background:'+color+'"></div>'+col+'</div><div style="display:flex;align-items:center;gap:5px"><span class="col-count">'+colLeads.length+'</span><button onclick="showAddLeadInStage(\''+col+'\')" style="background:'+color+'22;border:1px solid '+color+'44;border-radius:.25rem;width:18px;height:18px;color:'+color+';font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1">+</button></div></div><div class="col-body">'+cards+'</div></div></div>';
+  });
+  var wrap=gid("kanbanWrap");if(!wrap){renderPage("pipeline");return;}
+  var pname=pipelines.find(function(p){return p.id===pid;});
+  wrap.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;min-width:max-content"><p style="color:var(--text3);font-size:9px;letter-spacing:.1em;text-transform:uppercase">← Scroll · Drag to move · '+(selectedRole==="agent"?"Your leads in":"All leads in")+' <b style="color:var(--gold)">'+(pname?pname.name:"")+'</b></p><button onclick="showAddLeadModal()" class="btn-gold" style="padding:7px 16px;font-size:11px;border-radius:.25rem;margin-left:16px">+ New Lead</button></div><div class="kanban">'+cols+'</div>';
+}
+function pipeDragStart(e,id,col){dragLead={id:id,fromCol:col};var el=document.getElementById("kcard-"+id);if(el)el.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",id);}
+function pipeDragEnd(){dragLead=null;document.querySelectorAll(".k-card").forEach(function(c){c.classList.remove("dragging");});document.querySelectorAll(".col-inner").forEach(function(c){c.classList.remove("drag-over");});document.querySelectorAll(".drop-zone").forEach(function(c){c.classList.remove("active");});}
+function pipeDragOver(e,col){e.preventDefault();if(!dragLead||dragLead.fromCol===col)return;document.querySelectorAll(".col-inner").forEach(function(c){c.classList.remove("drag-over");});var ce=document.getElementById("col-"+col.replace(/ /g,"-"));if(ce)ce.classList.add("drag-over");document.querySelectorAll(".drop-zone").forEach(function(c){c.classList.remove("active");});var dz=document.getElementById("dz-"+col.replace(/ /g,"-"));if(dz)dz.classList.add("active");}
+function pipeDragLeave(e){if(!e.currentTarget.contains(e.relatedTarget))e.currentTarget.classList.remove("drag-over");}
+async function pipeDrop(e,toCol){e.preventDefault();document.querySelectorAll(".col-inner").forEach(function(c){c.classList.remove("drag-over");});if(!dragLead||dragLead.fromCol===toCol){dragLead=null;return;}var id=dragLead.id;dragLead=null;try{await COL.leads().doc(id).update({status:toCol});showToast("✅ Moved to "+toCol);}catch(err){showToast("❌ "+err.message);}}
+
+/* ══ DASHBOARD ══ */
+function pgDashboard(el){
+  var closed=leads.filter(function(l){return l.status==="Closed";});var conv=leads.length?Math.round(closed.length/leads.length*100):0;var revenue=closed.reduce(function(s,l){return s+Number(l.value||0);},0);var showRev=selectedRole==="admin";
+  var agStats={};agents.forEach(function(ag){var ml=leads.filter(function(l){return l.agentName===ag.name;});var mc=ml.filter(function(l){return l.status==="Closed";});agStats[ag.name]={name:ag.name,leadsCount:ml.length,closedCount:mc.length,convRate:ml.length?Math.round(mc.length/ml.length*100):0,revenue:mc.reduce(function(s,l){return s+Number(l.value||0);},0)};});
+  var lb=Object.values(agStats).sort(function(a,b){return b.convRate-a.convRate||b.closedCount-a.closedCount;});
+  var statCards=[{label:"Total Leads",val:leads.length,delta:"All pipelines",icon:"groups",a:"#312e81",b:"#4f46e5"},{label:"Closed Deals",val:closed.length,delta:"Converted",icon:"ads_click",a:"#14532d",b:"#16a34a"},{label:"Conversion",val:conv+"%",delta:"Rate",icon:"show_chart",a:"#0c4a6e",b:"#0284c7"},{label:"Revenue",val:showRev?fmtCur(revenue):"🔒",delta:showRev?"Total closed":"Admin only",icon:"payments",a:"#7c2d12",b:"#ea580c"}];
+  var sh="";statCards.forEach(function(s){sh+='<div class="stat-card brushed" style="background:linear-gradient(135deg,'+s.a+','+s.b+');box-shadow:0 4px 20px '+s.a+'80"><span class="mso stat-icon">'+s.icon+'</span><div class="stat-val">'+s.val+'</div><div class="stat-label">'+s.label+'</div><span class="stat-delta">'+s.delta+'</span></div>';});
+  var planRevHtml="";
+  if(showRev){var pc="";PLAN_NAMES.forEach(function(p){var pl=leads.filter(function(l){return l.status==="Closed"&&l.plan===p;});var rv=pl.reduce(function(s,l){return s+Number(l.value||0);},0);var P=PLANS[p];pc+='<div class="plan-rev-card brushed" style="background:linear-gradient(135deg,'+P.gradient+');border:1px solid rgba(255,255,255,.08)"><div style="font-size:22px;margin-bottom:4px">'+P.icon+'</div><div class="plan-rev-val">'+fmtCur(rv)+'</div><div class="plan-rev-key">'+p+' Plan</div><div class="plan-rev-count">'+pl.length+' member'+(pl.length!==1?"s":"")+'</div></div>';});planRevHtml='<div class="card brushed" style="margin-bottom:14px"><div class="card-title"><span class="mso">diamond</span>Revenue by Plan</div><div class="plan-rev-grid">'+pc+'</div></div>';}
+  var pbHtml="";
+  if(showRev&&pipelines.length>1){var pr="";pipelines.forEach(function(p){var cnt=leads.filter(function(l){return l.pipelineId===p.id;}).length;var cl=leads.filter(function(l){return l.pipelineId===p.id&&l.status==="Closed";}).length;pr+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:13px;color:var(--text);width:100px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</span><div style="flex:1">'+bar(cl,cnt||1,"#22c55e")+'</div><span style="font-size:10px;color:var(--text3);letter-spacing:.04em;white-space:nowrap;margin-left:8px">'+cl+' / '+cnt+'</span></div>';});pbHtml='<div class="card brushed" style="margin-bottom:14px"><div class="card-title"><span class="mso">folder_open</span>Leads by Pipeline</div>'+pr+'</div>';}
+  var medals=["🥇","🥈","🥉"];var lbh="";
+  if(lb.length){lb.slice(0,5).forEach(function(ag,i){lbh+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="font-size:'+(i<3?16:11)+'px;width:22px;text-align:center">'+(medals[i]||"#"+(i+1))+'</span>'+av(initials(ag.name),28)+'<div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text);margin-bottom:3px"><span style="font-weight:700">'+ag.name+'</span><span style="color:var(--text3);font-size:10px;letter-spacing:.04em">'+ag.convRate+'% · '+ag.closedCount+'✓</span></div>'+bar(ag.convRate,100,i===0?"#f59e0b":"#e9c176")+'</div></div>';});}else lbh='<p style="color:var(--text3);font-size:11px;text-align:center;padding:16px 0;letter-spacing:.06em;text-transform:uppercase">No agents yet</p>';
+  var rh="";if(leads.length){leads.slice(0,5).forEach(function(l){rh+='<div class="lead-row" onclick="openLead(\''+l.id+'\')">'+av(initials(l.name),28)+'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.name+'</div><div style="color:var(--text3);font-size:10px;letter-spacing:.04em;text-transform:uppercase">'+(l.plan?(PLANS[l.plan]?PLANS[l.plan].icon:"")+" "+l.plan+" · ":"")+(l.source||"")+'</div></div>'+pill(l.status,stageColor(l.status))+'</div>';});}else rh='<p style="color:var(--text3);font-size:11px;text-align:center;padding:16px 0;letter-spacing:.06em;text-transform:uppercase">No leads yet</p>';
+  var mx=1;DEFAULT_STAGES.forEach(function(s){var c=leads.filter(function(l){return l.status===s;}).length;if(c>mx)mx=c;});
+  var sr="";DEFAULT_STAGES.forEach(function(s){var c=leads.filter(function(l){return l.status===s;}).length;sr+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:8px;height:8px;border-radius:50%;background:'+stageColor(s)+';flex-shrink:0"></div><span style="font-size:10px;font-weight:700;color:var(--text);letter-spacing:.04em;text-transform:uppercase;flex:1;min-width:90px">'+s+'</span><div style="flex:2">'+bar(c,mx,stageColor(s))+'</div><span style="font-size:11px;font-weight:700;color:var(--text);min-width:24px;text-align:right;font-family:\'Archivo Narrow\',sans-serif">'+c+'</span></div>';});
+  el.innerHTML='<div class="page"><div class="stat-grid">'+sh+'</div>'+planRevHtml+pbHtml+'<div class="two-col"><div class="card brushed"><div class="card-title"><span class="mso">trophy</span>Leaderboard</div>'+lbh+'</div><div class="card brushed"><div class="card-title"><span class="mso">bolt</span>Recent Leads</div>'+rh+'</div></div><div class="card brushed"><div class="card-title"><span class="mso">analytics</span>Pipeline Summary</div>'+sr+'</div></div>';
+}
+function openLead(id){selectedLead=leads.find(function(l){return l.id===id;})||null;chatView=true;renderPage("inbox");}
+
+/* ══ INBOX ══ */
+function pgInbox(el){
+  var myLeads=selectedRole==="agent"?leads.filter(function(l){return l.agentName===currentUser.name;}):leads;
+  if(chatView&&selectedLead){el.style.height="100%";el.style.overflow="hidden";el.innerHTML=renderChatView();loadChatMessages(selectedLead.id);return;}
+  var pf="";if(pipelines.length>1){var po='<option value="all">All Pipelines</option>';pipelines.forEach(function(p){po+='<option value="'+p.id+'">'+p.name+'</option>';});pf='<div style="margin-top:8px;position:relative"><select style="width:100%;background:rgba(3,13,37,.6);border:none;border-bottom:2px solid var(--border);padding:8px 12px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s" onchange="filterInboxPipeline(this.value)">'+po+'</select></div>';}
+  el.innerHTML='<div style="height:100%;display:flex;flex-direction:column;overflow:hidden"><div style="padding:10px 14px;border-bottom:1px solid var(--border2);background:var(--surface)"><div style="display:flex;gap:8px;align-items:center;position:relative"><span class="mso" style="position:absolute;left:10px;color:var(--text3);font-size:18px;pointer-events:none">search</span><input class="list-search" id="leadSearch" placeholder="Search leads…" oninput="filterLeads(this.value)" style="flex:1"/><button onclick="showAddLeadModal()" class="btn-gold" style="border-radius:.25rem;width:36px;height:36px;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button></div><div class="tab-row"><button class="tab-btn active-tab" onclick="filterPlatform(\'all\',this)">All</button><button class="tab-btn" onclick="filterPlatform(\'WhatsApp\',this)">WhatsApp</button><button class="tab-btn" onclick="filterPlatform(\'Instagram\',this)">Instagram</button></div>'+pf+'</div><div style="flex:1;overflow-y:auto" id="leadItems">'+renderLeadList(myLeads)+'</div></div>';
+}
+function filterInboxPipeline(val){var my=selectedRole==="agent"?leads.filter(function(l){return l.agentName===currentUser.name;}):leads;var li=gid("leadItems");if(li)li.innerHTML=renderLeadList(val==="all"?my:my.filter(function(l){return l.pipelineId===val;}));}
+function renderLeadList(arr){
+  if(!arr.length)return'<div style="text-align:center;padding:40px 16px;color:var(--text3)"><span class="mso" style="font-size:48px;display:block;margin-bottom:10px;opacity:.4">inbox</span><p style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">No leads yet</p></div>';
+  var html="";
+  arr.forEach(function(l){
+    var pname=pipelines.length>1?(pipelines.find(function(p){return p.id===l.pipelineId;})||{name:""}).name:"";
+    var pb=pname?'<span class="pipe-badge">'+pname+'</span>':"";
+    var planB=l.plan?'<span class="pill plan-'+l.plan.toLowerCase()+'" style="font-size:8px">'+(PLANS[l.plan]?PLANS[l.plan].icon:"")+" "+l.plan+'</span>':"";
+    var ds="";if(l.enquiryDate||l.createdAt){try{ds=new Date(l.enquiryDate||l.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short"});}catch(e){}}
+    var eb=selectedRole!=="agent"?'<button onclick="showEditLeadModal(\''+l.id+'\')" style="background:rgba(233,193,118,.1);border:1px solid rgba(233,193,118,.25);border-radius:.25rem;padding:5px 8px;color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;text-transform:uppercase;letter-spacing:.04em">Edit</button>':"";
+    html+='<div class="lead-item"><div style="position:relative;cursor:pointer" onclick="selectLead(\''+l.id+'\')">'+av(initials(l.name),36)+'<span style="position:absolute;bottom:0;right:0;font-size:8px;color:'+(l.platform==="WhatsApp"?"#22c55e":"#ec4899")+'">●</span></div><div style="flex:1;min-width:0;cursor:pointer" onclick="selectLead(\''+l.id+'\')"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">'+l.name+'</span><span style="color:var(--text3);font-size:10px;flex-shrink:0;letter-spacing:.04em">'+ds+'</span></div><div style="color:var(--text3);font-size:10px;margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap">'+pill(l.status,stageColor(l.status))+planB+pb+'<span style="letter-spacing:.04em">'+(l.agentName||"Unassigned")+'</span></div></div><div style="display:flex;gap:5px;flex-shrink:0">'+eb+'<button onclick="selectLead(\''+l.id+'\')" style="background:var(--surface2);border:1px solid var(--border);border-radius:.25rem;padding:5px 8px;color:var(--text2);font-size:11px;cursor:pointer">💬</button></div></div>';
+  });return html;
+}
+function renderChatView(){
+  var sl=selectedLead;var pname=(pipelines.find(function(p){return p.id===sl.pipelineId;})||{name:""}).name;
+  var pb=sl.plan?'<span class="pill plan-'+sl.plan.toLowerCase()+'" style="margin-left:6px;font-size:8px">'+(PLANS[sl.plan]?PLANS[sl.plan].icon:"")+" "+sl.plan+'</span>':"";
+  var eb=selectedRole!=="agent"?'<button class="action-btn" onclick="showEditLeadModal(\''+sl.id+'\')">✏️ Edit</button>':"";
+  var sn=sl.name.replace(/'/g,"\\'");
+  return '<div class="chat-view" style="height:100%;overflow:hidden"><div class="chat-head">'+
+    '<button class="chat-back" onclick="chatView=false;renderPage(\'inbox\')">‹</button>'+
+    av(initials(sl.name),34)+'<div style="flex:1;min-width:0"><div class="chat-name">'+sl.name+pb+'</div><div class="chat-sub">'+(sl.phone||sl.source||"")+(pname?" · "+pname:"")+'</div></div>'+
+    '<div class="chat-hactions"><button class="action-btn" onclick="showAddReminderModal(\''+sn+'\')">⏰</button>'+eb+
+    '<button class="action-btn" onclick="openDetailSheet(\''+sl.id+'\')">···</button>'+
+    '<button class="action-btn" onclick="showStageModal(\''+sl.id+'\')">'+pill(sl.status,stageColor(sl.status))+'</button></div></div>'+
+    '<div class="chat-msgs" id="chatMsgs"><div style="text-align:center;color:var(--text3);padding:20px;font-size:11px;text-transform:uppercase;letter-spacing:.06em">Loading…</div></div>'+
+    '<div class="chat-input-row"><button class="emoji-btn" onclick="showTemplatePicker(\''+sl.id+'\')">📋</button>'+
+    '<input id="msgInput" class="msg-input" placeholder="Message…" onkeydown="if(event.key===\'Enter\')sendMsg()"/>'+
+    '<button class="send-btn btn-gold" onclick="sendMsg()" style="border-radius:.25rem;padding:9px 16px">Send</button></div></div>';
+}
+function loadChatMessages(lid){
+  if(unsubMessages)unsubMessages();
+  unsubMessages=COL.messages(lid).orderBy("createdAt").onSnapshot(function(snap){
+    var box=gid("chatMsgs");if(!box)return;var msgs=snap.docs.map(function(d){return d.data();});var sl=leads.find(function(l){return l.id===lid;})||selectedLead;
+    var nh=sl&&sl.notes?'<div style="text-align:center;margin-bottom:8px"><span style="background:rgba(233,193,118,.1);color:var(--gold);border:1px solid rgba(233,193,118,.25);border-radius:2px;padding:3px 12px;font-size:10px;letter-spacing:.06em;text-transform:uppercase">📌 '+sl.notes+'</span></div>':"";
+    var dh="";if(sl&&sl.enquiryDate){try{dh='<div style="text-align:center;margin-bottom:8px"><span style="background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2);border-radius:2px;padding:3px 12px;font-size:10px;letter-spacing:.06em;text-transform:uppercase">📅 Enquiry: '+new Date(sl.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})+'</span></div>';}catch(e){}}
+    var mh="";if(msgs.length){msgs.forEach(function(m){var out=m.from==="agent";mh+='<div style="display:flex;justify-content:'+(out?"flex-end":"flex-start")+'"><div class="msg-bubble '+(out?"msg-out":"msg-in")+'">'+m.text+'<div class="msg-time">'+(m.time||"")+'</div></div></div>';});}
+    else mh='<div style="text-align:center;color:var(--text3);padding:40px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.06em">No messages yet.</div>';
+    box.innerHTML=dh+nh+mh;box.scrollTop=box.scrollHeight;
+  });
+}
+function selectLead(id){selectedLead=leads.find(function(l){return l.id===id;})||null;chatView=true;renderPage("inbox");}
+async function sendMsg(){var inp=gid("msgInput");if(!inp||!inp.value.trim()||!selectedLead)return;var text=inp.value.trim();inp.value="";try{await COL.messages(selectedLead.id).add({from:"agent",text:text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});}catch(e){showToast("❌ "+e.message);}}
+function filterLeads(val){var my=selectedRole==="agent"?leads.filter(function(l){return l.agentName===currentUser.name;}):leads;var li=gid("leadItems");if(li)li.innerHTML=renderLeadList(val?my.filter(function(l){return l.name.toLowerCase().indexOf(val.toLowerCase())>-1||(l.phone&&l.phone.indexOf(val)>-1);}):my);}
+function filterPlatform(plat,btn){document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active-tab");});btn.classList.add("active-tab");var my=selectedRole==="agent"?leads.filter(function(l){return l.agentName===currentUser.name;}):leads;var li=gid("leadItems");if(li)li.innerHTML=renderLeadList(plat==="all"?my:my.filter(function(l){return l.platform===plat;}));}
+
+/* ══ LEAD MODALS ══ */
+function pipelineRow(selPid){if(pipelines.length<=1)return '<input type="hidden" id="lpipe" value="'+(activePipelineId||(pipelines[0]&&pipelines[0].id)||"")+'" />';var opts="";pipelines.forEach(function(p){opts+='<option value="'+p.id+'"'+(p.id===(selPid||activePipelineId)?' selected':'')+'>'+p.name+'</option>';});return '<div class="form-row"><label>Pipeline *</label><select id="lpipe">'+opts+'</select></div>';}
+function showAddLeadModal(){_leadModal(null);}
+function showEditLeadModal(id){_leadModal(leads.find(function(l){return l.id===id;}));}
+function _leadModal(l){
+  var isEdit=!!l,canAssign=selectedRole!=="agent";
+  var ao='<option value=""'+((!l||!l.agentName||l.agentName==="Unassigned")?' selected':'')+'>Unassigned</option>';agents.forEach(function(a){ao+='<option'+(l&&l.agentName===a.name?' selected':'')+'>'+a.name+'</option>';});
+  var po='<option value="">Select Plan</option>';PLAN_NAMES.forEach(function(p){po+='<option value="'+p+'"'+(l&&l.plan===p?' selected':'')+'>'+PLANS[p].icon+' '+p+'</option>';});
+  var so="";SOURCES.forEach(function(s){so+='<option'+(l&&l.source===s?' selected':'')+'>'+s+'</option>';});
+  var plo="";PLATFORMS.forEach(function(p){plo+='<option'+(l&&l.platform===p?' selected':'')+'>'+p+'</option>';});
+  var stages=getPipelineStages(l?l.pipelineId:activePipelineId);
+  var stRow=isEdit?'<div class="form-row"><label>Status</label><select id="lst">'+stages.map(function(s){return '<option'+(l.status===s?' selected':'')+'>'+s+'</option>';}).join("")+'</select></div>':"";
+  var delBtn=isEdit&&selectedRole!=="agent"?'<button class="btn-cancel" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)" onclick="confirmDelete(\'Delete lead '+l.name+'?\',\'deleteLead(\\\''+l.id+'\\\');closeModal()\')">Delete</button>':'<button class="btn-cancel" onclick="closeModal()">Cancel</button>';
+  showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+(isEdit?"Edit Lead":"Add Lead")+'</div>'+pipelineRow(l?l.pipelineId:null)+'<div class="form-row"><label>Full Name *</label><input id="ln" value="'+(l?l.name:"")+'" placeholder="Rajesh Kumar"/></div><div class="form-row"><label>Phone</label><input id="lp" type="tel" value="'+(l?l.phone||"":"")+'" placeholder="+91 98765 43210"/></div><div class="form-row"><label>Instagram</label><input id="lig" value="'+(l?l.instagram||"":"")+'" placeholder="@handle"/></div><div class="form-row"><label>Enquiry Date</label><input id="ledate" type="date" value="'+(l?l.enquiryDate||todayStr():todayStr())+'"/></div><div class="form-row"><label>Source</label><select id="ls">'+so+'</select></div><div class="form-row"><label>Platform</label><select id="lpl">'+plo+'</select></div><div class="form-row"><label>Plan</label><select id="lplan">'+po+'</select></div>'+(canAssign?'<div class="form-row"><label>Assign To</label><select id="lag">'+ao+'</select></div>':"")+'<div class="form-row"><label>Deal Value (₹)</label><input id="lv" type="number" value="'+(l?l.value||"":"")+'" placeholder="25000"/></div>'+stRow+'<div class="form-row"><label>Notes</label><textarea id="lnotes">'+(l?l.notes||"":"")+'</textarea></div><div class="modal-footer">'+delBtn+'<button class="btn-save" onclick="'+(isEdit?"updateLead('"+l.id+"')":'addLead()')+'">'+(isEdit?"Save Changes":"Add Lead")+'</button></div></div>');
+}
+async function addLead(){
+  var name=(gid("ln").value||"").trim();if(!name){showToast("Name is required");return;}var phone=(gid("lp").value||"").trim(),ig=(gid("lig").value||"").trim();
+  var pid=gid("lpipe")?gid("lpipe").value:(activePipelineId||(pipelines[0]&&pipelines[0].id)||"");
+  var dupes=leads.filter(function(l){var nm=l.name.toLowerCase()===name.toLowerCase();var ph=phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,"");var ig2=ig&&l.instagram&&l.instagram.toLowerCase()===ig.toLowerCase();return nm||ph||ig2;});
+  if(dupes.length){var d=dupes[0];var mr=(d.name.toLowerCase()===name.toLowerCase()?"Name":phone&&d.phone&&d.phone.replace(/\s/g,"")===phone.replace(/\s/g,"")?"Phone":"Instagram");showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#f59e0b">Duplicate Found</div><p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same <b>'+mr+'</b> already exists.</p><div style="display:flex;flex-direction:column;gap:8px"><button onclick="closeModal();openLead(\''+d.id+'\')" class="btn-gold" style="width:100%;padding:11px;border-radius:.25rem;font-size:12px">View Existing Lead</button><button onclick="closeModal();_doAddLead(\''+pid+'\')" style="width:100%;padding:11px;border-radius:.25rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em">Add as New Anyway</button><button onclick="closeModal();_leadModal(null)" class="btn-cancel" style="width:100%">← Go Back</button></div></div>');return;}
+  await _doAddLead(pid);
+}
+async function _doAddLead(pid){var name=(gid("ln")?gid("ln").value||"":"").trim();if(!name){showToast("Name is required");return;}var canAssign=selectedRole!=="agent";var data={name:name,phone:gid("lp")?gid("lp").value||"":"",instagram:gid("lig")?gid("lig").value||"":"",enquiryDate:gid("ledate")?gid("ledate").value||todayStr():todayStr(),source:gid("ls")?gid("ls").value||"":"",platform:gid("lpl")?gid("lpl").value||"":"",plan:gid("lplan")?gid("lplan").value||"":"",agentName:canAssign?(gid("lag")?gid("lag").value||"Unassigned":"Unassigned"):currentUser.name,value:Number(gid("lv")?gid("lv").value||0:0),status:"New Lead",notes:gid("lnotes")?gid("lnotes").value||"":"",pipelineId:pid||(activePipelineId)||(pipelines[0]&&pipelines[0].id)||"",createdAt:new Date().toISOString()};try{await COL.leads().add(data);closeModal();showToast("✅ \""+data.name+"\" added");}catch(e){showToast("❌ "+e.message);}}
+async function updateLead(id){var name=(gid("ln").value||"").trim();if(!name){showToast("Name is required");return;}var canAssign=selectedRole!=="agent";var ex=leads.find(function(l){return l.id===id;});var pid=gid("lpipe")?gid("lpipe").value:(ex?ex.pipelineId:activePipelineId)||"";var data={name:name,phone:gid("lp").value||"",instagram:gid("lig").value||"",enquiryDate:gid("ledate").value||todayStr(),source:gid("ls").value,platform:gid("lpl").value,plan:gid("lplan").value||"",agentName:canAssign?(gid("lag")?gid("lag").value||"Unassigned":"Unassigned"):currentUser.name,value:Number(gid("lv").value)||0,status:gid("lst")?gid("lst").value:(ex?ex.status:"New Lead"),notes:gid("lnotes").value||"",pipelineId:pid,updatedAt:new Date().toISOString()};try{await COL.leads().doc(id).update(data);closeModal();showToast("✅ Lead updated");if(chatView){selectedLead=leads.find(function(l){return l.id===id;});renderPage("inbox");}}catch(e){showToast("❌ "+e.message);}}
+async function deleteLead(id){try{await COL.leads().doc(id).delete();chatView=false;selectedLead=null;renderPage("inbox");showToast("Lead deleted");}catch(e){showToast("❌ "+e.message);}}
+function showAddLeadInStage(stage){var so="";SOURCES.forEach(function(s){so+='<option>'+s+'</option>';});var plo="";PLATFORMS.forEach(function(p){plo+='<option>'+p+'</option>';});var po='<option value="">Select Plan</option>';PLAN_NAMES.forEach(function(p){po+='<option value="'+p+'">'+PLANS[p].icon+' '+p+'</option>';});var ao=selectedRole!=="agent"?'<div class="form-row"><label>Assign To</label><select id="lag"><option value="">Unassigned</option>'+agents.map(function(a){return '<option>'+a.name+'</option>';}).join("")+'</select></div>':"";showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Add Lead to '+stage+'</div><div class="form-row"><label>Full Name *</label><input id="ln" placeholder="Rajesh Kumar"/></div><div class="form-row"><label>Phone</label><input id="lp" type="tel" placeholder="+91 98765 43210"/></div><div class="form-row"><label>Enquiry Date</label><input id="ledate" type="date" value="'+todayStr()+'"/></div><div class="form-row"><label>Source</label><select id="ls">'+so+'</select></div><div class="form-row"><label>Platform</label><select id="lpl">'+plo+'</select></div><div class="form-row"><label>Plan</label><select id="lplan">'+po+'</select></div>'+ao+'<div class="form-row"><label>Deal Value (₹)</label><input id="lv" type="number" placeholder="25000"/></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" style="background:'+stageColor(stage)+';color:#fff" onclick="addLeadInStage(\''+stage+'\')">Add</button></div></div>');}
+async function addLeadInStage(stage){var name=(gid("ln").value||"").trim();if(!name){showToast("Name is required");return;}var phone=(gid("lp").value||"").trim();var dupes=leads.filter(function(l){return l.name.toLowerCase()===name.toLowerCase()||(phone&&l.phone&&l.phone.replace(/\s/g,"")===phone.replace(/\s/g,""));});if(dupes.length){var d=dupes[0];showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#f59e0b">Duplicate Found</div><p style="color:var(--text2);font-size:13px;margin-bottom:12px">A lead with the same name or phone already exists.</p><div style="display:flex;flex-direction:column;gap:8px"><button onclick="closeModal();openLead(\''+d.id+'\')" class="btn-gold" style="width:100%;padding:11px;border-radius:.25rem;font-size:12px">View Existing</button><button onclick="closeModal();_doAddLeadInStage(\''+stage+'\')" style="width:100%;padding:11px;border-radius:.25rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em">Add Anyway</button><button onclick="closeModal();showAddLeadInStage(\''+stage+'\')" class="btn-cancel" style="width:100%">← Go Back</button></div></div>');return;}await _doAddLeadInStage(stage);}
+async function _doAddLeadInStage(stage){var name=(gid("ln")?gid("ln").value||"":"").trim();if(!name){showToast("Name is required");return;}var canAssign=selectedRole!=="agent";var data={name:name,phone:gid("lp")?gid("lp").value||"":"",instagram:"",enquiryDate:gid("ledate")?gid("ledate").value||todayStr():todayStr(),source:gid("ls")?gid("ls").value||"":"",platform:gid("lpl")?gid("lpl").value||"":"",plan:gid("lplan")?gid("lplan").value||"":"",agentName:canAssign?(gid("lag")?gid("lag").value||"Unassigned":"Unassigned"):currentUser.name,value:Number(gid("lv")?gid("lv").value||0:0),status:stage,notes:"",pipelineId:activePipelineId||(pipelines[0]&&pipelines[0].id)||"",createdAt:new Date().toISOString()};try{await COL.leads().add(data);closeModal();showToast("✅ \""+data.name+"\" added to "+stage);}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ DETAIL SHEET ══ */
+function openDetailSheet(lid){
+  var l=leads.find(function(x){return x.id===lid;});if(!l)return;
+  var pname=(pipelines.find(function(p){return p.id===l.pipelineId;})||{name:"Default"}).name;
+  var pb=l.plan?'<span class="pill plan-'+l.plan.toLowerCase()+'" style="font-size:8px">'+(PLANS[l.plan]?PLANS[l.plan].icon:"")+" "+l.plan+'</span>':"";
+  var dv=l.enquiryDate?new Date(l.enquiryDate).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}):"—";
+  var sn=l.name.replace(/'/g,"\\'");
+  var rb=selectedRole!=="agent"?'<button class="ghost-btn" onclick="closeDetailSheet();showReassignModal(\''+lid+'\')">👤 Reassign</button>':"";
+  var mpb=selectedRole==="admin"&&pipelines.length>1?'<button class="ghost-btn" onclick="closeDetailSheet();showMovePipelineModal(\''+lid+'\')">🗂 Move Pipeline</button>':"";
+  var db2=selectedRole!=="agent"?'<button class="ghost-btn" style="border-color:rgba(239,68,68,.3);color:#ef4444" onclick="closeDetailSheet();confirmDelete(\'Delete lead '+l.name+'?\',\'deleteLead(\\\''+lid+'\\\')\')">🗑 Delete Lead</button>':"";
+  gid("detailPanel").innerHTML='<div class="detail-handle"></div><div style="text-align:center;margin-bottom:16px">'+av(initials(l.name),52,"var(--gold2)")+'<p style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:18px;margin:10px 0 8px;color:var(--gold)">'+l.name+'</p><div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap">'+pill(l.status,stageColor(l.status))+pb+'<span class="pipe-badge">'+pname+'</span></div></div><div class="detail-block"><div class="detail-key">📞 Phone</div><div class="detail-val">'+(l.phone||"—")+'</div></div><div class="detail-block"><div class="detail-key">📸 Instagram</div><div class="detail-val">'+(l.instagram||"—")+'</div></div><div class="detail-block"><div class="detail-key">📅 Enquiry Date</div><div class="detail-val">'+dv+'</div></div><div class="detail-block"><div class="detail-key">📡 Source</div><div class="detail-val">'+(l.source||"—")+'</div></div><div class="detail-block"><div class="detail-key">🗂 Pipeline</div><div class="detail-val">'+pname+'</div></div><div class="detail-block"><div class="detail-key">👤 Agent</div><div class="detail-val">'+(l.agentName||"Unassigned")+'</div></div>'+(selectedRole==="admin"?'<div class="detail-block"><div class="detail-key">💰 Deal Value</div><div class="detail-val">'+fmtCur(l.value)+'</div></div>':"")+(l.notes?'<div class="detail-block"><div class="detail-key">📌 Notes</div><div class="detail-val">'+l.notes+'</div></div>':"")+'<div style="height:12px"></div><button class="ghost-btn" style="border-color:rgba(233,193,118,.3);color:var(--gold)" onclick="closeDetailSheet();showAddReminderModal(\''+sn+'\')">⏰ Set Reminder</button><button class="ghost-btn" style="border-color:rgba(233,193,118,.3);color:var(--gold)" onclick="closeDetailSheet();showEditLeadModal(\''+lid+'\')">✏️ Edit Lead</button><button class="ghost-btn" style="border-color:rgba(233,193,118,.3);color:var(--gold)" onclick="closeDetailSheet();showStageModal(\''+lid+'\')">🔄 Change Stage</button>'+rb+mpb+db2;
+  gid("detailSheet").classList.add("open");
+}
+function closeDetailSheet(){gid("detailSheet").classList.remove("open");}
+function showMovePipelineModal(lid){var l=leads.find(function(x){return x.id===lid;});if(!l)return;var btns="";pipelines.forEach(function(p){btns+='<button class="stage-btn'+(l.pipelineId===p.id?" current":"")+'\" onclick="moveToPipeline(\''+lid+'\',\''+p.id+'\')"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></div>'+p.name+(l.pipelineId===p.id?" (current)":"")+'</button>';});showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Move Pipeline</div>'+btns+'<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>');}
+async function moveToPipeline(lid,pid){var p=pipelines.find(function(x){return x.id===pid;});try{await COL.leads().doc(lid).update({pipelineId:pid});closeModal();showToast("✅ Moved to "+(p?p.name:"pipeline"));}catch(e){showToast("❌ "+e.message);}}
+function showStageModal(lid){var l=leads.find(function(x){return x.id===lid;});if(!l)return;var stages=getPipelineStages(l.pipelineId);var btns="";stages.forEach(function(s){btns+='<button class="stage-btn'+(l.status===s?" current":"")+'\" onclick="changeStage(\''+lid+'\',\''+s+'\')"><div style="width:8px;height:8px;border-radius:50%;background:'+stageColor(s)+';flex-shrink:0"></div>'+s+'</button>';});showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Change Stage</div>'+btns+'<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>');}
+async function changeStage(lid,stage){try{await COL.leads().doc(lid).update({status:stage});closeModal();showToast("✅ Moved to "+stage);}catch(e){showToast("❌ "+e.message);}}
+function showReassignModal(lid){var l=leads.find(function(x){return x.id===lid;});if(!l)return;var btns=agents.length?agents.map(function(ag){return '<button class="stage-btn'+(l.agentName===ag.name?" current":"")+'\" onclick="reassignLead(\''+lid+'\',\''+ag.name+'\')">👤 '+ag.name+'</button>';}).join(""):'<p style="color:var(--text3);font-size:11px;padding:12px 0;letter-spacing:.06em;text-transform:uppercase">No agents added yet.</p>';showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Reassign</div>'+btns+'<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>');}
+async function reassignLead(lid,agentName){try{await COL.leads().doc(lid).update({agentName:agentName});closeModal();showToast("✅ Reassigned to "+agentName);}catch(e){showToast("❌ "+e.message);}}
+function showTemplatePicker(lid){if(!templates.length){showToast("No templates yet!");return;}var btns=templates.map(function(t){return '<button class="stage-btn" onclick="useTemplate(\''+lid+'\',\''+t.id+'\')">📄 '+t.title+'</button>';}).join("");showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Use Template</div>'+btns+'<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Cancel</button></div>');}
+async function useTemplate(lid,tid){var t=templates.find(function(x){return x.id===tid;}),l=leads.find(function(x){return x.id===lid;});if(!t||!l)return;var text=t.content.replace(/\{\{name\}\}/g,l.name);try{await COL.messages(lid).add({from:"agent",text:text,time:nowT(),createdAt:new Date().toISOString(),senderName:currentUser.name});closeModal();showToast("Template sent ✅");}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ AGENTS ══ */
+function pgAgents(el){
+  var add=selectedRole==="admin"?'<div class="agent-card brushed" style="display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-style:dashed;min-height:120px;border-color:rgba(233,193,118,.25)" onclick="showAddAgentModal()"><span class="mso" style="font-size:32px;color:var(--text3)">add</span><p style="color:var(--text3);font-size:10px;margin-top:8px;text-transform:uppercase;letter-spacing:.08em">Add Agent</p></div>':"";
+  var cards="";
+  agents.forEach(function(ag){var ml=leads.filter(function(l){return l.agentName===ag.name;});var mc=ml.filter(function(l){return l.status==="Closed";});var conv=ml.length?Math.round(mc.length/ml.length*100):0;var rev=mc.reduce(function(s,l){return s+Number(l.value||0);},0);var sc=ag.status==="online"?"#22c55e":ag.status==="away"?"#f59e0b":"#6b7280";var ab=selectedRole==="admin"?'<div style="display:flex;gap:7px;margin-top:10px"><button class="ghost-btn" style="flex:1;padding:7px;font-size:11px" onclick="showAgentClients(\''+ag.name.replace(/'/g,"\\'")+'\')">Clients</button><button class="ghost-btn" style="flex:1;padding:7px;font-size:11px" onclick="showEditAgentModal(\''+ag.id+'\')">Edit</button><button class="ghost-btn" style="flex:1;padding:7px;font-size:11px;border-color:rgba(239,68,68,.3);color:#ef4444" onclick="confirmDelete(\'Remove agent '+ag.name+'?\',\'deleteAgent(\\\''+ag.id+'\\\')\')">Remove</button></div>':"";
+    cards+='<div class="agent-card brushed"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'+av(initials(ag.name),40)+'<div style="flex:1;min-width:0"><div style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:15px;color:var(--text)">'+ag.name+'</div><div style="display:flex;align-items:center;gap:5px;margin-top:2px"><span style="width:7px;height:7px;border-radius:50%;background:'+sc+';display:inline-block"></span><span style="color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.06em">'+ag.status+'</span></div></div><div style="text-align:right"><div class="agent-conv-val">'+conv+'%</div><div class="agent-conv-lbl">Conv.</div></div></div><div class="agent-stats"><div class="agent-stat"><div class="agent-stat-val">'+ml.length+'</div><div class="agent-stat-key">Leads</div></div><div class="agent-stat"><div class="agent-stat-val">'+(selectedRole==="admin"?fmtCur(rev):"🔒")+'</div><div class="agent-stat-key">Revenue</div></div><div class="agent-stat"><div class="agent-stat-val">'+(ag.resp||"—")+'</div><div class="agent-stat-key">Resp.</div></div></div>'+bar(conv,100,"#e9c176")+ab+'</div>';
+  });
+  el.innerHTML='<div class="agent-grid">'+add+cards+'</div>';
+}
+function showAgentClients(agentName){var agl=leads.filter(function(l){return l.agentName===agentName;});var grp={};DEFAULT_STAGES.forEach(function(s){grp[s]=[];});agl.forEach(function(l){if(grp[l.status])grp[l.status].push(l);else grp[DEFAULT_STAGES[0]].push(l);});var tr=agl.filter(function(l){return l.status==="Closed";}).reduce(function(s,l){return s+Number(l.value||0);},0);var sr="";DEFAULT_STAGES.filter(function(s){return grp[s]&&grp[s].length;}).forEach(function(s){var lrows="";grp[s].forEach(function(l){lrows+='<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--surface2);border-radius:.25rem;margin-bottom:5px;border:1px solid var(--border);cursor:pointer" onclick="closeModal();openLead(\''+l.id+'\')">'+av(initials(l.name),30)+'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.name+'</div><div style="font-size:10px;color:var(--text3);letter-spacing:.04em">'+(l.phone||"No phone")+'</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:700;color:var(--gold);font-family:\'Archivo Narrow\',sans-serif">'+fmtCur(l.value)+'</div></div></div>';});sr+='<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><div style="width:8px;height:8px;border-radius:50%;background:'+stageColor(s)+'"></div><span style="font-weight:700;font-size:11px;color:var(--text);text-transform:uppercase;letter-spacing:.06em">'+s+'</span><span style="background:rgba(233,193,118,.1);border-radius:99px;padding:1px 7px;font-size:9px;color:var(--gold);border:1px solid rgba(233,193,118,.2)">'+grp[s].length+'</span></div>'+lrows+'</div>';});showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+agentName+"'s Clients</div>"+'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"><div style="background:var(--surface2);border-radius:.25rem;padding:10px;text-align:center;border:1px solid var(--border)"><div style="font-family:\'Archivo Narrow\',sans-serif;font-size:20px;font-weight:700;color:var(--text)">'+agl.length+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Total</div></div><div style="background:var(--surface2);border-radius:.25rem;padding:10px;text-align:center;border:1px solid var(--border)"><div style="font-family:\'Archivo Narrow\',sans-serif;font-size:20px;font-weight:700;color:#22c55e">'+agl.filter(function(l){return l.status==="Closed";}).length+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Closed</div></div><div style="background:var(--surface2);border-radius:.25rem;padding:10px;text-align:center;border:1px solid var(--border)"><div style="font-family:\'Archivo Narrow\',sans-serif;font-size:16px;font-weight:700;color:var(--gold)">'+fmtCur(tr)+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Revenue</div></div></div>'+(agl.length?sr:'<div style="text-align:center;padding:28px;color:var(--text3)"><span class="mso" style="font-size:40px;display:block;margin-bottom:8px">inbox</span><p style="text-transform:uppercase;letter-spacing:.06em;font-size:11px">No clients</p></div>')+'<button class="btn-cancel" onclick="closeModal()" style="width:100%;margin-top:4px">Close</button></div>');}
+function showAddAgentModal(){_agentModal(null);}function showEditAgentModal(id){_agentModal(agents.find(function(a){return a.id===id;}));}
+function _agentModal(ag){var isEdit=!!ag;var so=['online','away','offline'].map(function(s){return '<option'+(!ag||ag.status===s?' selected':'')+'>'+s+'</option>';}).join("");var del=isEdit?'<button class="btn-cancel" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)" onclick="confirmDelete(\'Remove agent '+ag.name+'?\',\'deleteAgent(\\\''+ag.id+'\\\');closeModal()\')">Remove</button>':'<button class="btn-cancel" onclick="closeModal()">Cancel</button>';showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+(isEdit?"Edit Agent":"Add Agent")+'</div><div class="form-row"><label>Full Name *</label><input id="an" value="'+(ag?ag.name:"")+'" placeholder="e.g. Priya Menon"/></div><div class="form-row"><label>Email</label><input id="ae" type="email" value="'+(ag?ag.email||"":"")+'" placeholder="priya@homegym.in"/></div><div class="form-row"><label>Status</label><select id="as2">'+so+'</select></div><div class="form-row"><label>Avg Response Time</label><input id="ar" value="'+(ag?ag.resp||"":"")+'" placeholder="e.g. 5m"/></div><div class="modal-footer">'+del+'<button class="btn-save" onclick="'+(isEdit?"updateAgent('"+ag.id+"')":'addAgent()')+'">'+(isEdit?"Save":"Add Agent")+'</button></div></div>');}
+async function addAgent(){var n=(gid("an").value||"").trim();if(!n){showToast("Name required");return;}try{await COL.agents().add({name:n,email:gid("ae").value||"",status:gid("as2").value,resp:gid("ar").value||"—",createdAt:new Date().toISOString()});closeModal();showToast("✅ "+n+" added");}catch(e){showToast("❌ "+e.message);}}
+async function updateAgent(id){var n=(gid("an").value||"").trim();if(!n){showToast("Name required");return;}try{await COL.agents().doc(id).update({name:n,email:gid("ae").value||"",status:gid("as2").value,resp:gid("ar").value||"—"});closeModal();showToast("Agent updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteAgent(id){try{await COL.agents().doc(id).delete();showToast("Agent removed");}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ FOLLOW-UPS ══ */
+function pgFollowups(el){var ts=todayStr(),pd=tasks.filter(function(t){return !t.done;});el.innerHTML='<div class="page"><div class="fu-counters"><div class="fu-counter brushed"><div class="fu-num" style="color:#f97316">'+pd.length+'</div><div class="fu-lbl">Pending</div></div><div class="fu-counter brushed"><div class="fu-num" style="color:#f59e0b">'+tasks.filter(function(t){return !t.done&&t.due===ts;}).length+'</div><div class="fu-lbl">Today</div></div><div class="fu-counter brushed"><div class="fu-num" style="color:#ef4444">'+tasks.filter(function(t){return !t.done&&t.due&&t.due<ts;}).length+'</div><div class="fu-lbl">Overdue</div></div></div><div class="card brushed"><div class="section-head"><div class="card-title" style="margin-bottom:0"><span class="mso">task</span>Tasks</div><div style="display:flex;gap:7px"><button onclick="showAddReminderModal()" style="background:rgba(233,193,118,.1);border:1px solid rgba(233,193,118,.25);border-radius:.25rem;padding:7px 12px;color:var(--gold);font-size:10px;font-weight:700;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;text-transform:uppercase;letter-spacing:.06em">⏰ Reminder</button><button onclick="showAddTaskModal()" class="btn-gold" style="border-radius:.25rem;padding:7px 14px;font-size:11px">+ Task</button></div></div><div id="taskList" style="margin-top:12px">'+renderTaskList()+'</div></div></div>';}
+function renderTaskList(){if(!tasks.length)return'<div style="text-align:center;padding:24px;color:var(--text3)"><span class="mso" style="font-size:40px;display:block;margin-bottom:8px;opacity:.4">check_circle</span><p style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">No tasks yet</p></div>';return tasks.map(function(t){var pc=t.priority==="high"?"#ef4444":t.priority==="medium"?"#f59e0b":"#22c55e";var db=!t.done?'<button class="task-btn" style="background:rgba(233,193,118,.1);color:var(--gold);border:1px solid rgba(233,193,118,.25)" onclick="markTaskDone(\''+t.id+'\')">✓</button>':'<span style="color:#22c55e;font-size:14px;padding:4px">✓</span>';return '<div class="task-item"><div class="task-prio" style="background:'+pc+'"></div><div style="flex:1;min-width:0"><div class="task-lead" style="text-decoration:'+(t.done?"line-through":"none")+'">'+t.leadName+' <span style="color:var(--text3);font-weight:400">— '+t.task+'</span></div><div class="task-info">Due '+(t.due||"No date")+' · '+t.priority+'</div></div><div class="task-actions">'+db+'<button class="task-btn" style="background:var(--surface);color:var(--text2);border:1px solid var(--border)" onclick="showEditTaskModal(\''+t.id+'\')">✏️</button><button class="task-btn" style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2)" onclick="confirmDelete(\'Delete this task?\',\'deleteTask(\\\''+t.id+'\\\')\')">🗑</button></div></div>';}).join("");}
+function showAddTaskModal(){_taskModal(null);}function showEditTaskModal(id){_taskModal(tasks.find(function(t){return t.id===id;}));}
+function _taskModal(t){var isEdit=!!t;var po=['high','medium','low'].map(function(p){return '<option value="'+p+'"'+(t&&t.priority===p?' selected':'')+'>'+p.charAt(0).toUpperCase()+p.slice(1)+'</option>';}).join("");var lo=leads.map(function(l){return '<option value="'+l.name+'"></option>';}).join("");var del=isEdit?'<button class="btn-cancel" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)" onclick="confirmDelete(\'Delete this task?\',\'deleteTask(\\\''+t.id+'\\\');closeModal()\')">Delete</button>':'<button class="btn-cancel" onclick="closeModal()">Cancel</button>';showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+(isEdit?"Edit Task":"Add Task")+'</div><div class="form-row"><label>Lead Name *</label><input id="tln" list="ldNames" value="'+(t?t.leadName:"")+'" placeholder="Type lead name"/><datalist id="ldNames">'+lo+'</datalist></div><div class="form-row"><label>Task *</label><input id="tt" value="'+(t?t.task:"")+'" placeholder="e.g. Send product catalog"/></div><div class="form-row"><label>Due Date</label><input id="td" type="date" value="'+(t?t.due||"":"")+'"/></div><div class="form-row"><label>Priority</label><select id="tp">'+po+'</select></div><div class="modal-footer">'+del+'<button class="btn-save" onclick="'+(isEdit?"updateTask('"+t.id+"')":'addTask()')+'">'+(isEdit?"Save":"Add")+'</button></div></div>');}
+async function addTask(){var ln=(gid("tln").value||"").trim(),tt=(gid("tt").value||"").trim();if(!ln||!tt){showToast("Fill required fields");return;}try{await COL.tasks().add({leadName:ln,task:tt,due:gid("td").value||"",priority:gid("tp").value,done:false,createdAt:new Date().toISOString(),createdBy:currentUser.uid});closeModal();showToast("Task added ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateTask(id){var ln=(gid("tln").value||"").trim(),tt=(gid("tt").value||"").trim();if(!ln||!tt){showToast("Fill required fields");return;}try{await COL.tasks().doc(id).update({leadName:ln,task:tt,due:gid("td").value||"",priority:gid("tp").value});closeModal();showToast("Task updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function markTaskDone(id){try{await COL.tasks().doc(id).update({done:true});showToast("Done ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteTask(id){try{await COL.tasks().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ AUTOMATION ══ */
+function pgAutomation(el){if(selectedRole!=="admin"){el.innerHTML='<div class="page">'+accessDenied("Automation")+'</div>';return;}var rows=autos.length?autos.map(function(a){return '<div class="auto-item"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span class="tag" style="background:rgba(96,165,250,.12);color:#60a5fa">IF</span><span style="font-size:12px;font-weight:700;color:var(--text)">'+a.trigger+'</span></div><div style="display:flex;align-items:center;gap:7px"><span class="tag" style="background:rgba(233,193,118,.12);color:var(--gold)">THEN</span><span style="color:var(--text2);font-size:12px">'+a.action+'</span></div></div><button onclick="showEditAutoModal(\''+a.id+'\')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:6px">✏️</button><div class="toggle" style="background:'+(a.on?"var(--gold2)":"rgba(127,127,127,.2)")+'" onclick="toggleAuto(\''+a.id+'\')"><div class="toggle-knob" style="left:'+(a.on?"22px":"3px")+'"></div></div><button onclick="confirmDelete(\'Delete this rule?\',\'deleteAuto(\\\''+a.id+'\\\')\')\" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:4px;margin-left:6px">🗑</button></div>';}).join(""):'<div style="text-align:center;padding:24px;color:var(--text3)"><span class="mso" style="font-size:40px;display:block;margin-bottom:8px;opacity:.4">bolt</span><p style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">No rules yet</p></div>';el.innerHTML='<div class="page"><div class="card brushed"><div class="section-head"><div class="card-title" style="margin-bottom:0"><span class="mso">bolt</span>Automation Rules</div><button onclick="showAddAutoModal()" class="btn-gold" style="border-radius:.25rem;padding:7px 14px;font-size:11px">+ Add</button></div><div style="margin-top:12px">'+rows+'</div></div></div>';}
+function showAddAutoModal(){_autoModal(null);}function showEditAutoModal(id){_autoModal(autos.find(function(a){return a.id===id;}));}
+function _autoModal(a){var isEdit=!!a;var to=TRIGGERS.map(function(t){return '<option'+(a&&a.trigger===t?' selected':'')+'>'+t+'</option>';}).join("");var ao=ACTIONS.map(function(t){return '<option'+(a&&a.action===t?' selected':'')+'>'+t+'</option>';}).join("");var del=isEdit?'<button class="btn-cancel" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)" onclick="confirmDelete(\'Delete this rule?\',\'deleteAuto(\\\''+a.id+'\\\');closeModal()\')">Delete</button>':'<button class="btn-cancel" onclick="closeModal()">Cancel</button>';showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+(isEdit?"Edit Rule":"New Rule")+'</div><div class="form-row"><label>Trigger (IF)</label><select id="at2">'+to+'</select></div><div class="form-row"><label>Action (THEN)</label><select id="aa">'+ao+'</select></div><div class="modal-footer">'+del+'<button class="btn-save" onclick="'+(isEdit?"updateAuto('"+a.id+"')":'addAuto()')+'">'+(isEdit?"Save":"Add")+'</button></div></div>');}
+async function addAuto(){try{await COL.autos().add({trigger:gid("at2").value,action:gid("aa").value,on:true,createdAt:new Date().toISOString()});closeModal();showToast("Rule added ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateAuto(id){try{await COL.autos().doc(id).update({trigger:gid("at2").value,action:gid("aa").value});closeModal();showToast("Rule updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function toggleAuto(id){var a=autos.find(function(x){return x.id===id;});if(!a)return;try{await COL.autos().doc(id).update({on:!a.on});}catch(e){showToast("❌ "+e.message);}}
+async function deleteAuto(id){try{await COL.autos().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ CAMPAIGNS ══ */
+function pgCampaigns(el){if(selectedRole!=="admin"){el.innerHTML='<div class="page">'+accessDenied("Campaigns")+'</div>';return;}var ts=campaigns.reduce(function(s,c){return s+Number(c.spend||0);},0),tr=campaigns.reduce(function(s,c){return s+Number(c.revenue||0);},0),tl=campaigns.reduce(function(s,c){return s+Number(c.leads||0);},0);var rows=campaigns.length?campaigns.map(function(c){var roas=c.spend?(Number(c.revenue||0)/Number(c.spend)).toFixed(1)+"x":"—";return '<div class="camp-row"><div style="flex:1;min-width:0"><div class="camp-name">'+c.name+'</div><div style="color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.04em">'+(c.leads||0)+' leads · '+c.status+'</div></div><div style="text-align:center;min-width:60px"><div style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:13px;color:var(--text)">₹'+Number(c.spend||0).toLocaleString("en-IN")+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">Spend</div></div><div style="text-align:center;min-width:50px"><div style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:13px;color:#22c55e">'+roas+'</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">ROAS</div></div><button onclick="showEditCampaignModal(\''+c.id+'\')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:4px">✏️</button><button onclick="confirmDelete(\'Delete campaign '+c.name+'?\',\'deleteCampaign(\\\''+c.id+'\\\')\')\" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">🗑</button></div>';}).join(""):'<div style="text-align:center;padding:28px;color:var(--text3)"><span class="mso" style="font-size:40px;display:block;margin-bottom:8px;opacity:.4">campaign</span><p style="text-transform:uppercase;letter-spacing:.08em;font-size:11px">No campaigns yet</p></div>';el.innerHTML='<div class="page"><div class="campaign-stat-grid"><div class="camp-stat brushed"><div style="font-size:22px">📤</div><div class="camp-stat-val">₹'+ts.toLocaleString("en-IN")+'</div><div class="camp-stat-key">Spend</div></div><div class="camp-stat brushed"><div style="font-size:22px">👥</div><div class="camp-stat-val">'+tl+'</div><div class="camp-stat-key">Leads</div></div><div class="camp-stat brushed"><div style="font-size:22px">💰</div><div class="camp-stat-val">₹'+tr.toLocaleString("en-IN")+'</div><div class="camp-stat-key">Revenue</div></div><div class="camp-stat brushed"><div style="font-size:22px">📈</div><div class="camp-stat-val">'+(ts?(tr/ts).toFixed(1)+"x":"—")+'</div><div class="camp-stat-key">ROAS</div></div></div><div class="card brushed"><div class="section-head"><div class="card-title" style="margin-bottom:0"><span class="mso">campaign</span>Campaigns</div><button onclick="showAddCampaignModal()" class="btn-gold" style="border-radius:.25rem;padding:7px 14px;font-size:11px">+ Add</button></div><div style="margin-top:12px">'+rows+'</div></div></div>';}
+function showAddCampaignModal(){_campaignModal(null);}function showEditCampaignModal(id){_campaignModal(campaigns.find(function(c){return c.id===id;}));}
+function _campaignModal(c){var isEdit=!!c;var so=['Active','Paused','Ended'].map(function(s){return '<option'+(c&&c.status===s?' selected':'')+'>'+s+'</option>';}).join("");var del=isEdit?'<button class="btn-cancel" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)" onclick="confirmDelete(\'Delete campaign '+c.name+'?\',\'deleteCampaign(\\\''+c.id+'\\\');closeModal()\')">Delete</button>':'<button class="btn-cancel" onclick="closeModal()">Cancel</button>';showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+(isEdit?"Edit Campaign":"Add Campaign")+'</div><div class="form-row"><label>Name *</label><input id="cn" value="'+(c?c.name:"")+'" placeholder="e.g. Diwali Sale 2026"/></div><div class="form-row"><label>Ad Spend (₹)</label><input id="cs" type="number" value="'+(c?c.spend||0:0)+'"/></div><div class="form-row"><label>Leads</label><input id="cl" type="number" value="'+(c?c.leads||0:0)+'"/></div><div class="form-row"><label>Revenue (₹)</label><input id="cr" type="number" value="'+(c?c.revenue||0:0)+'"/></div><div class="form-row"><label>Status</label><select id="cst">'+so+'</select></div><div class="modal-footer">'+del+'<button class="btn-save" onclick="'+(isEdit?"updateCampaign('"+c.id+"')":'addCampaign()')+'">'+(isEdit?"Save":"Add")+'</button></div></div>');}
+async function addCampaign(){var n=(gid("cn").value||"").trim();if(!n){showToast("Name required");return;}try{await COL.campaigns().add({name:n,spend:Number(gid("cs").value)||0,leads:Number(gid("cl").value)||0,revenue:Number(gid("cr").value)||0,status:gid("cst").value,createdAt:new Date().toISOString()});closeModal();showToast("Campaign added ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateCampaign(id){var n=(gid("cn").value||"").trim();if(!n){showToast("Name required");return;}try{await COL.campaigns().doc(id).update({name:n,spend:Number(gid("cs").value)||0,leads:Number(gid("cl").value)||0,revenue:Number(gid("cr").value)||0,status:gid("cst").value});closeModal();showToast("Campaign updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteCampaign(id){try{await COL.campaigns().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ TEMPLATES ══ */
+function pgTemplates(el){var cards=templates.map(function(t){return '<div class="tpl-card brushed"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="tpl-title">'+t.title+'</span>'+pill(t.type||"Text","#e9c176")+'</div><div class="tpl-body">'+t.content+'</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><span style="color:var(--text3);font-size:10px;letter-spacing:.04em;text-transform:uppercase">Used '+(t.uses||0)+'×</span><div style="display:flex;gap:6px"><button style="background:rgba(233,193,118,.1);color:var(--gold);border:1px solid rgba(233,193,118,.25);border-radius:.25rem;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;text-transform:uppercase;letter-spacing:.04em" onclick="showEditTemplateModal(\''+t.id+'\')">Edit</button><button style="background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2);border-radius:.25rem;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;text-transform:uppercase;letter-spacing:.04em" onclick="confirmDelete(\'Delete template '+t.title+'?\',\'deleteTemplate(\\\''+t.id+'\\\')\')">Delete</button></div></div></div>';}).join("");el.innerHTML='<div class="tpl-grid"><div class="tpl-add" onclick="showAddTemplateModal()"><span class="mso" style="font-size:32px;color:var(--text3)">add</span><div style="color:var(--text3);font-size:10px;margin-top:8px;text-transform:uppercase;letter-spacing:.08em">New Template</div></div>'+cards+'</div>';}
+function showAddTemplateModal(){_templateModal(null);}function showEditTemplateModal(id){_templateModal(templates.find(function(t){return t.id===id;}));}
+function _templateModal(t){var isEdit=!!t;var to=['Text','Audio','Image'].map(function(s){return '<option'+(t&&t.type===s?' selected':'')+'>'+s+'</option>';}).join("");var del=isEdit?'<button class="btn-cancel" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)" onclick="confirmDelete(\'Delete template '+t.title+'?\',\'deleteTemplate(\\\''+t.id+'\\\');closeModal()\')">Delete</button>':'<button class="btn-cancel" onclick="closeModal()">Cancel</button>';showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">'+(isEdit?"Edit Template":"New Template")+'</div><div class="form-row"><label>Title *</label><input id="ttl" value="'+(t?t.title:"")+'" placeholder="e.g. Welcome Message"/></div><div class="form-row"><label>Type</label><select id="tty">'+to+'</select></div><div class="form-row"><label>Content (use {{name}})</label><textarea id="tcn">'+(t?t.content:"")+'</textarea></div><div class="modal-footer">'+del+'<button class="btn-save" onclick="'+(isEdit?"updateTemplate('"+t.id+"')":'addTemplate()')+'">'+(isEdit?"Save":"Create")+'</button></div></div>');}
+async function addTemplate(){var ti=(gid("ttl").value||"").trim(),co=(gid("tcn").value||"").trim();if(!ti||!co){showToast("Fill all fields");return;}try{await COL.templates().add({title:ti,type:gid("tty").value,content:co,uses:0,createdAt:new Date().toISOString()});closeModal();showToast("Template saved ✅");}catch(e){showToast("❌ "+e.message);}}
+async function updateTemplate(id){var ti=(gid("ttl").value||"").trim(),co=(gid("tcn").value||"").trim();if(!ti||!co){showToast("Fill all fields");return;}try{await COL.templates().doc(id).update({title:ti,type:gid("tty").value,content:co});closeModal();showToast("Template updated ✅");}catch(e){showToast("❌ "+e.message);}}
+async function deleteTemplate(id){try{await COL.templates().doc(id).delete();}catch(e){showToast("❌ "+e.message);}}
+
+/* ══ SETTINGS ══ */
+async function pgSettings(el){if(selectedRole!=="admin"){el.innerHTML='<div class="page">'+accessDenied("User Management")+'</div>';return;}el.innerHTML='<div class="page"><div style="text-align:center;padding:40px;color:var(--text3)"><div class="spinner" style="width:28px;height:28px;border-width:3px"></div></div></div>';try{var snap=await COL.users().get();managedUsers=snap.docs.map(function(d){return Object.assign({uid:d.id},d.data());});_renderSettings(el);}catch(e){el.innerHTML='<div class="page"><p style="color:#ef4444;padding:20px">Error: '+e.message+'</p></div>';}}
+function _renderSettings(el){
+  var rC={admin:"#e9c176",manager:"#06b6d4",agent:"#22c55e"};
+  var ur=managedUsers.map(function(u){var col=rC[u.role]||"#666";var eb=u.uid!==currentUser.uid?'<button onclick="showEditUserModal(\''+u.uid+'\')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer">✏️</button>':"<span style='width:28px'></span>";return '<div class="user-row">'+av(initials(u.name||u.email||"?"),34,col+"44")+'<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(u.name||"—")+'</div><div style="color:var(--text3);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.04em">'+(u.email||u.uid)+'</div></div><span style="padding:2px 8px;border-radius:2px;font-size:9px;font-weight:700;background:'+col+'18;color:'+col+';border:1px solid '+col+'33;flex-shrink:0;margin-right:6px;text-transform:uppercase;letter-spacing:.06em">'+(ROLES[u.role]?ROLES[u.role].label:u.role)+'</span>'+eb+'</div>';}).join("")||'<p style="color:var(--text3);font-size:11px;text-align:center;padding:16px;text-transform:uppercase;letter-spacing:.06em">No users found.</p>';
+  var pr=pipelines.map(function(p){var cnt=leads.filter(function(l){return l.pipelineId===p.id;}).length;var stages=getPipelineStages(p.id);var del=pipelines.length>1?'<button onclick="confirmDelete(\'Delete pipeline '+p.name+'? All leads must be reassigned first.\',\'deletePipelineConfirmed(\\\''+p.id+'\\\')\')\" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:.25rem;padding:4px 8px;color:#ef4444;font-size:10px;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em">Del</button>':"";return '<div style="background:var(--surface2);border-radius:.25rem;padding:10px 12px;margin-bottom:6px;border:1px solid var(--border)"><div style="display:flex;align-items:center;gap:9px"><div style="flex:1;min-width:0"><div style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:14px;color:var(--text)">'+p.name+'</div><div style="color:var(--text3);font-size:10px;letter-spacing:.04em">'+cnt+' leads · '+stages.length+' stages</div></div><button onclick="showRenamePipelineModal(\''+p.id+'\')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:4px">✏️</button><button onclick="showManageStagesModal(\''+p.id+'\')" style="background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:4px 8px;color:var(--text2);font-size:11px;cursor:pointer;margin-right:4px">🗂</button>'+del+'</div></div>';}).join("");
+  el.innerHTML='<div class="page"><div class="card brushed" style="margin-bottom:14px"><div class="section-head"><div class="card-title" style="margin-bottom:0"><span class="mso">group</span>Platform Users</div><button onclick="showCreateUserModal()" class="btn-gold" style="border-radius:.25rem;padding:7px 14px;font-size:11px">+ Create</button></div><div style="margin-top:12px">'+ur+'</div></div><div class="card brushed" style="margin-bottom:14px"><div class="card-title"><span class="mso">account_tree</span>Pipelines</div>'+pr+'<button onclick="showCreatePipelineModal()" class="btn-gold" style="width:100%;padding:10px;border-radius:.25rem;margin-top:8px;font-size:12px">+ New Pipeline</button></div><div class="card brushed"><div class="card-title"><span class="mso">settings</span>App Settings</div><div class="settings-row"><div><div class="settings-row-label">Your Role</div><div class="settings-row-sub">'+currentUser.email+'</div></div>'+pill(ROLES[selectedRole]?ROLES[selectedRole].label:selectedRole,"#e9c176")+'</div></div></div>';
+}
+function showCreateUserModal(){showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Create User</div><div style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:.25rem;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#60a5fa;letter-spacing:.04em">ℹ️ Creates a Firebase Auth account. Share credentials with the user.</div><div class="form-row"><label>Full Name *</label><input id="un" placeholder="e.g. Arjun Nair"/></div><div class="form-row"><label>Email *</label><input id="ue" type="email" placeholder="arjun@homegym.in"/></div><div class="form-row"><label>Password *</label><input id="upw" type="text" placeholder="Min 6 characters" autocomplete="new-password"/></div><div class="form-row"><label>Role</label><select id="ur"><option value="manager">Manager</option><option value="agent">Sales Agent</option></select></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" id="createUserBtn" onclick="createUser()">Create Account</button></div></div>');}
+async function createUser(){var n=(gid("un").value||"").trim(),e2=(gid("ue").value||"").trim(),pw=gid("upw").value,role=gid("ur").value;if(!n||!e2||!pw){showToast("Fill all required fields");return;}if(pw.length<6){showToast("Password must be 6+ characters");return;}var btn=gid("createUserBtn");btn.innerHTML='<span class="spinner"></span>Creating…';btn.disabled=true;try{var sa;try{sa=firebase.app("secondary");}catch(e3){sa=firebase.initializeApp(FB_CFG,"secondary");}var cr=await sa.auth().createUserWithEmailAndPassword(e2,pw);await COL.users().doc(cr.user.uid).set({name:n,email:e2,role:role,createdBy:currentUser.uid,createdAt:new Date().toISOString()});await sa.auth().signOut();closeModal();showToast("✅ Account created for "+n,4000);pgSettings(gid("mainContent"));}catch(e){var msgs={"auth/email-already-in-use":"Email already exists.","auth/invalid-email":"Invalid email.","auth/weak-password":"Password too weak."};showToast("❌ "+(msgs[e.code]||e.message));btn.textContent="Create Account";btn.disabled=false;}}
+function showEditUserModal(uid2){var u=managedUsers.find(function(x){return x.uid===uid2;});if(!u)return;var isSelf=uid2===currentUser.uid;var ro=['admin','manager','agent'].map(function(r){return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+ROLES[r].label+'</option>';}).join("");var sw=isSelf?'<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:.25rem;padding:9px 12px;font-size:12px;color:#f59e0b;margin-bottom:8px;letter-spacing:.04em">⚠️ This is your own account.</div>':"";var rb=!isSelf?'<button onclick="confirmRemoveUser(\''+uid2+'\')" style="width:100%;padding:11px;border-radius:.25rem;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#ef4444;font-size:12px;font-weight:700;cursor:pointer;font-family:\'Archivo Narrow\',sans-serif;text-transform:uppercase;letter-spacing:.06em">Remove User</button>':"";showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title">Edit User</div><div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:.25rem;margin-bottom:16px;border:1px solid var(--border)">'+av(initials(u.name||u.email||"?"),40)+'<div><div style="font-family:\'Archivo Narrow\',sans-serif;font-weight:700;font-size:15px;color:var(--text)">'+(u.name||"—")+'</div><div style="color:var(--text3);font-size:12px;letter-spacing:.04em">'+(u.email||u.uid)+'</div></div></div><div class="form-row"><label>Full Name</label><input id="eun" value="'+(u.name||"")+'"/></div><div class="form-row"><label>Role</label><select id="eur">'+ro+'</select></div>'+sw+'<div class="modal-footer" style="flex-direction:column;gap:8px"><div style="display:flex;gap:8px;width:100%"><button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button><button class="btn-save" style="flex:2" id="editUserBtn" onclick="editUser(\''+uid2+'\')">Save Changes</button></div>'+rb+'</div></div>');}
+async function editUser(uid2){var btn=gid("editUserBtn");btn.innerHTML='<span class="spinner"></span>Saving…';btn.disabled=true;try{await COL.users().doc(uid2).update({name:gid("eun").value,role:gid("eur").value});closeModal();showToast("✅ User updated");pgSettings(gid("mainContent"));}catch(e){showToast("❌ "+e.message);btn.textContent="Save Changes";btn.disabled=false;}}
+function confirmRemoveUser(uid2){var u=managedUsers.find(function(x){return x.uid===uid2;});if(!u)return;closeModal();showModal('<div class="modal"><div class="modal-handle"></div><div class="modal-title" style="color:#ef4444">Remove User</div><p style="color:var(--text2);font-size:14px;margin-bottom:14px">Remove <b>'+(u.name||u.email)+'</b>? They will lose access.</p><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()" style="flex:1">Cancel</button><button class="btn-save" style="background:#c62828;flex:2" id="removeUserBtn" onclick="removeUser(\''+uid2+'\')">Yes, Remove</button></div></div>');}
+async function removeUser(uid2){var btn=gid("removeUserBtn");btn.innerHTML='<span class="spinner"></span>Removing…';btn.disabled=true;try{await COL.users().doc(uid2).delete();managedUsers=managedUsers.filter(function(u){return u.uid!==uid2;});closeModal();showToast("✅ User removed",4000);pgSettings(gid("mainContent"));}catch(e){showToast("❌ Failed: "+e.message);btn.textContent="Yes, Remove";btn.disabled=false;}}
 </script>
 </body>
 </html>
