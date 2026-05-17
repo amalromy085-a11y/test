@@ -549,47 +549,8 @@ async function submitMissedReasonPopup(sessionId,clientName,trainerName,date,tim
 function openDotsMenu(menuId){document.querySelectorAll('.dots-dropdown').forEach(d=>{if(d.id!==menuId)d.classList.remove('open');});const dd=document.getElementById(menuId);if(dd)dd.classList.toggle('open');}
 document.addEventListener('click',e=>{if(!e.target.closest('.dots-menu-wrap')){document.querySelectorAll('.dots-dropdown').forEach(d=>d.classList.remove('open'));}});
 function toggleCollapsible(id){const hd=document.getElementById('col-hd-'+id);const body=document.getElementById('col-body-'+id);if(!hd||!body)return;const isOpen=body.classList.contains('open');hd.classList.toggle('open',!isOpen);body.classList.toggle('open',!isOpen);}
-
-function renderDashTodaySessions(todayS, tcVisible, canStart) {
-  const realClientIds = new Set(todayS.map(s => s.clientId).filter(Boolean));
-
-  // Only show TC entries for clients NOT already in real sessions
-  const tcFiltered = tcVisible.filter(tc => !realClientIds.has(tc.clientId));
-
-  // Deduplicate real sessions by clientId+time (remove any duplicate session docs)
-  const seenKey = new Set();
-  const dedupedSessions = todayS.filter(s => {
-    const key = `${s.clientId}_${s.time}`;
-    if (seenKey.has(key)) return false;
-    seenKey.add(key);
-    return true;
-  });
-
-  const combined = [...dedupedSessions, ...tcFiltered];
-  combined.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-
-  if (!combined.length) return emptyState('📅', 'No sessions today', '', '', '');
-
-  const rows = combined.map(s => {
-    const isTc = !!s._isTc;
-    const tcBadge = isTc ? `<span class="tc-dash-badge" title="From Time Chart">📋 Fixed</span>` : '';
-    const actBtns = canStart
-      ? `${s.status === 'not-started' ? `<button class="btn btn-gr btn-sm" onclick="markSessionStatus('${s.id}','onair')">▶ Start</button>` : ''}
-         ${s.status === 'onair' ? `<button class="btn btn-p btn-sm" onclick="markSessionStatus('${s.id}','completed')">✓ Done</button><button class="btn btn-d btn-sm" onclick="markSessionStatus('${s.id}','missed')">✗ Miss</button>` : ''}`
-      : '';
-    return `<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);min-width:80px">${to12h(s.time)}</div>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:13px">${s.clientName || '—'} ${tcBadge}</div>
-        <div style="font-size:12px;color:var(--muted)">${s.trainerName || '—'} • ${s.type || 'Session'}</div>
-      </div>
-      ${statusBadge(s.status)}
-      <div style="display:flex;gap:5px">${actBtns}</div>
-    </div>`;
-  }).join('');
-
-  return `<div style="padding:0 2px">${rows}</div>`;
-}  const now=new Date();const result=[];
+function getTcVisibleSessions(tcEntries,clients,todayStr){
+  const now=new Date();const result=[];
   for(const tc of tcEntries){
     if(!tc.sessionTime)continue;const[h,m]=tc.sessionTime.split(':').map(Number);if(isNaN(h)||isNaN(m))continue;
     const sessTime=new Date(now);sessTime.setHours(h,m,0,0);const showFrom=new Date(sessTime.getTime()-60*60*1000);
@@ -1210,13 +1171,7 @@ async function dash(){
     if(CR==='admin'){[coordUsers,headUsers]=await Promise.all([fsGetAll('users',fn().where('role','==','coordinator')),fsGetAll('users',fn().where('role','==','coordinatorhead'))]);}
     const activeClients=clients.filter(c=>c.active!==false),inactiveClients=clients.filter(c=>c.active===false);
     const today=new Date().toDateString();
-   const activeClientIds=new Set(activeClients.map(c=>c.id));
-   const todayS=sessions.filter(s=>{
-     if(!s.date||new Date(s.date).toDateString()!==today)return false;
-     // keep sessions that belong to an active client (or have no clientId assigned)
-     if(s.clientId&&!activeClientIds.has(s.clientId))return false;
-     return true;
-   });
+    const todayS=sessions.filter(s=>s.date&&new Date(s.date).toDateString()===today);
     const onair=todayS.filter(s=>s.status==='onair').length,missed=todayS.filter(s=>s.status==='missed').length;
     const tcVisible=getTcVisibleSessions(tcEntries,activeClients,todayStr);
     const ranked=buildLeaderboard(trainers,allRatings,activeClients);
@@ -1233,6 +1188,8 @@ async function dash(){
         ${CR==='admin'?`<div class="sc sc-b"><div class="sc-ico">🧑‍💼</div><div class="sc-lbl">Coordinators</div><div class="sc-val">${coordUsers.length+headUsers.length}</div><div class="sc-sub">${headUsers.length} head, ${coordUsers.length} coord.</div></div>`:''}
       </div>
       <div class="card"><div class="card-hd"><div class="card-title">📊 Sessions by Status (This Month)</div>${dotsMenuHtml}</div><div class="chart-box"><canvas id="ch-status"></canvas></div></div>
+             <div id="dash-sessions">${renderDashTodaySessions(todayS,tcVisible,true)}</div>
+      </div>
       <div class="collapsible-section"><div class="collapsible-hd" id="col-hd-leaderboard" onclick="toggleCollapsible('leaderboard')"><div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px">🏆 Trainer Leaderboard <span class="badge b-a" style="font-size:10px">${ranked.length}</span></div><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-g btn-sm" onclick="event.stopPropagation();navTo('trainerratings')">Full Ratings →</button><span class="collapsible-arrow">▼</span></div></div><div class="collapsible-body" id="col-body-leaderboard">${renderLeaderboard(ranked)}</div></div>
       ${CR==='admin'?`<div class="collapsible-section"><div class="collapsible-hd" id="col-hd-alltrainers" onclick="toggleCollapsible('alltrainers')"><div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px">🧑‍🏫 All Trainers <span class="badge b-g" style="font-size:10px">${trainers.length}</span></div><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-g btn-sm" onclick="event.stopPropagation();navTo('trainers')">View All →</button><span class="collapsible-arrow">▼</span></div></div><div class="collapsible-body" id="col-body-alltrainers">${trainers.length===0?emptyState('🧑‍🏫','No trainers yet','','',''):trainers.map(t=>{const tR=allRatings.filter(r=>r.trainerId===t.id);const avg=tR.length?avgRating(tR):0;const tc=activeClients.filter(c=>c.trainerId===t.id).length;const ini=(t.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);const col=['#888','#ff4444','#ff7700','var(--yellow)','#88cc00','var(--accent)'][Math.round(avg)]||'#888';return`<div class="trainer-list-item"><div style="width:36px;height:36px;border-radius:50%;background:var(--green-dim);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">${ini}</div><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px">${t.name||'—'}</div><div style="font-size:11px;color:var(--muted)">${t.gender||'—'} · ${tc} client${tc!==1?'s':''}</div></div><div style="text-align:right">${tR.length?`<div style="color:${col};font-weight:700;font-size:14px">★ ${avg.toFixed(1)}</div><div style="font-size:10px;color:var(--muted)">${tR.length} ratings</div>`:'<div style="color:var(--muted2);font-size:12px">No ratings</div>'}</div><span class="badge ${t.active!==false?'b-g':'b-r'}" style="margin-left:8px">${t.active!==false?'Active':'Inactive'}</span></div>`;}).join('')}</div></div>`:''}
       <div class="collapsible-section"><div class="collapsible-hd" id="col-hd-oldclients" onclick="toggleCollapsible('oldclients')"><div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px">📦 Old Clients <span class="badge b-r" style="font-size:10px">${inactiveClients.length} inactive</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--muted)">Batch & One-on-One</span><span class="collapsible-arrow">▼</span></div></div><div class="collapsible-body" id="col-body-oldclients">${renderOldClientsSection(inactiveClients,allBatches)}</div></div>`;
@@ -1260,7 +1217,7 @@ async function dash(){
         <div class="sc sc-y"><div class="sc-ico">✅</div><div class="sc-lbl">Done Follow-ups</div><div class="sc-val">${doneFU.length}</div></div>
       </div>
       <div class="card"><div class="card-hd"><div class="card-title">📞 Pending Follow-ups (${pendingFU.length})</div><button class="btn btn-p btn-sm" onclick="navTo('followups')">View All →</button></div>${pendingFU.length===0?emptyState('📞','No pending follow-ups','All caught up!','',''):`<div>${pendingFU.slice(0,10).map(f=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">${f.clientName||'—'}</div><div style="font-size:12px;color:var(--muted)">${f.type||'—'} • Due: ${f.dueDate||'—'}</div></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">${f.priority==='High'?`<span class="badge b-r">🔴 High</span>`:f.priority==='Medium'?`<span class="badge b-y">🟡 Med</span>`:`<span class="badge b-gray">⚪ Low</span>`}<button class="btn btn-gr btn-sm" onclick="markFollowupDone('${f.id}');dash()">Done ✓</button></div></div>`).join('')}</div>`}</div>
-   
+           </div>`;
   } else if(CR==='trainer'){
     const myUid=auth().currentUser.uid;
     const[mySessions,myClients,myCerts,myRatings]=await Promise.all([fsGetAll('sessions',fn().where('trainerId','==',myUid)),fsGetAll('clients',fn().where('trainerId','==',myUid),fn().where('active','==',true)),fsGetAll('certificates',fn().where('trainerId','==',myUid)),fsGetAll('trainerratings',fn().where('trainerId','==',myUid))]);
@@ -1278,6 +1235,7 @@ async function dash(){
     const presentCount=myAttend.filter(a=>a.status==='present').length,rate=myAttend.length?Math.round(presentCount/myAttend.length*100):0;
     $('page').innerHTML=`
       <div class="stats-grid"><div class="sc sc-a"><div class="sc-ico">📅</div><div class="sc-lbl">Sessions Today</div><div class="sc-val">${todayS.length}</div></div><div class="sc sc-g"><div class="sc-ico">📊</div><div class="sc-lbl">Attendance Rate</div><div class="sc-val">${rate}%</div></div><div class="sc sc-b"><div class="sc-ico">🗓</div><div class="sc-lbl">Total Sessions</div><div class="sc-val">${mySessions.length}</div></div></div>
+        }
 }
 function closeDotsAndScroll(headerId){document.querySelectorAll('.dots-dropdown').forEach(d=>d.classList.remove('open'));const el=document.getElementById(headerId);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});const sectionId=headerId.replace('col-hd-','');const body=document.getElementById('col-body-'+sectionId);if(body&&!body.classList.contains('open')){toggleCollapsible(sectionId);}}}
 function renderDashTodaySessions(todayS,tcVisible,canStart){
@@ -2184,57 +2142,16 @@ async function delSession(id){
 // UPDATED getTcVisibleSessions — filters by sessionDays
 // Replace the existing getTcVisibleSessions function
 // ══════════════════════════════════════════════════════════════
-
 function getTcVisibleSessions(tcEntries, clients, todayStr) {
   const now = new Date();
-  const todayDow = now.toLocaleDateString('en-IN', { weekday: 'short' });
-  const activeClientIds = new Set(clients.map(c => c.id));  // ← only active clients
+  const todayDow = now.toLocaleDateString('en-IN', { weekday: 'short' }); // 'Mon','Tue',etc.
   const result = [];
 
   for (const tc of tcEntries) {
     if (!tc.sessionTime) continue;
-
-    // ── skip if client no longer exists / is inactive ──
-    if (tc.clientId && !activeClientIds.has(tc.clientId)) continue;
-
     const [h, m] = tc.sessionTime.split(':').map(Number);
     if (isNaN(h) || isNaN(m)) continue;
 
-    if (tc.sessionDays && tc.sessionDays.length > 0) {
-      if (!tc.sessionDays.includes(todayDow)) continue;
-    }
-
-    const sessTime = new Date(now);
-    sessTime.setHours(h, m, 0, 0);
-    const showFrom = new Date(sessTime.getTime() - 60 * 60 * 1000);
-    if (now < showFrom) continue;
-
-    const client = clients.find(c => c.id === tc.clientId) || {};
-    result.push({
-      id: `tc_${tc.id}`,
-      _isTc: true,
-      _tcId: tc.id,
-      clientId: tc.clientId,
-      clientName: tc.clientName || client.name || '—',
-      trainerId: tc.trainerId || client.trainerId || '',
-      trainerName: tc.trainerName || client.trainerName || '—',
-      time: tc.sessionTime,
-      date: todayStr,
-      type: tc.sessionType || client.goal || 'General Fitness',
-      status: tc.todayStatus || 'not-started',
-      _tcEntry: tc
-    });
-  }
-
-  // ── deduplicate by clientId (keep only one entry per client) ──
-  const seen = new Set();
-  return result.filter(r => {
-    if (!r.clientId) return true;
-    if (seen.has(r.clientId)) return false;
-    seen.add(r.clientId);
-    return true;
-  });
-}
     // ── NEW: check if today's day is in sessionDays ──────
     if (tc.sessionDays && tc.sessionDays.length > 0) {
       if (!tc.sessionDays.includes(todayDow)) continue; // skip — not scheduled today
