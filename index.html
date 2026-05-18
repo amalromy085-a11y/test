@@ -2220,16 +2220,12 @@ async function delSession(id){
   catch(e){toast('Error: '+e.message,'error');}
 }
 // ══════════════════════════════════════════════════════════════
-// TIME CHART — paste this entire block replacing from
-// "function injectTcStyles(){" down to closing } of exportTcPDF
+// TIME CHART — Full code with duplicate client + entry removal
 // ══════════════════════════════════════════════════════════════
-        // ══════════════════════════════════════════════════════════════
-// UPDATED getTcVisibleSessions — filters by sessionDays
-// Replace the existing getTcVisibleSessions function
-// ══════════════════════════════════════════════════════════════
+
 function getTcVisibleSessions(tcEntries, clients, todayStr) {
   const now = new Date();
-  const todayDow = now.toLocaleDateString('en-IN', { weekday: 'short' }); // 'Mon','Tue',etc.
+  const todayDow = now.toLocaleDateString('en-IN', { weekday: 'short' });
   const result = [];
 
   for (const tc of tcEntries) {
@@ -2237,11 +2233,9 @@ function getTcVisibleSessions(tcEntries, clients, todayStr) {
     const [h, m] = tc.sessionTime.split(':').map(Number);
     if (isNaN(h) || isNaN(m)) continue;
 
-    // ── NEW: check if today's day is in sessionDays ──────
     if (tc.sessionDays && tc.sessionDays.length > 0) {
-      if (!tc.sessionDays.includes(todayDow)) continue; // skip — not scheduled today
+      if (!tc.sessionDays.includes(todayDow)) continue;
     }
-    // if sessionDays is empty/undefined, show every day (backward compatible)
 
     const sessTime = new Date(now);
     sessTime.setHours(h, m, 0, 0);
@@ -2266,12 +2260,6 @@ function getTcVisibleSessions(tcEntries, clients, todayStr) {
   }
   return result;
 }
-
-// ══════════════════════════════════════════════════════════════
-// UPDATED TIME CHART SECTION
-// Replace everything from "function injectTcStyles(){" down to
-// the closing } of "async function exportTcPDF()"
-// ══════════════════════════════════════════════════════════════
 
 function injectTcStyles() {
   if (document.getElementById('tc-styles')) return;
@@ -2324,13 +2312,29 @@ async function timechart() {
   $('page').innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spin" style="width:28px;height:28px;margin:0 auto 10px"></div>Loading…</div>`;
   injectTcStyles();
 
-  const [clients, sessions, tcEntriesRaw] = await Promise.all([
+  const [clientsRaw, sessions, tcEntriesRaw] = await Promise.all([
     fsGetAll('clients', fn().where('active', '==', true)),
     fsGetAll('sessions'),
     fsGetAll('timechart')
   ]);
 
-  // Deduplicate
+  // ── DEDUPLICATE CLIENTS by id ────────────────────────────────
+  const clientsById = {};
+  for (const c of clientsRaw) {
+    if (!c.id) continue;
+    const existing = clientsById[c.id];
+    if (!existing) {
+      clientsById[c.id] = c;
+    } else {
+      // keep whichever has a more recent updatedAt
+      const eTs = existing.updatedAt?.seconds || existing.createdAt?.seconds || 0;
+      const nTs = c.updatedAt?.seconds || c.createdAt?.seconds || 0;
+      if (nTs > eTs) clientsById[c.id] = c;
+    }
+  }
+  const clients = Object.values(clientsById);
+
+  // ── DEDUPLICATE TC ENTRIES by clientId ───────────────────────
   const tcByClient = {};
   const toDelete = [];
   for (const e of tcEntriesRaw) {
@@ -2361,7 +2365,6 @@ async function timechart() {
   const todaySessionsMap = {};
   sessions.filter(s => s.date === today).forEach(s => { if (s.clientId) todaySessionsMap[s.clientId] = s.status; });
 
-  // Today's day of week abbreviation (matches what we store)
   const DOW_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const todayDow = DOW_ABBR[new Date().getDay()];
 
@@ -2370,13 +2373,11 @@ async function timechart() {
     const liveStatus = todaySessionsMap[c.id] || tc.todayStatus || 'not-started';
     const startDate = c.startDate || tc.startDate || '';
     const dayNum = startDate ? Math.max(Math.floor((new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)) + 1, 1) : 0;
-    // Is today a scheduled day for this entry?
     const days = tc.sessionDays || [];
     const scheduledToday = days.length === 0 || days.includes(todayDow);
     return { client: c, tc, liveStatus, startDate, dayNum, scheduledToday };
   });
 
-  // Sort: by session time (clients with time first), then name
   rows.sort((a, b) => {
     const tA = a.tc.sessionTime || a.client.sessionTime || '';
     const tB = b.tc.sessionTime || b.client.sessionTime || '';
@@ -2386,22 +2387,23 @@ async function timechart() {
     return (a.client.name || '').localeCompare(b.client.name || '');
   });
 
-  const onairN = rows.filter(r => r.liveStatus === 'onair').length;
+  const onairN     = rows.filter(r => r.liveStatus === 'onair').length;
   const completedN = rows.filter(r => r.liveStatus === 'completed').length;
-  const missedN = rows.filter(r => r.liveStatus === 'missed').length;
-  const pendingN = rows.filter(r => r.liveStatus === 'not-started').length;
-  const withEntry = rows.filter(r => r.tc && r.tc.id).length;
+  const missedN    = rows.filter(r => r.liveStatus === 'missed').length;
+  const pendingN   = rows.filter(r => r.liveStatus === 'not-started').length;
+  const withEntry  = rows.filter(r => r.tc && r.tc.id).length;
   const scheduledTodayN = rows.filter(r => r.scheduledToday && r.tc && r.tc.id).length;
-  const totalN = rows.length || 1;
-  const dupCount = tcEntriesRaw.length - tcEntries.length;
+  const totalN     = rows.length || 1;
+  const dupTcCount = tcEntriesRaw.length - tcEntries.length;
+  const dupClientCount = clientsRaw.length - clients.length;
 
-  window._tcRows = rows;
-  window._tcMap = tcMap;
+  window._tcRows    = rows;
+  window._tcMap     = tcMap;
   window._tcClients = clients;
   window._tcEntries = tcEntries;
-  window._tcView = 'grid';
-  window._tcFilter = 'all';
-  window._todayDow = todayDow;
+  window._tcView    = 'grid';
+  window._tcFilter  = 'all';
+  window._todayDow  = todayDow;
 
   function planColor(p) {
     return { Silver: 'var(--muted)', Gold: 'var(--yellow)', Platinum: 'var(--purple)', 'Platinum Plus': 'var(--purple)', 'Corporate Fitness': 'var(--blue)', Couple: 'var(--pink)' }[p] || 'var(--muted)';
@@ -2409,9 +2411,9 @@ async function timechart() {
   function planEmoji(p) {
     return { Silver: '🥈', Gold: '🥇', Platinum: '💎', 'Platinum Plus': '💎+', 'Corporate Fitness': '🏢', Couple: '👫' }[p] || '•';
   }
-  window._tcPlanColor = planColor;
-  window._tcPlanEmoji = planEmoji;
-  window._tcCanDelete = CR === 'admin' || CR === 'coordinatorhead';
+  window._tcPlanColor  = planColor;
+  window._tcPlanEmoji  = planEmoji;
+  window._tcCanDelete  = CR === 'admin' || CR === 'coordinatorhead';
 
   const progTotal = Math.round((completedN + onairN) / totalN * 100);
 
@@ -2422,7 +2424,8 @@ async function timechart() {
         <div style="font-size:12px;color:var(--muted);margin-top:2px">
           Persistent daily session tracker — ${clients.length} active clients · Sorted by session time
           · <strong style="color:var(--green)">${scheduledTodayN}</strong> scheduled for <strong>${todayDow}</strong>
-          ${dupCount > 0 ? ` <span style="color:var(--yellow)">· Removed ${dupCount} duplicate(s)</span>` : ''}
+          ${dupTcCount > 0 ? ` <span style="color:var(--yellow)">· Removed ${dupTcCount} duplicate TC entr${dupTcCount === 1 ? 'y' : 'ies'}</span>` : ''}
+          ${dupClientCount > 0 ? ` <span style="color:var(--yellow)">· Removed ${dupClientCount} duplicate client row${dupClientCount === 1 ? '' : 's'}</span>` : ''}
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -2520,12 +2523,10 @@ function tcRender() {
   el.innerHTML = window._tcView === 'list' ? tcListHTML(rows) : tcGridHTML(rows);
 }
 
-// Helper to get today's DOW abbreviation anywhere
 function DOW_ABBR_GLOBAL() {
   return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date().getDay()];
 }
 
-// Render day pills (for card display)
 function renderDayPills(sessionDays, todayDow) {
   const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   if (!sessionDays || sessionDays.length === 0) {
@@ -2559,8 +2560,6 @@ function tcGridHTML(rows) {
     const cId = c.id;
     const sessionTime = tc.sessionTime || c.sessionTime || '';
     const sessionDays = tc.sessionDays || [];
-
-    // Not scheduled today — dim card
     const notTodayStyle = (!scheduledToday && tc.id) ? 'opacity:.55;' : '';
 
     let actionBtns = '';
@@ -2597,7 +2596,6 @@ function tcGridHTML(rows) {
         <div class="tc-info-row"><span style="font-size:13px">🧑‍🏫</span><span class="tc-info-lbl">Trainer</span><span class="tc-info-val">${trainerName}</span></div>
         <div class="tc-info-row"><span style="font-size:13px">🏋️</span><span class="tc-info-lbl">Type</span><span class="tc-info-val">${tc.sessionType || c.goal || '—'}</span></div>
         ${startDate ? `<div class="tc-info-row"><span style="font-size:13px">📅</span><span class="tc-info-lbl">Start</span><span class="tc-info-val">${startDate}</span></div>` : ''}
-        <!-- Session Days Row -->
         <div class="tc-info-row" style="align-items:flex-start">
           <span style="font-size:13px">📆</span>
           <span class="tc-info-lbl">Days</span>
@@ -2656,7 +2654,6 @@ function tcListHTML(rows) {
   </div>`;
 }
 
-// ── DAY SELECTOR WIDGET HTML ──────────────────────────────────
 function buildDaySelectorHTML(selectedDays = [], widgetId = 'tc-days') {
   const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   return `
@@ -2698,13 +2695,11 @@ function tcToggleDay(widgetId, day) {
     days.push(day);
   }
   hiddenEl.value = JSON.stringify(days);
-  // update buttons
   const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   ALL_DAYS.forEach(d => {
     const btn = document.getElementById(`${widgetId}-${d}`);
     if (btn) btn.classList.toggle('selected', days.includes(d));
   });
-  // update summary
   const sumEl = document.getElementById(widgetId + '-summary');
   if (sumEl) sumEl.textContent = days.length === 0 ? 'Every day (no restriction)' : days.join(', ');
 }
@@ -2746,7 +2741,6 @@ function getTcDays(widgetId) {
   try { return JSON.parse(hiddenEl.value || '[]'); } catch (e) { return []; }
 }
 
-// ── ADD TC ENTRY ──────────────────────────────────────────────
 async function openAddTcEntry() {
   const clients = window._tcClients || await fsGetAll('clients', fn().where('active', '==', true));
   openM1('ADD TIME CHART ENTRY', `
@@ -2775,7 +2769,6 @@ async function openAddTcEntry() {
   attachClientAC('tc-client-inp', 'tc-client-id', clients);
 }
 
-// ── EDIT TC ENTRY ─────────────────────────────────────────────
 async function openEditTcEntry(clientId) {
   const clients = window._tcClients || await fsGetAll('clients', fn().where('active', '==', true));
   const c = clients.find(x => x.id === clientId) || {};
@@ -2807,7 +2800,6 @@ async function openEditTcEntry(clientId) {
     </div>`);
 }
 
-// ── SAVE TC ENTRY ─────────────────────────────────────────────
 async function saveTcEntry(existingId = '', fixedClientId = '') {
   let clientId = fixedClientId || document.getElementById('tc-client-id')?.value || '';
   let clientName = '';
@@ -2815,10 +2807,10 @@ async function saveTcEntry(existingId = '', fixedClientId = '') {
   else { const c = (window._tcClients || []).find(x => x.id === fixedClientId); clientName = c?.name || ''; }
   if (!clientId && !clientName) { toast('Select a client', 'error'); return; }
 
-  const sessionTime  = document.getElementById('tc-time')?.value || '';
-  const sessionType  = document.getElementById('tc-stype')?.value || '';
-  const remarks      = document.getElementById('tc-remarks')?.value || '';
-  const sessionDays  = getTcDays('tc-days'); // ← NEW
+  const sessionTime = document.getElementById('tc-time')?.value || '';
+  const sessionType = document.getElementById('tc-stype')?.value || '';
+  const remarks     = document.getElementById('tc-remarks')?.value || '';
+  const sessionDays = getTcDays('tc-days');
 
   const client = (window._tcClients || []).find(x => x.id === clientId) || {};
   const data = {
@@ -2826,7 +2818,7 @@ async function saveTcEntry(existingId = '', fixedClientId = '') {
     trainerName: client?.trainerName || '',
     trainerId: client?.trainerId || '',
     sessionTime, sessionType, remarks,
-    sessionDays // ← NEW
+    sessionDays
   };
 
   try {
@@ -2844,7 +2836,6 @@ async function saveTcEntry(existingId = '', fixedClientId = '') {
   } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
-// ── QUICK STATUS (unchanged) ──────────────────────────────────
 async function tcQuickStatus(tcId, status, clientId) {
   const today = getTodayStr();
   try {
@@ -2856,7 +2847,7 @@ async function tcQuickStatus(tcId, status, clientId) {
         clientId, clientName: c.name || '',
         trainerName: c.trainerName || '', trainerId: c.trainerId || '',
         sessionTime: c.sessionTime || '', sessionType: c.sessionType || c.goal || '',
-        sessionDays: [], // default empty = every day
+        sessionDays: [],
         todayStatus: status, lastStatusUpdate: today
       });
       if (!window._tcMap) window._tcMap = {};
@@ -2871,7 +2862,6 @@ async function tcQuickStatus(tcId, status, clientId) {
   } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
-// ── VIEW DETAIL (updated to show days) ───────────────────────
 async function tcViewDetail(clientId) {
   const c = (window._tcClients || []).find(x => x.id === clientId);
   if (!c) { toast('Client not found', 'error'); return; }
@@ -2915,7 +2905,6 @@ async function tcViewDetail(clientId) {
         <div><span style="color:var(--muted)">Trainer:</span> <strong>${tc.trainerName || c.trainerName || '—'}</strong></div>
         <div><span style="color:var(--muted)">Start Date:</span> <strong>${startDate || '—'}</strong></div>
       </div>
-      <!-- Days display -->
       <div style="margin-bottom:8px">
         <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Session Days</div>
         <div style="display:flex;gap:4px;flex-wrap:wrap">${renderDayPills(sessionDays, todayDow)}</div>
@@ -2954,7 +2943,6 @@ async function tcViewDetail(clientId) {
     </div>`);
 }
 
-// ── STATUS MODAL (unchanged) ──────────────────────────────────
 async function openTcStatus(clientId, clientName) {
   const tc = (window._tcMap || {})[clientId] || {}; const current = tc.todayStatus || 'not-started';
   openM1(`STATUS: ${clientName.toUpperCase()}`, `
@@ -2985,7 +2973,6 @@ async function saveTcStatusFromModal(tcId, clientId) {
   closeM1();
 }
 
-// ── DELETE TC ENTRY (unchanged) ───────────────────────────────
 async function delTcEntry(tcId, clientId, event) {
   if (event && event.stopPropagation) event.stopPropagation();
   if (!tcId) { toast('No Time Chart entry to delete', 'warn'); return; }
@@ -2999,7 +2986,6 @@ async function delTcEntry(tcId, clientId, event) {
   } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
-// ── EXPORT PDF (unchanged, + days column) ────────────────────
 async function exportTcPDF() {
   toast('Generating Time Chart PDF…', 'info');
   const rows = window._tcRows || [];
@@ -3022,10 +3008,10 @@ async function exportTcPDF() {
     doc.text('CLIENT TIME CHART', pw / 2, 42, { align: 'center' });
     doc.setTextColor(200, 200, 210); doc.setFontSize(10); doc.setFont('helvetica', 'normal');
     doc.text(`${getTodayStr()} (${todayDow})  ·  ${rows.length} Active Clients  ·  Ordered by Session Time`, pw / 2, 52, { align: 'center' });
-    const onairN = rows.filter(r => r.liveStatus === 'onair').length;
+    const onairN     = rows.filter(r => r.liveStatus === 'onair').length;
     const completedN = rows.filter(r => r.liveStatus === 'completed').length;
-    const missedN = rows.filter(r => r.liveStatus === 'missed').length;
-    const pendingN = rows.filter(r => r.liveStatus === 'not-started').length;
+    const missedN    = rows.filter(r => r.liveStatus === 'missed').length;
+    const pendingN   = rows.filter(r => r.liveStatus === 'not-started').length;
     const scheduledN = rows.filter(r => r.scheduledToday && r.tc && r.tc.id).length;
     [[onairN, 'On Air', [0, 200, 110]], [completedN, 'Completed', [212, 255, 0]], [missedN, 'Missed', [255, 75, 75]], [pendingN, 'Pending', [255, 190, 0]], [scheduledN, `Sched. ${todayDow}`, [77, 159, 255]]].forEach(([v, l, c], i) => {
       const bx = 16 + i * 56, bw = 52;
