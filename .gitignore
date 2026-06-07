@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+# docs/ is intentionally tracked - it's the build output for GitHub Pages
 *.local
 
 # Editor directories and files
